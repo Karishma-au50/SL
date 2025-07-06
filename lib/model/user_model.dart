@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
+
 import '../core/model/base_model.dart';
+
 class UserModel {
   String? id;
   String? firstname;
@@ -46,9 +49,9 @@ class UserModel {
     this.pincode,
     this.country,
     this.role,
-    this.documentsName=const [],
-    this.documentsDetails=const [],
-    this.images=const [],
+    this.documentsName = const [],
+    this.documentsDetails = const [],
+    this.images = const [],
     this.isVerified,
     this.createdAt,
     this.updatedAt,
@@ -58,33 +61,33 @@ class UserModel {
     this.v,
   });
   UserModel copyWith({
-      String? id,
-  String? firstname,
-  String? lastname,
-  String? middlename,
-  int? dob,
-  int? mobile,
-  String? gender,
-  String? email,
-  String? address1,
-  String? address2,
-  String? address3,
-  String? state,
-  String? city,
-  String? pincode,
-  String? country,
-  String? role,
-  List<String>? documentsName,
-  List<String>? documentsDetails,
-  List<String>? images,
-  bool? isVerified,
-  int? createdAt,
-  int? updatedAt,
-  bool? isDeleted,
-  int? deletedAt,
-  String? deletedBy,
-  int? v,
-  }){
+    String? id,
+    String? firstname,
+    String? lastname,
+    String? middlename,
+    int? dob,
+    int? mobile,
+    String? gender,
+    String? email,
+    String? address1,
+    String? address2,
+    String? address3,
+    String? state,
+    String? city,
+    String? pincode,
+    String? country,
+    String? role,
+    List<String>? documentsName,
+    List<String>? documentsDetails,
+    List<String>? images,
+    bool? isVerified,
+    int? createdAt,
+    int? updatedAt,
+    bool? isDeleted,
+    int? deletedAt,
+    String? deletedBy,
+    int? v,
+  }) {
     return UserModel(
       id: id ?? this.id,
       firstname: firstname ?? this.firstname,
@@ -113,7 +116,6 @@ class UserModel {
       deletedBy: deletedBy ?? this.deletedBy,
       v: v ?? this.v,
     );
-  
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -149,11 +151,11 @@ class UserModel {
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
+      // '_id': id,
       'firstname': firstname,
       'lastname': lastname,
       'middlename': middlename,
-      'dob': dob,
+      // 'dob': dob,
       'mobile': mobile,
       'gender': gender,
       'email': email,
@@ -169,12 +171,17 @@ class UserModel {
       'documentsDetails': documentsDetails,
       'images': images,
       'isVerified': isVerified,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-      'isDeleted': isDeleted,
-      'deletedAt': deletedAt,
-      'deletedBy': deletedBy,
+      // 'createdAt': createdAt,
+      // 'updatedAt': updatedAt,
+      // 'isDeleted': isDeleted,
+      // 'deletedAt': deletedAt,
+      // 'deletedBy': deletedBy,
       '__v': v,
     };
+  }
+
+  // comvert to FormData
+  FormData toFormData() {
+    return FormData.fromMap(toJson());
   }
 }

@@ -1,29 +1,31 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:sl/model/user_model.dart';
 import 'package:sl/routes/app_routes.dart';
 import 'package:sl/shared/app_colors.dart';
 import 'package:sl/widgets/inputs/my_text_field.dart';
+import 'package:sl/widgets/toast/my_toast.dart';
 
 import '../../../widgets/buttons/my_button.dart';
 import '../controller/auth_controller.dart';
 
-enum GenderEnum {
-  male,
-  female
-}
+enum GenderEnum { male, female }
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  final String mobile;
+  const RegisterScreen({super.key, required this.mobile});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-   int currentStep = 0;
+  int currentStep = 0;
   final redColor = const Color(0xFFB10606);
   GenderEnum genderGroup = GenderEnum.male;
   final _picker = ImagePicker();
@@ -55,7 +57,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final documentNumberController = TextEditingController();
 
   String? selectedDocumentType;
-void nextStep() async {
+  void nextStep() async {
     if (_formKeys[currentStep].currentState?.validate() ?? false) {
       if (currentStep < 2) {
         setState(() => currentStep++);
@@ -64,7 +66,7 @@ void nextStep() async {
           firstname: firstNameController.text,
           middlename: middleNameController.text,
           lastname: lastNameController.text,
-          gender: genderGroup.name,
+          gender: genderGroup.name.capitalizeFirst,
           dob: null,
           mobile: int.tryParse(mobileController.text),
           email: emailController.text,
@@ -84,14 +86,18 @@ void nextStep() async {
           updatedAt: DateTime.now().millisecondsSinceEpoch,
         );
 
-        await controller.register(user).then((value) {
-          context.push(AppRoutes.home);
-        }).catchError((e) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-        });
+        await controller
+            .register(user)
+            .then((value) {
+              if (value) context.go(AppRoutes.home);
+            })
+            .catchError((e) {
+              MyToasts.toastError(e.toString());
+            });
       }
     }
   }
+
   void prevStep() {
     if (currentStep > 0) {
       setState(() => currentStep--);
@@ -109,7 +115,9 @@ void nextStep() async {
             height: 3,
             margin: const EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(
-              color: currentStep >= index ? AppColors.kcPrimaryColor : Colors.grey.shade300,
+              color: currentStep >= index
+                  ? AppColors.kcPrimaryColor
+                  : Colors.grey.shade300,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -167,10 +175,10 @@ void nextStep() async {
   //            ScaffoldMessenger.of(context).showSnackBar(
   //             SnackBar(content: Text(error.toString())),
   //           );
-  //               context.push(AppRoutes.home); 
+  //               context.push(AppRoutes.home);
   //         }
   //       );
-       
+
   //     }
   //   }
   // }
@@ -203,7 +211,24 @@ void nextStep() async {
   //   );
   // }
 
- @override
+  @override
+  void initState() {
+    mobileController.text = widget.mobile;
+    super.initState();
+  }
+
+  Future<void> pickImage(bool isFront) async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (isFront) {
+        frontImage = image;
+      } else {
+        backImage = image;
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screens = [
       buildPersonalDetailsForm(),
@@ -231,23 +256,34 @@ void nextStep() async {
                   radius: 18,
                   backgroundColor: const Color(0xFFFFF3F2),
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: Colors.black),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 16,
+                      color: Colors.black,
+                    ),
                     onPressed: prevStep,
                   ),
                 ),
               ),
               const SizedBox(height: 10),
               const Center(
-                child: Text("Create a New Account", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                child: Text(
+                  "Create a New Account",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 currentStep == 0
                     ? "Personal Details\nStep 1/3"
                     : currentStep == 1
-                        ? "Address Details\nStep 2/3"
-                        : "Document Details\nStep 3/3",
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                    ? "Address Details\nStep 2/3"
+                    : "Document Details\nStep 3/3",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const SizedBox(height: 10),
               stepIndicator(),
@@ -261,12 +297,14 @@ void nextStep() async {
               const SizedBox(height: 20),
               MyButton(
                 text: currentStep == 2 ? "Submit" : "Next",
-                onPressed: ()async {
-                  if (currentStep == 2) {
-                    nextStep();
-                  } else {
-                    currentStep++;
-                  }
+                onPressed: () async {
+                  nextStep();
+
+                  // if (currentStep == 2) {
+                  //   nextStep();
+                  // } else {
+                  //   currentStep++;
+                  // }
                 },
               ),
               const SizedBox(height: 10),
@@ -277,8 +315,13 @@ void nextStep() async {
     );
   }
 
-   Widget buildTextField(String label, String hint, TextEditingController controller,
-      {TextInputType type = TextInputType.text}) {
+  Widget buildTextField(
+    String label,
+    String hint,
+    TextEditingController controller, {
+    TextInputType type = TextInputType.text,
+    VoidCallback? onTap,
+  }) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: MyTextField(
@@ -286,10 +329,13 @@ void nextStep() async {
         hintText: hint,
         labelText: label,
         textInputType: type,
-        validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+        validator: (value) =>
+            value == null || value.isEmpty ? 'Required' : null,
+        onTap: onTap,
       ),
     );
   }
+
   Widget buildPersonalDetailsForm() {
     return SingleChildScrollView(
       child: Column(
@@ -297,7 +343,7 @@ void nextStep() async {
           buildTextField("First Name", "Ex. ABC", firstNameController),
           buildTextField("Middle Name", "Ex. Kumar", middleNameController),
           buildTextField("Last Name", "Ex. SL Chemicals", lastNameController),
-               Padding(
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text("Gender:"),
           ),
@@ -318,19 +364,24 @@ void nextStep() async {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CircleAvatar(
-                          child: Icon(Icons.male, color: Colors.blue, size: 20,),
+                          child: Icon(Icons.male, color: Colors.blue, size: 20),
                         ),
                         Text("Male"),
-                        Radio(value: GenderEnum.male,   activeColor: AppColors.kcPrimaryColor, groupValue: genderGroup, onChanged: (val){
-                        setState(() {
-                          genderGroup = val!;
-                        });
-                        }),
+                        Radio(
+                          value: GenderEnum.male,
+                          activeColor: AppColors.kcPrimaryColor,
+                          groupValue: genderGroup,
+                          onChanged: (val) {
+                            setState(() {
+                              genderGroup = val!;
+                            });
+                          },
+                        ),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(width: 15,),
+                SizedBox(width: 15),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -341,48 +392,102 @@ void nextStep() async {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                         CircleAvatar(
-                            child: Icon(Icons.female, color: Colors.blue, size: 20,),
-                       ),
+                        CircleAvatar(
+                          child: Icon(
+                            Icons.female,
+                            color: Colors.blue,
+                            size: 20,
+                          ),
+                        ),
                         Text("Female"),
-                        Radio(value: GenderEnum.female, 
-                        activeColor: AppColors.kcPrimaryColor,
-                        groupValue: genderGroup, onChanged: (val){
-                          setState(() {
-                            genderGroup = val!;
-                          });
-                        }),
+                        Radio(
+                          value: GenderEnum.female,
+                          activeColor: AppColors.kcPrimaryColor,
+                          groupValue: genderGroup,
+                          onChanged: (val) {
+                            setState(() {
+                              genderGroup = val!;
+                            });
+                          },
+                        ),
                       ],
                     ),
-                  )
+                  ),
                 ),
               ],
             ),
           ),
-      
-          buildTextField("Date of Birth", "Ex. 14 Aug, 1995", dobController),
-          buildTextField("Phone Number", "Ex. +91 9876543210", mobileController, type: TextInputType.phone),
-          buildTextField("Email Address", "example@gmail.com", emailController, type: TextInputType.emailAddress),
+
+          buildTextField(
+            "Date of Birth",
+            "Ex. 14 Aug, 1995",
+            dobController,
+            onTap: () {
+              showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(1900),
+                lastDate: DateTime.now(),
+              ).then((selectedDate) {
+                if (selectedDate != null) {
+                  dobController.text = DateFormat(
+                    "dd MMM, yyyy",
+                  ).format(selectedDate);
+                }
+              });
+            },
+          ),
+          buildTextField(
+            "Phone Number",
+            "Ex. +91 9876543210",
+            mobileController,
+            type: TextInputType.phone,
+          ),
+          buildTextField(
+            "Email Address",
+            "example@gmail.com",
+            emailController,
+            type: TextInputType.emailAddress,
+          ),
         ],
       ),
     );
   }
+
   Widget buildAddressDetailsForm() {
     return SingleChildScrollView(
       child: Column(
         children: [
-          buildTextField("Address Line 1", "Ex. 53 Brentwood Drive", address1Controller),
-          buildTextField("Address Line 2", "Ex. Queensland(Q), 81 Duff Street", address2Controller),
-          buildTextField("Address Line 3", "Ex. 81 Duff Street.", address3Controller),
+          buildTextField(
+            "Address Line 1",
+            "Ex. 53 Brentwood Drive",
+            address1Controller,
+          ),
+          buildTextField(
+            "Address Line 2",
+            "Ex. Queensland(Q), 81 Duff Street",
+            address2Controller,
+          ),
+          buildTextField(
+            "Address Line 3",
+            "Ex. 81 Duff Street.",
+            address3Controller,
+          ),
           buildTextField("State", "Ex. Haryana", stateController),
           buildTextField("City", "Ex. Faridabad", cityController),
-          buildTextField("Post Code", "000000", pincodeController, type: TextInputType.number),
+          buildTextField(
+            "Post Code",
+            "000000",
+            pincodeController,
+            type: TextInputType.number,
+          ),
           buildTextField("Country", "Ex. India", countryController),
         ],
       ),
     );
   }
-Widget buildDocumentDetailsForm() {
+
+  Widget buildDocumentDetailsForm() {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -391,11 +496,20 @@ Widget buildDocumentDetailsForm() {
             child: DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 labelText: "Select Document",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
               ),
               value: selectedDocumentType,
-              items: ['PAN Card', 'Aadhar Card'].map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
+              items: ['PAN Card', 'Aadhar Card']
+                  .map(
+                    (type) => DropdownMenuItem(value: type, child: Text(type)),
+                  )
+                  .toList(),
               validator: (value) => value == null ? 'Required' : null,
               onChanged: (value) {
                 setState(() {
@@ -406,10 +520,85 @@ Widget buildDocumentDetailsForm() {
           ),
           if (selectedDocumentType != null)
             buildTextField(
-              selectedDocumentType == 'PAN Card' ? "PAN Number" : "Aadhar Number",
-              selectedDocumentType == 'PAN Card' ? "Ex. XXXXX3256X" : "Ex. 123456789012",
+              selectedDocumentType == 'PAN Card'
+                  ? "PAN Number"
+                  : "Aadhar Number",
+              selectedDocumentType == 'PAN Card'
+                  ? "Ex. XXXXX3256X"
+                  : "Ex. 123456789012",
               documentNumberController,
-              type: selectedDocumentType == 'PAN Card' ? TextInputType.text : TextInputType.number,
+              type: selectedDocumentType == 'PAN Card'
+                  ? TextInputType.text
+                  : TextInputType.number,
+            ),
+
+          if (selectedDocumentType != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Upload Front Image"),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () => pickImage(true),
+                    child: Container(
+                      height: 120,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: frontImage == null
+                          ? const Center(
+                              child: Icon(
+                                Icons.upload_file,
+                                size: 40,
+                                color: Colors.grey,
+                              ),
+                            )
+                          : Image.file(
+                              File(frontImage!.path),
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (selectedDocumentType != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Upload Back Image"),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () => pickImage(false),
+                    child: Container(
+                      height: 120,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: backImage == null
+                          ? const Center(
+                              child: Icon(
+                                Icons.upload_file,
+                                size: 40,
+                                color: Colors.grey,
+                              ),
+                            )
+                          : Image.file(
+                              File(backImage!.path),
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
+                ],
+              ),
             ),
         ],
       ),

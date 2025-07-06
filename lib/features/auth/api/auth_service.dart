@@ -1,5 +1,3 @@
-
-
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 import '../../../core/model/response_model.dart';
@@ -10,8 +8,7 @@ import '../../../shared/services/storage_service.dart';
 class AuthEndpoint {
   static const sendOTP = '/api/users/send-otp';
   static const register = '/api/users';
-  static const verifyOtp = '/auth/verifyOtp';
-
+  static const verifyOtp = '/api/users/verify-otp';
 }
 
 class AuthService extends BaseApiService {
@@ -31,43 +28,43 @@ class AuthService extends BaseApiService {
   // register
 
   Future<ResponseModel> register(UserModel user) async {
-  
-    final res = await post(AuthEndpoint.register, data: user);
+    final res = await post(AuthEndpoint.register, data: user.toFormData());
 
-    ResponseModel resModel = ResponseModel<String>(
+    ResponseModel resModel = ResponseModel(
       message: res.data["message"],
-      status: res.data["status"],
+      status: res.data["error"],
       data: res.data['data'],
     );
-    if (resModel.status == true) {
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(resModel.data['token']);
-      StorageService.instance.setUserId(UserModel.fromJson(decodedToken));
-      StorageService.instance.setToken(resModel.data);
-    }
+    // if (resModel.status == false) {
+    //   Map<String, dynamic> decodedToken = JwtDecoder.decode(
+    //     resModel.data['token'],
+    //   );
+    //   StorageService.instance.setUserId(UserModel.fromJson(decodedToken));
+    //   StorageService.instance.setToken(resModel.data);
+    // }
     return resModel;
   }
 
   // SEND OTP
   Future<ResponseModel> sendOTP(String mobile) async {
-    final res = await post(
-      AuthEndpoint.sendOTP,
-      data: {"mobile": mobile},
-    );
+    final res = await post(AuthEndpoint.sendOTP, data: {"mobile": mobile});
     ResponseModel resModel = ResponseModel(
       message: res.data["message"],
-      status: res.data["status"],
+      status: res.data["error"] ?? true,
       data: res.data['data'],
     );
     return resModel;
   }
-  Future <ResponseModel> verifyOtp(String mobile, String otp) async {
+
+  Future<ResponseModel> verifyOtp(String mobile, String otp) async {
     final res = await post(
       AuthEndpoint.verifyOtp,
       data: {"mobile": mobile, "otp": otp},
     );
     ResponseModel resModel = ResponseModel(
       message: res.data["message"],
-      status: res.data["status"],
+      status: res.data["error"],
+      data: res.data['data'],
     );
     if (resModel.status == true) {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(res.data['token']);
@@ -85,7 +82,7 @@ class AuthService extends BaseApiService {
   //   );
   //   ResponseModel resModel = ResponseModel<List<UserModel>>(
   //     message: res.data["message"],
-  //     status: res.data["status"],
+  //     status: res.data["error"],
   //     data: res.data["data"]
   //         .map<UserModel>((e) => UserModel.fromJson(e))
   //         .toList(),

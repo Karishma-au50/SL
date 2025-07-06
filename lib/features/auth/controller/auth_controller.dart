@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
+import 'package:sl/routes/app_routes.dart';
 
 import '../../../model/user_model.dart';
 import '../../../shared/services/storage_service.dart';
@@ -21,17 +23,18 @@ class AuthController extends GetxController {
   //   }
   // }
 
- 
   // register
   Future<bool> register(UserModel user) async {
     try {
       final res = await _api.register(user);
-      if (res.status ?? false) {
+      if (!(res.status ?? true)) {
         return true;
       } else {
         // MyToasts.toastError(res.message ?? "Error");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      MyToasts.toastError(e.response?.data["message"] ?? "Error");
+    } on Exception catch (e) {
       MyToasts.toastError(e.toString());
     }
     return false;
@@ -41,29 +44,39 @@ class AuthController extends GetxController {
   Future<dynamic> sendOTP(String mobile) async {
     try {
       final res = await _api.sendOTP(mobile);
-      if (res.status ?? false) {
-        MyToasts.toastSuccess(res.message ?? "Success");
+      if (!(res.status ?? true)) {
         return res.data;
+      } else {
+        MyToasts.toastError(res.message ?? "Error");
+        return null;
       }
     } catch (e) {
       MyToasts.toastError(e.toString());
     }
   }
 
-Future<void> verifyOtp(String mobile, String otp) async {
+  Future<bool?> verifyOtp(String mobile, String otp) async {
     try {
       final res = await _api.verifyOtp(mobile, otp);
-      if (res.status ?? false) {
-        MyToasts.toastSuccess(res.message ?? "Success");
-        return res.data;
-     
+      if (!(res.status ?? true)) {
+        bool isUserExist = res.data["isUserExist"] ?? false;
+        if (isUserExist) {
+          StorageService.instance.setToken(res.data['token']);
+        }
+        return isUserExist;
       } else {
         MyToasts.toastError(res.message ?? "Error");
+        return null;
       }
+    } on DioException catch (e) {
+      MyToasts.toastError(e.response?.data["message"] ?? "Error");
+      return null;
     } catch (e) {
       MyToasts.toastError(e.toString());
+      return null;
     }
   }
+
   // forgot password
   // Future<List<UserModel>?> forgotPass(String mobile, String password) async {
   //   try {

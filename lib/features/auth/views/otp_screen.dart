@@ -14,13 +14,9 @@ import '../../home/api/dashboard_services.dart';
 import '../controller/auth_controller.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
-  final String? mobile;
+  final String mobile;
 
-  const OtpVerificationScreen({
-    super.key,
-    this.mobile,
- 
-  });
+  const OtpVerificationScreen({super.key, required this.mobile});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -68,7 +64,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       focusNode.dispose();
       super.dispose();
     }
-
   }
 
   @override
@@ -244,34 +239,44 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         errorPinTheme: defaultPinTheme.copyBorderWith(
                           border: Border.all(color: Colors.redAccent),
                         ),
-                      //  onCompleted: handleOTPCompletion,
+                        //  onCompleted: handleOTPCompletion,
                       ),
 
-                   
                       const SizedBox(height: 30),
 
                       // Verify Button
                       MyButton(
                         text: "Verify Now",
                         borderRadius: BorderRadius.circular(8),
-                        disabled: !isPinValid,
+                        // disabled: !isPinValid,
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                       await  controller.verifyOtp(widget.mobile!, pinController.text)
+                            await controller
+                                .verifyOtp(widget.mobile, pinController.text)
                                 .then((value) {
-                                  
-                                  context.push(AppRoutes.home);
-                              // final int? otp = value['otp'];
-                              // final bool? isRegistered = value['isRegistered'];
-                              // context.push(
-                              //   AppRoutes.otpVerification,
-                              //   extra: {
-                              //     "mobile": widget.mobile,
-                              //     "otp": otp,
-                              //     // "isRegistered": isRegistered,
-                              //   },
-                              // );
-                            });
+                                  if (value == null) {
+                                  } else if (value) {
+                                    // User exists, navigate to home
+                                    context.go(AppRoutes.home);
+                                  } else {
+                                    // User does not exist, navigate to register
+                                    context.push(
+                                      AppRoutes.register,
+                                      extra: widget.mobile,
+                                    );
+                                  }
+                                  // context.push(AppRoutes.home);
+                                  // final int? otp = value['otp'];
+                                  // final bool? isRegistered = value['isRegistered'];
+                                  // context.push(
+                                  //   AppRoutes.otpVerification,
+                                  //   extra: {
+                                  //     "mobile": widget.mobile,
+                                  //     "otp": otp,
+                                  //     // "isRegistered": isRegistered,
+                                  //   },
+                                  // );
+                                });
                             // FirebaseMessaging.instance.getToken().then((token) {
                             //   print('Token: $token');
                             //   try {
@@ -283,18 +288,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                             // if (widget.isRegistered!) {
                             //   context.go(AppRoutes.home);
                             // } else {
-                              // context.push(
-                              //   AppRoutes.register,
-                              //   extra: {
-                              //     "mobile": widget.mobile,
-                              //     "isRegistered": widget.isRegistered,
-                              //   },
-                              // );
+                            // context.push(
+                            //   AppRoutes.register,
+                            //   extra: {
+                            //     "mobile": widget.mobile,
+                            //     "isRegistered": widget.isRegistered,
+                            //   },
+                            // );
                             // }
                           }
                         },
                       ),
-                    
 
                       const SizedBox(height: 30),
 

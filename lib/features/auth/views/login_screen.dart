@@ -104,8 +104,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           phoneController.text,
                         );
                         if (result != null) {
-                          
-                          context.push(AppRoutes.otpVerification);
+                          context.push(
+                            AppRoutes.otpVerification,
+                            extra: phoneController.text,
+                          );
                         }
                       }
                     },

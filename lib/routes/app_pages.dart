@@ -59,18 +59,17 @@ class AppPages {
         name: 'otpVerification',
         builder: (context, state) {
           // final data = state.extra! as Map<String, dynamic>;
-          return OtpVerificationScreen(
-            // mobile: data['mobile'],
-            // otp: data['otp'],
-            // isRegistered: data['isRegistered'],
-          );
+          return OtpVerificationScreen(mobile: state.extra as String);
         },
       ),
 
       GoRoute(
         path: AppRoutes.register,
         name: 'signup',
-        builder: (context, state) => const RegisterScreen(),
+        builder: (context, state) {
+          final mobile = state.extra as String? ?? '';
+          return RegisterScreen(mobile: mobile);
+        },
       ),
 
       // ShellRoute(
