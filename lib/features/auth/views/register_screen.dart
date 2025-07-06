@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sl/model/user_model.dart';
 import 'package:sl/routes/app_routes.dart';
 import 'package:sl/shared/app_colors.dart';
@@ -60,9 +61,9 @@ void nextStep() async {
         setState(() => currentStep++);
       } else {
         final user = UserModel(
-          firstName: firstNameController.text,
-          middleName: middleNameController.text,
-          lastName: lastNameController.text,
+          firstname: firstNameController.text,
+          middlename: middleNameController.text,
+          lastname: lastNameController.text,
           gender: genderGroup.name,
           dob: null,
           mobile: int.tryParse(mobileController.text),
@@ -260,7 +261,13 @@ void nextStep() async {
               const SizedBox(height: 20),
               MyButton(
                 text: currentStep == 2 ? "Submit" : "Next",
-                onPressed: nextStep,
+                onPressed: ()async {
+                  if (currentStep == 2) {
+                    nextStep();
+                  } else {
+                    currentStep++;
+                  }
+                },
               ),
               const SizedBox(height: 10),
             ],

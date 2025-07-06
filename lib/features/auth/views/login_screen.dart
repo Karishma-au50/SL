@@ -8,14 +8,22 @@ import 'package:sl/widgets/inputs/my_text_field.dart';
 import '../../../routes/app_routes.dart';
 import '../controller/auth_controller.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController phoneController = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
-   AuthController controller = Get.isRegistered<AuthController>()
+
+  AuthController controller = Get.isRegistered<AuthController>()
       ? Get.find<AuthController>()
       : Get.put(AuthController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,26 +99,14 @@ class LoginScreen extends StatelessWidget {
                     text: "Login",
                     borderRadius: BorderRadius.circular(8),
                     onPressed: () async {
-                      // if (_formKey.currentState?.validate() ?? false) {
-                      //   context.push(AppRoutes.otpVerification);
-                      // }
-                      
-
-                            if (_formKey.currentState!.validate()) {
-                        await controller
-                            .sendOTP(phoneController.text)
-                            .then((value) {
-                          final int? otp = value['otp'];
-                          // // final bool? isRegistered = value['isRegistered'];
-                          context.push(
-                            AppRoutes.otpVerification,
-                            extra: {
-                              "mobile": phoneController.text,
-                              "otp": otp,
-                              // // "isRegistered": isRegistered,
-                            },
-                          );
-                        });
+                      if (_formKey.currentState!.validate()) {
+                        final result = await controller.sendOTP(
+                          phoneController.text,
+                        );
+                        if (result != null) {
+                          
+                          context.push(AppRoutes.otpVerification);
+                        }
                       }
                     },
                   ),

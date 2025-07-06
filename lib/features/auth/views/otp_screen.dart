@@ -15,11 +15,11 @@ import '../controller/auth_controller.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String? mobile;
-  final int? otp;
+
   const OtpVerificationScreen({
     super.key,
     this.mobile,
-    this.otp,
+ 
   });
 
   @override
@@ -90,37 +90,37 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       ),
     );
 
-    void handleOTPCompletion(String otp) {
-      if (otp == '${widget.otp}') {
-        setState(() {
-          isPinValid = true;
-        });
-        FirebaseMessaging.instance.getToken().then((token) {
-          print('Token: $token');
-          try {
-            DashboardService().updateDeviceToken(token!);
-          } catch (e) {
-            print(e);
-          }
-        });
-        // Automatically navigate after OTP is verified
-        // if (widget.isRegistered!) {
-        //   context.go(AppRoutes.home);
-        // } else {
-          // context.push(
-          //   AppRoutes.register,
-          //   extra: {
-          //     "mobile": widget.mobile,
-          //     "isRegistered": widget.isRegistered
-          //   },
-          // );
-        // }
-      } else {
-        setState(() {
-          isPinValid = false;
-        });
-      }
-    }
+    // void handleOTPCompletion(String otp) {
+    //   if (otp == '${widget.otp}') {
+    //     setState(() {
+    //       isPinValid = true;
+    //     });
+    //     FirebaseMessaging.instance.getToken().then((token) {
+    //       print('Token: $token');
+    //       try {
+    //         DashboardService().updateDeviceToken(token!);
+    //       } catch (e) {
+    //         print(e);
+    //       }
+    //     });
+    //     // Automatically navigate after OTP is verified
+    //     // if (widget.isRegistered!) {
+    //     //   context.go(AppRoutes.home);
+    //     // } else {
+    //       // context.push(
+    //       //   AppRoutes.register,
+    //       //   extra: {
+    //       //     "mobile": widget.mobile,
+    //       //     "isRegistered": widget.isRegistered
+    //       //   },
+    //       // );
+    //     // }
+    //   } else {
+    //     setState(() {
+    //       isPinValid = false;
+    //     });
+    //   }
+    // }
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -244,7 +244,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         errorPinTheme: defaultPinTheme.copyBorderWith(
                           border: Border.all(color: Colors.redAccent),
                         ),
-                       onCompleted: handleOTPCompletion,
+                      //  onCompleted: handleOTPCompletion,
                       ),
 
                    
@@ -257,8 +257,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         disabled: !isPinValid,
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            controller.verifyOtp(widget.mobile!, pinController.text)
+                       await  controller.verifyOtp(widget.mobile!, pinController.text)
                                 .then((value) {
+                                  
                                   context.push(AppRoutes.home);
                               // final int? otp = value['otp'];
                               // final bool? isRegistered = value['isRegistered'];

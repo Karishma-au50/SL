@@ -38,7 +38,7 @@ class AuthController extends GetxController {
   }
 
   // send OTP
-  Future<void> sendOTP(String mobile) async {
+  Future<dynamic> sendOTP(String mobile) async {
     try {
       final res = await _api.sendOTP(mobile);
       if (res.status ?? false) {

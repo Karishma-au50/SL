@@ -56,6 +56,7 @@ class AuthService extends BaseApiService {
     ResponseModel resModel = ResponseModel(
       message: res.data["message"],
       status: res.data["status"],
+      data: res.data['data'],
     );
     return resModel;
   }
