@@ -48,9 +48,11 @@ class _ScannerPageState extends State<ScannerPage> {
           ),
           IconButton(
             color: Colors.white,
-            icon: Icon( controller.facing == CameraFacing.front
-                ? Icons.camera_front
-                : Icons.camera_rear),
+            icon: Icon(
+              controller.facing == CameraFacing.front
+                  ? Icons.camera_front
+                  : Icons.camera_rear,
+            ),
             iconSize: 32.0,
             onPressed: () => controller.switchCamera(),
           ),
@@ -61,12 +63,28 @@ class _ScannerPageState extends State<ScannerPage> {
           MobileScanner(
             controller: controller,
             onDetect: _onDetect,
+            fit: BoxFit.cover,
+            placeholderBuilder: (p0, p1) {
+              return Center(child: CircularProgressIndicator());
+            },
+
+            overlayBuilder: (p0, p1) {
+              return Container(
+                color: Colors.black.withOpacity(0.5),
+                child: Center(
+                  child: Text(
+                    'Point the camera at a QR code',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
+              );
+            },
           ),
           // Scanning overlay
           Container(
             decoration: ShapeDecoration(
               shape: QrScannerOverlayShape(
-                borderColor: Colors.red,
+                borderColor: Colors.transparent,
                 borderRadius: 10,
                 borderLength: 30,
                 borderWidth: 10,
@@ -100,19 +118,13 @@ class _ScannerPageState extends State<ScannerPage> {
                     onPressed: () {
                       controller.stop();
                     },
-                    icon: const Icon(
-                      Icons.stop,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.stop, color: Colors.white),
                   ),
                   IconButton(
                     onPressed: () {
                       controller.start();
                     },
-                    icon: const Icon(
-                      Icons.refresh,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.refresh, color: Colors.white),
                   ),
                 ],
               ),
@@ -125,7 +137,7 @@ class _ScannerPageState extends State<ScannerPage> {
 
   void _onDetect(BarcodeCapture capture) {
     if (isProcessing) return; // Prevent multiple simultaneous scans
-    
+
     final List<Barcode> barcodes = capture.barcodes;
     if (barcodes.isNotEmpty) {
       setState(() {
@@ -142,28 +154,20 @@ class _ScannerPageState extends State<ScannerPage> {
   void _handleScannedCode(String code) async {
     // Stop the scanner
     controller.stop();
-    
+
     print("Scanned QR Code: $code");
-    
+
     try {
-      // Try to decode as JSON for API verification
-      final data = json.decode(code);
-      print("Decoded QR data: $data");
-      
       // Call API to verify the QR code
-      await dashboardCntlr.qrVerification(
-        userId: dashboardCntlr.userModel.value!.id!, 
-        data: data
-      );
-      
+      await dashboardCntlr.qrVerification(data: code);
+
       // Navigate back after successful verification
       if (mounted) {
         Navigator.of(context).pop();
       }
-      
     } catch (e) {
       print("Error processing QR code: $e");
-      
+
       // If it's not JSON or API call fails, show error dialog
       if (mounted) {
         showDialog(
@@ -195,7 +199,7 @@ class _ScannerPageState extends State<ScannerPage> {
           },
         );
       }
-      
+
       MyToasts.toastError(e.toString());
     }
   }
@@ -233,49 +237,88 @@ class QrScannerOverlayShape extends ShapeBorder {
   Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
     Path _getLeftTopPath(double cutOutSize) {
       return Path()
-        ..moveTo(rect.center.dx - cutOutSize / 2, rect.center.dy - cutOutSize / 2)
-        ..lineTo(rect.center.dx - cutOutSize / 2 + borderLength,
-            rect.center.dy - cutOutSize / 2)
-        ..moveTo(rect.center.dx - cutOutSize / 2, rect.center.dy - cutOutSize / 2)
-        ..lineTo(rect.center.dx - cutOutSize / 2,
-            rect.center.dy - cutOutSize / 2 + borderLength);
+        ..moveTo(
+          rect.center.dx - cutOutSize / 2,
+          rect.center.dy - cutOutSize / 2,
+        )
+        ..lineTo(
+          rect.center.dx - cutOutSize / 2 + borderLength,
+          rect.center.dy - cutOutSize / 2,
+        )
+        ..moveTo(
+          rect.center.dx - cutOutSize / 2,
+          rect.center.dy - cutOutSize / 2,
+        )
+        ..lineTo(
+          rect.center.dx - cutOutSize / 2,
+          rect.center.dy - cutOutSize / 2 + borderLength,
+        );
     }
 
     Path _getRightTopPath(double cutOutSize) {
       return Path()
-        ..moveTo(rect.center.dx + cutOutSize / 2, rect.center.dy - cutOutSize / 2)
-        ..lineTo(rect.center.dx + cutOutSize / 2 - borderLength,
-            rect.center.dy - cutOutSize / 2)
-        ..moveTo(rect.center.dx + cutOutSize / 2, rect.center.dy - cutOutSize / 2)
-        ..lineTo(rect.center.dx + cutOutSize / 2,
-            rect.center.dy - cutOutSize / 2 + borderLength);
+        ..moveTo(
+          rect.center.dx + cutOutSize / 2,
+          rect.center.dy - cutOutSize / 2,
+        )
+        ..lineTo(
+          rect.center.dx + cutOutSize / 2 - borderLength,
+          rect.center.dy - cutOutSize / 2,
+        )
+        ..moveTo(
+          rect.center.dx + cutOutSize / 2,
+          rect.center.dy - cutOutSize / 2,
+        )
+        ..lineTo(
+          rect.center.dx + cutOutSize / 2,
+          rect.center.dy - cutOutSize / 2 + borderLength,
+        );
     }
 
     Path _getLeftBottomPath(double cutOutSize) {
       return Path()
-        ..moveTo(rect.center.dx - cutOutSize / 2, rect.center.dy + cutOutSize / 2)
-        ..lineTo(rect.center.dx - cutOutSize / 2 + borderLength,
-            rect.center.dy + cutOutSize / 2)
-        ..moveTo(rect.center.dx - cutOutSize / 2, rect.center.dy + cutOutSize / 2)
-        ..lineTo(rect.center.dx - cutOutSize / 2,
-            rect.center.dy + cutOutSize / 2 - borderLength);
+        ..moveTo(
+          rect.center.dx - cutOutSize / 2,
+          rect.center.dy + cutOutSize / 2,
+        )
+        ..lineTo(
+          rect.center.dx - cutOutSize / 2 + borderLength,
+          rect.center.dy + cutOutSize / 2,
+        )
+        ..moveTo(
+          rect.center.dx - cutOutSize / 2,
+          rect.center.dy + cutOutSize / 2,
+        )
+        ..lineTo(
+          rect.center.dx - cutOutSize / 2,
+          rect.center.dy + cutOutSize / 2 - borderLength,
+        );
     }
 
     Path _getRightBottomPath(double cutOutSize) {
       return Path()
-        ..moveTo(rect.center.dx + cutOutSize / 2, rect.center.dy + cutOutSize / 2)
-        ..lineTo(rect.center.dx + cutOutSize / 2 - borderLength,
-            rect.center.dy + cutOutSize / 2)
-        ..moveTo(rect.center.dx + cutOutSize / 2, rect.center.dy + cutOutSize / 2)
-        ..lineTo(rect.center.dx + cutOutSize / 2,
-            rect.center.dy + cutOutSize / 2 - borderLength);
+        ..moveTo(
+          rect.center.dx + cutOutSize / 2,
+          rect.center.dy + cutOutSize / 2,
+        )
+        ..lineTo(
+          rect.center.dx + cutOutSize / 2 - borderLength,
+          rect.center.dy + cutOutSize / 2,
+        )
+        ..moveTo(
+          rect.center.dx + cutOutSize / 2,
+          rect.center.dy + cutOutSize / 2,
+        )
+        ..lineTo(
+          rect.center.dx + cutOutSize / 2,
+          rect.center.dy + cutOutSize / 2 - borderLength,
+        );
     }
 
     return Path.combine(
-      PathOperation.difference,
-      Path()..addRect(rect),
-      Path()
-        ..addRRect(
+        PathOperation.difference,
+        Path()..addRect(rect),
+        Path()..addRRect(
           RRect.fromRectAndRadius(
             Rect.fromCenter(
               center: rect.center,
@@ -285,7 +328,7 @@ class QrScannerOverlayShape extends ShapeBorder {
             Radius.circular(borderRadius),
           ),
         ),
-    )
+      )
       ..addPath(_getLeftTopPath(cutOutSize), Offset.zero)
       ..addPath(_getRightTopPath(cutOutSize), Offset.zero)
       ..addPath(_getLeftBottomPath(cutOutSize), Offset.zero)

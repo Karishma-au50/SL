@@ -18,7 +18,7 @@ class DashboardController extends GetxController {
     userModel.refresh();
   }
 
-//  get home screen baneer
+  //  get home screen baneer
 
   Future<List<HomeBannerModel>?> getHomeScreenBanner() async {
     try {
@@ -26,7 +26,7 @@ class DashboardController extends GetxController {
       if (res.status ?? true) {
         return res.data;
       } else {
-         MyToasts.toastError(res.message ?? "Error");
+        MyToasts.toastError(res.message ?? "Error");
       }
     } on DioException catch (e) {
       MyToasts.toastError(e.response?.data["message"] ?? "Error");
@@ -63,13 +63,11 @@ class DashboardController extends GetxController {
       MyToasts.toastError(e.toString());
     }
   }
-   // purchase verification
-  Future<bool> qrVerification(
-      {required String userId,
-      required String data,}) async {
+
+  // purchase verification
+  Future<bool> qrVerification({required String data}) async {
     try {
-      final res = await _api.qrVerification(
-          userId: userId, data: data,);
+      final res = await _api.qrVerification(data: data);
       if (res.status ?? false) {
         MyToasts.toastSuccess("Purchase verified successfully");
         return true;
@@ -82,7 +80,4 @@ class DashboardController extends GetxController {
       return false;
     }
   }
-
-
- 
 }

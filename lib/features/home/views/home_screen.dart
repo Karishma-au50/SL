@@ -11,6 +11,7 @@ import 'package:sl/routes/app_routes.dart';
 import '../../../model/home_banner_model.dart';
 import '../../../shared/app_colors.dart';
 import '../../../shared/services/storage_service.dart' show StorageService;
+import '../../../widgets/network_image_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,16 +22,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-   UserModel? user = StorageService.instance.getUserId();
-    int current = 0;
+  late final UserModel user;
+  int current = 0;
   final List<HomeBannerModel> homeBanner = [];
-    DashboardController dashboardController = Get.isRegistered<DashboardController>()
+  DashboardController dashboardController =
+      Get.isRegistered<DashboardController>()
       ? Get.find<DashboardController>()
       : Get.put(DashboardController());
 
   @override
   void initState() {
     super.initState();
+    user = StorageService.instance.getUserId()!;
     dashboardController.getHomeScreenBanner().then((offers) {
       if (offers != null) {
         setState(() {
@@ -38,8 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
-
-    
   }
 
   @override
@@ -79,19 +80,29 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Image.network(
-                      "https://i.pinimg.com/736x/4c/53/91/4c5391c2a69855120a204971a728f421.jpg",
-                      width: 50,
-                      height: 50,
-
-                      fit: BoxFit.cover,
+                  SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: NetworkImageView(
+                      imgUrl:
+                          "https://i.pinimg.com/736x/4c/53/91/4c5391c2a69855120a204971a728f421.jpg",
+                      radius: 24,
+                      isFullPath: true,
                     ),
                   ),
+
+                  // ClipRRect(
+                  //   borderRadius: BorderRadius.circular(24),
+                  //   child: Image.network(
+                  //     "https://i.pinimg.com/736x/4c/53/91/4c5391c2a69855120a204971a728f421.jpg",
+                  //     width: 50,
+                  //     height: 50,
+
+                  //     fit: BoxFit.cover,
+                  //   ),
+                  // ),
                   const SizedBox(width: 12),
-                   Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -99,8 +110,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       Text(
-                        // use decoded token for user name 
-                        '${user?.firstname} ${user?.lastname}',
+                        // use decoded token for user name
+                        '${user.firstname} ${user.lastname}',
                         // '${dashboardController.userModel.value?.firstname} ${dashboardController.userModel.value?.lastname}',
                         style: TextStyle(
                           fontSize: 16,
@@ -112,7 +123,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.push(AppRoutes.login);
+                      StorageService.instance.clear();
+                    },
                     icon: const Icon(
                       Icons.wallet_travel_outlined,
                       color: Colors.white,
@@ -133,42 +147,40 @@ class _HomeScreenState extends State<HomeScreen> {
             // Banner
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: 
-                 AspectRatio(
-                              aspectRatio: 16 / 9,
-                              child: CarouselSlider(
-                                items: homeBanner.map((offer) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                    
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Image.network(
-                                        // offer.image,
-                                        'https://i.pinimg.com/1200x/ec/7b/3e/ec7b3eb153f227ff2bf90062bb28d7dd.jpg',
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                                options: CarouselOptions(
-                                  enlargeCenterPage: true,
-                                  enableInfiniteScroll: true,
-                                  viewportFraction: 1,
-                                  // limitedOffers.length >= 2 ? 0.8 : 1,
-                                  initialPage: 0,
-                                  onPageChanged: (index, reason) {
-                                    setState(() {
-                                      current = index;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: CarouselSlider(
+                  items: homeBanner.map((offer) {
+                    return GestureDetector(
+                      onTap: () {},
+                      child: NetworkImageView(imgUrl: offer.image, radius: 8),
+                      // child: Container(
+                      //   decoration: BoxDecoration(
+                      //     borderRadius: BorderRadius.circular(8),
+                      //   ),
+                      //   child: Image.network(
+                      //     // offer.image,
+                      //     'https://i.pinimg.com/1200x/ec/7b/3e/ec7b3eb153f227ff2bf90062bb28d7dd.jpg',
+                      //     fit: BoxFit.cover,
+                      //   ),
+                      // ),
+                    );
+                  }).toList(),
+                  options: CarouselOptions(
+                    enlargeCenterPage: true,
+                    enableInfiniteScroll: true,
+                    viewportFraction: 1,
+                    // limitedOffers.length >= 2 ? 0.8 : 1,
+                    initialPage: 0,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        current = index;
+                      });
+                    },
+                  ),
+                ),
+              ),
+
               // ClipRRect(
               //   borderRadius: BorderRadius.circular(12),
               //   child: Image.network(
@@ -381,7 +393,6 @@ class _HomeScreenState extends State<HomeScreen> {
           // Handle chat action
         }
         // Add more actions as needed
-        
       },
       child: Container(
         width: MediaQuery.of(context).size.width / 2 - 24,
@@ -401,7 +412,10 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -429,7 +443,7 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFFFDF3F4), // shape: BoxShape.circle,
             borderRadius: BorderRadius.circular(45),
-      
+
             // boxShadow: [BoxShadow(color: const Color(0xFFFDF3F4), blurRadius: 6)],
           ),
           child: Column(

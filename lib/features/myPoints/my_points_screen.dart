@@ -13,16 +13,20 @@ class _MyPointsScreenState extends State<MyPointsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-  backgroundColor: const Color(0xFF001519),
-      appBar: AppBar(
       backgroundColor: const Color(0xFF001519),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF001519),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'My Points',
-          style: TextStyle(color: Colors.white,fontSize: 18, fontWeight: FontWeight.bold  ),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
       ),
@@ -66,7 +70,12 @@ class _MyPointsScreenState extends State<MyPointsScreen> {
 
           // Last Updated
           Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 8,
+              bottom: 16,
+            ),
             child: Row(
               children: const [
                 Icon(Icons.update, color: Colors.white70, size: 18),
@@ -78,9 +87,6 @@ class _MyPointsScreenState extends State<MyPointsScreen> {
               ],
             ),
           ),
-       
-
-          
 
           // List of Points
           Expanded(
@@ -94,30 +100,40 @@ class _MyPointsScreenState extends State<MyPointsScreen> {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                      Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white12,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Row(
-                children: [
-                  _buildToggleButton('Scanned Points', !isOtherPointsSelected),
-                  _buildToggleButton('Other Points', isOtherPointsSelected),
-                ],
-              ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white12,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Row(
+                      children: [
+                        _buildToggleButton(
+                          'Scanned Points',
+                          !isOtherPointsSelected,
                         ),
-              
+                        _buildToggleButton(
+                          'Other Points',
+                          isOtherPointsSelected,
+                        ),
+                      ],
+                    ),
+                  ),
+
                   _buildPointsTile(
                     title: 'Welcome Points',
                     dateTime: '17 May 2025 | 10:30 PM',
                     points: 50,
                   ),
-                    _buildPointsTile(
+                  _buildPointsTile(
                     title: 'Welcome Points',
                     dateTime: '17 May 2025 | 10:30 PM',
                     points: 50,
-                  ),  _buildPointsTile(
+                  ),
+                  _buildPointsTile(
                     title: 'Welcome Points',
                     dateTime: '17 May 2025 | 10:30 PM',
                     points: 50,
@@ -169,7 +185,10 @@ class _MyPointsScreenState extends State<MyPointsScreen> {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
       leading: const Icon(Icons.event_note, color: Colors.green),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600,fontSize: 14)),
+      title: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      ),
       subtitle: Text(dateTime, style: textStyle),
       trailing: Text(
         '+$points',
@@ -180,6 +199,5 @@ class _MyPointsScreenState extends State<MyPointsScreen> {
         ),
       ),
     );
-   
   }
 }

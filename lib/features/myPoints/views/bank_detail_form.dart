@@ -6,11 +6,8 @@ import 'package:sl/widgets/inputs/my_text_field.dart';
 
 class BankDetailForm extends StatefulWidget {
   final AccountDetails? initialData;
-  
-  const BankDetailForm({
-    super.key,
-    this.initialData,
-  });
+
+  const BankDetailForm({super.key, this.initialData});
 
   @override
   State<BankDetailForm> createState() => _BankDetailFormState();
@@ -81,10 +78,7 @@ class _BankDetailFormState extends State<BankDetailForm> {
               const SizedBox(height: 8),
               const Text(
                 'Please provide your bank account details for withdrawal',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
               const SizedBox(height: 24),
 
@@ -144,9 +138,9 @@ class _BankDetailFormState extends State<BankDetailForm> {
                     return 'Please enter IFSC code';
                   }
                   // IFSC code validation pattern
-                  if (!RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$').hasMatch(value.toUpperCase())) {
-                    return 'Please enter valid IFSC code';
-                  }
+                  // if (!RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$').hasMatch(value.toUpperCase())) {
+                  //   return 'Please enter valid IFSC code';
+                  // }
                   return null;
                 },
               ),
@@ -171,7 +165,9 @@ class _BankDetailFormState extends State<BankDetailForm> {
                 validator: (value) {
                   if (value != null && value.trim().isNotEmpty) {
                     // Basic UPI ID validation
-                    if (!RegExp(r'^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$').hasMatch(value)) {
+                    if (!RegExp(
+                      r'^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$',
+                    ).hasMatch(value)) {
                       return 'Please enter valid UPI ID';
                     }
                   }

@@ -47,7 +47,6 @@ class AppPages {
         path: AppRoutes.home,
         name: 'home',
         builder: (context, state) {
-      
           return const HomeScreen();
         },
       ),
@@ -112,18 +111,18 @@ class AppPages {
         name: 'chatWithUs',
         builder: (context, state) => const ChatWithUsScreen(),
       ),
- GoRoute(
-          path: AppRoutes.qrScan,
-          builder: (context, state) => const ScannerPage(),
-        ),
-        GoRoute(
-          path: AppRoutes.bankDetailsForm,
-          name: 'bankDetailsForm',
-          builder: (context, state) {
-            final initialData = state.extra as AccountDetails?;
-            return BankDetailForm(initialData: initialData);
-          },
-        ),
+      GoRoute(
+        path: AppRoutes.qrScan,
+        builder: (context, state) => const ScannerPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.bankDetailsForm,
+        name: 'bankDetailsForm',
+        builder: (context, state) {
+          final initialData = state.extra as AccountDetails?;
+          return BankDetailForm(initialData: initialData);
+        },
+      ),
       GoRoute(
         path: AppRoutes.faq,
         name: 'faq',
@@ -132,7 +131,7 @@ class AppPages {
       GoRoute(
         path: AppRoutes.companyPolicy,
         name: 'companyPolicy',
-        builder: (context, state) => const CompanyPolicyScreen(),
+        builder: (context, state) => CompanyPolicyScreen(),
       ),
       GoRoute(
         path: AppRoutes.aboutUs,

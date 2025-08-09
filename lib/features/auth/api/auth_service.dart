@@ -12,7 +12,6 @@ class AuthEndpoint {
 }
 
 class AuthService extends BaseApiService {
-
   // register
 
   Future<ResponseModel> register(UserModel user) async {
@@ -54,8 +53,10 @@ class AuthService extends BaseApiService {
       status: res.data["error"],
       data: res.data['data'],
     );
-    if (resModel.status == true) {
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(res.data['token']);
+    if (!(resModel.status ?? true)) {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(
+        res.data["data"]['token'],
+      );
       StorageService.instance.setUserId(UserModel.fromJson(decodedToken));
       StorageService.instance.setToken(res.data['data']['token']);
     }

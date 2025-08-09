@@ -1,3 +1,5 @@
+import 'dart:math';
+
 class OfferModel {
   final String id;
   final int points;
@@ -14,6 +16,8 @@ class OfferModel {
   final DateTime updatedAt;
   final ProductModel productId;
   final QRCodeStats? qrCodeStats;
+  int detailBGColor;
+  int pointBGColor;
 
   OfferModel({
     required this.id,
@@ -31,7 +35,10 @@ class OfferModel {
     required this.updatedAt,
     required this.productId,
     this.qrCodeStats,
-  });
+    int? detailBGColor,
+    int? pointBGColor,
+  }) : detailBGColor = detailBGColor ?? OfferModel.generateRandomColor(),
+       pointBGColor = pointBGColor ?? OfferModel.generateRandomColor();
 
   // Getters for backward compatibility
   String get title => productId.title;
@@ -48,18 +55,26 @@ class OfferModel {
       points: json['points'] ?? 0,
       termsAndConditions: json['termsAndConditions'] ?? '',
       isRedeemable: json['isRedeemable'] ?? false,
-      validTill: DateTime.parse(json['validTill'] ?? DateTime.now().toIso8601String()),
+      validTill: DateTime.parse(
+        json['validTill'] ?? DateTime.now().toIso8601String(),
+      ),
       totalQRCodes: json['totalQRCodes'] ?? 0,
       redeemedCount: json['redeemedCount'] ?? 0,
       isActive: json['isActive'] ?? false,
       isDeleted: json['isDeleted'] ?? false,
-      deletedAt: json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
+      deletedAt: json['deletedAt'] != null
+          ? DateTime.parse(json['deletedAt'])
+          : null,
       deletedBy: json['deletedBy'],
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updatedAt'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updatedAt'] ?? DateTime.now().toIso8601String(),
+      ),
       productId: ProductModel.fromJson(json['productId'] ?? {}),
-      qrCodeStats: json['qrCodeStats'] != null 
-          ? QRCodeStats.fromJson(json['qrCodeStats']) 
+      qrCodeStats: json['qrCodeStats'] != null
+          ? QRCodeStats.fromJson(json['qrCodeStats'])
           : null,
     );
   }
@@ -90,10 +105,36 @@ class OfferModel {
 
   String _getMonthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
+  }
+
+  // generate random background colors
+  static final List<int> _presetColors = [
+    0xFFFF0000, // red
+    0xFF800080, // purple
+    0xFF008000, // green
+    0xFF0000FF, // blue
+    0xFFFFFF00, // yellow
+    0xFFFFC0CB, // pink
+    0xFFA52A2A, // brown
+  ];
+
+  static int generateRandomColor() {
+    final random = Random();
+    return _presetColors[random.nextInt(_presetColors.length)];
   }
 }
 
@@ -160,12 +201,7 @@ class QRCodeStats {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'total': total,
-      'used': used,
-      'available': available,
-    };
+    return {'_id': id, 'total': total, 'used': used, 'available': available};
   }
 }
 
@@ -173,16 +209,15 @@ class OfferResponse {
   final List<OfferModel> offers;
   final PaginationModel pagination;
 
-  OfferResponse({
-    required this.offers,
-    required this.pagination,
-  });
+  OfferResponse({required this.offers, required this.pagination});
 
   factory OfferResponse.fromJson(Map<String, dynamic> json) {
     return OfferResponse(
-      offers: (json['offers'] as List<dynamic>?)
-          ?.map((e) => OfferModel.fromJson(e as Map<String, dynamic>))
-          .toList() ?? [],
+      offers:
+          (json['offers'] as List<dynamic>?)
+              ?.map((e) => OfferModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
       pagination: PaginationModel.fromJson(json['pagination'] ?? {}),
     );
   }

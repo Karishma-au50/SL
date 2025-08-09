@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
+import '../../widgets/network_image_view.dart';
+
 class AboutUsScreen extends StatefulWidget {
   const AboutUsScreen({super.key});
 
@@ -48,14 +50,20 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         leading: const BackButton(color: Colors.white),
         title: Text(
           aboutUsData["title"],
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24)),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
         ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -68,21 +76,30 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                   height: 80,
                   fit: BoxFit.contain,
                 ),
-               
               ),
               const SizedBox(height: 16),
-              ...aboutUsData["description"].map<Widget>((text) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Text(text, style: const TextStyle(fontSize: 14, height: 1.5)),
-                  )),
-              const SizedBox(height: 16),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  aboutUsData["mapImageUrl"],
-                  fit: BoxFit.cover,
+              ...aboutUsData["description"].map<Widget>(
+                (text) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Text(
+                    text,
+                    style: const TextStyle(fontSize: 14, height: 1.5),
+                  ),
                 ),
               ),
+              const SizedBox(height: 16),
+              NetworkImageView(
+                imgUrl: aboutUsData["mapImageUrl"],
+                radius: 12,
+                isFullPath: true,
+              ),
+              // ClipRRect(
+              //   borderRadius: BorderRadius.circular(12),
+              //   child: Image.network(
+              //     aboutUsData["mapImageUrl"],
+              //     fit: BoxFit.cover,
+              //   ),
+              // ),
               const SizedBox(height: 16),
               _contactInfo(Icons.location_on, aboutUsData["visitUs"]),
               const SizedBox(height: 12),
@@ -103,10 +120,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         Icon(icon, color: const Color(0xFF00BFA5)),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(fontSize: 14, height: 1.4),
-          ),
+          child: Text(text, style: const TextStyle(fontSize: 14, height: 1.4)),
         ),
       ],
     );
