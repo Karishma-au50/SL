@@ -1,12 +1,24 @@
 // import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sl/features/myPoints/my_points_screen.dart' show MyPointsScreen;
 import 'package:sl/features/splash/splash_screen.dart';
 
+import '../features/FAQs/faqs_screen.dart';
+import '../features/aboutUs/about_us_screen.dart';
 import '../features/auth/views/login_screen.dart';
 import '../features/auth/views/otp_screen.dart';
 import '../features/auth/views/register_screen.dart';
+import '../features/chatWithUs/chat_with_us_screen.dart';
+import '../features/companyPolicy/company_policy_screen.dart';
 import '../features/home/views/home_screen.dart';
+import '../features/myPoints/product_detail_screen.dart';
+import '../features/myPoints/redeem_pointers_screen.dart';
+import '../features/myPoints/views/bank_detail_form.dart';
+import '../features/myPoints/withdraw_screen.dart';
+import '../features/qrScanning/qr_scan_screen.dart';
+import '../model/withdrawal_model.dart';
+import '../widgets/scanner/scanner_page.dart';
 import 'app_routes.dart';
 // class AnalyticsRouteObserver extends NavigatorObserver {
 //   @override
@@ -35,15 +47,39 @@ class AppPages {
         path: AppRoutes.home,
         name: 'home',
         builder: (context, state) {
-          // WidgetsBinding.instance.addPostFrameCallback((_) {
-          //   if (NotificationService.notificationNavigation?.isNotEmpty ?? false) {
-          //     context.push(NotificationService.notificationNavigation!);
-          //     NotificationService.notificationNavigation = null;
-          //   }
-          // });
+      
           return const HomeScreen();
         },
       ),
+      GoRoute(
+        path: AppRoutes.productDetail,
+        name: 'productDetail',
+        builder: (context, state) {
+          final productId = state.extra as String;
+          return ProductDetailScreen(productId: productId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.redeemPoints,
+        name: 'redeemPoints',
+        builder: (context, state) => const RedeemPointsScreen(),
+      ),
+      // GoRoute(
+      //   path: AppRoutes.qrScan,
+      //   name: 'qrScan',
+      //   builder: (context, state) => const QrScanPage(),
+      // ),
+      GoRoute(
+        path: AppRoutes.withdrawPoints,
+        name: 'withdrawPoints',
+        builder: (context, state) => const WithdrawScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.myPoints,
+        name: 'myPoints',
+        builder: (context, state) => const MyPointsScreen(),
+      ),
+
       GoRoute(
         path: AppRoutes.splash,
         name: 'splash',
@@ -71,29 +107,38 @@ class AppPages {
           return RegisterScreen(mobile: mobile);
         },
       ),
-
-      // ShellRoute(
-      //   navigatorKey: shellNavigatorKey,
-      //   parentNavigatorKey: rootNavigatorKey,
-      //   // builder: (context, state, child) => MainScreen(context: context, child: child),
-      //   routes: [
-
-      //     // GoRoute(
-      //     //   path: AppRoutes.enquiry,
-      //     //   name: 'enquiry',
-      //     //   builder: (context, state) =>
-      //     //       EnquiryScreen(enquiryModel: state.extra as EnquiryModel),
-      //     // ),
-
-      //     // GoRoute(
-      //     //   path: "${AppRoutes.productDetails}/:productId",
-      //     //   name: 'productDetails',
-      //     //   builder: (context, state) =>
-      //     //       ProductDetailsScreen(id: state.pathParameters["productId"]!),
-      //     // ),
-
-      //   ],
-      // ),
+      GoRoute(
+        path: AppRoutes.chatWithUs,
+        name: 'chatWithUs',
+        builder: (context, state) => const ChatWithUsScreen(),
+      ),
+ GoRoute(
+          path: AppRoutes.qrScan,
+          builder: (context, state) => const ScannerPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.bankDetailsForm,
+          name: 'bankDetailsForm',
+          builder: (context, state) {
+            final initialData = state.extra as AccountDetails?;
+            return BankDetailForm(initialData: initialData);
+          },
+        ),
+      GoRoute(
+        path: AppRoutes.faq,
+        name: 'faq',
+        builder: (context, state) => const FaqScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.companyPolicy,
+        name: 'companyPolicy',
+        builder: (context, state) => const CompanyPolicyScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.aboutUs,
+        name: 'aboutUs',
+        builder: (context, state) => const AboutUsScreen(),
+      ),
     ],
   );
 }

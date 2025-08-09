@@ -12,18 +12,6 @@ class AuthEndpoint {
 }
 
 class AuthService extends BaseApiService {
-  // Future<ResponseModel> login(
-  //     {required String mobile,}) async {
-  //   final res = await post(
-  //     AuthEndpoint.login,
-  //     data: {'mobile': mobile},
-  //   );
-  //   // Map<String, dynamic> decodedToken = JwtDecoder.decode(res.data['data']);
-  //   // print("Decoded json :- ${decodedToken}");
-  //   // StorageService.instance.setUserId(UserModel.fromJson(decodedToken));
-  //   // StorageService.instance.setToken(res.data['data']);
-  //   return ResponseModel<String>.empty().fromJson(res.data);
-  // }
 
   // register
 

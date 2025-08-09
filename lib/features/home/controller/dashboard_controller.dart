@@ -1,7 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 
+import '../../../core/expections/custom_exception.dart';
+import '../../../model/home_banner_model.dart';
 import '../../../model/user_model.dart';
 import '../../../shared/services/storage_service.dart';
+import '../../../widgets/toast/my_toast.dart';
 import '../api/dashboard_services.dart';
 
 class DashboardController extends GetxController {
@@ -14,17 +18,71 @@ class DashboardController extends GetxController {
     userModel.refresh();
   }
 
-  // Future<List<CategoryModel>?> getCategories() async {
-  //   try {
-  //     final res = await _api.getCategories();
-  //       if (res.status ?? false) {
-  //        category(res.data);
-  //       }
-  //     return res.data;
-  //   } catch (e) {
-  //     return null;
-  //   }
-  // }
+//  get home screen baneer
+
+  Future<List<HomeBannerModel>?> getHomeScreenBanner() async {
+    try {
+      final res = await _api.getHomeScreenBanner();
+      if (res.status ?? true) {
+        return res.data;
+      } else {
+         MyToasts.toastError(res.message ?? "Error");
+      }
+    } on DioException catch (e) {
+      MyToasts.toastError(e.response?.data["message"] ?? "Error");
+    } on Exception catch (e) {
+      MyToasts.toastError(e.toString());
+    }
+    return null;
+  }
+
+  Future<UserModel?> fetchUser(String id) async {
+    try {
+      final res = await _api.getUserById(id);
+      if (res.status ?? false) {
+        return res.data!;
+      } else {
+        throw FetchDataException(res.message);
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+      return null;
+    }
+  }
+
+  // scan the qr code
+  Future<void> scanQRCode(String data) async {
+    try {
+      final res = await _api.scanQRCode(data);
+      if (res.status ?? false) {
+        MyToasts.toastError("${res.data}");
+      } else {
+        MyToasts.toastError("Coupon not found");
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+    }
+  }
+   // purchase verification
+  Future<bool> qrVerification(
+      {required String userId,
+      required String data,}) async {
+    try {
+      final res = await _api.qrVerification(
+          userId: userId, data: data,);
+      if (res.status ?? false) {
+        MyToasts.toastSuccess("Purchase verified successfully");
+        return true;
+      } else {
+        MyToasts.toastError(res.message ?? "Failed to verify purchase");
+        return false;
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+      return false;
+    }
+  }
+
 
  
 }

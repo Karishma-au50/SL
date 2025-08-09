@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../routes/app_routes.dart';
+import '../../shared/services/storage_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,13 +17,31 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Log when initState is called
-    debugPrint("SplashScreen: initState called");
+      _navigateToLogin();
 
-    Future.delayed(const Duration(seconds: 5), () {
-      // ignore: use_build_context_synchronously
-      GoRouter.of(context).go(AppRoutes.login);
-    });
+    // // Log when initState is called
+    // debugPrint("SplashScreen: initState called");
+
+    // Future.delayed(const Duration(seconds: 5), () {
+    //   // ignore: use_build_context_synchronously
+    //   GoRouter.of(context).go(AppRoutes.login);
+    // });
+  }
+   _navigateToLogin() async {
+    await Future.delayed(const Duration(milliseconds: 5000));
+    final token = StorageService.instance.getToken();
+    if (token != null && token.isNotEmpty) {
+      // If token exists, navigate to home
+      if (mounted) {
+        context.go('/');
+      }
+    } else {
+      // If no token, navigate to login
+      if (mounted) {
+        context.go('/login');
+      }
+    }
+  
   }
 
   @override

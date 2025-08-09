@@ -145,72 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     documentNumberController.dispose();
     super.dispose();
   }
-  // int currentStep = 0;
-  // final redColor = const Color(0xFFB10606);
-  // GenderEnum genderGroup = GenderEnum.male;
-  // AuthController controller = Get.isRegistered<AuthController>()
-  //     ? Get.find<AuthController>()
-  //     : Get.put(AuthController());
-
-  // final _formKeys = [
-  //   GlobalKey<FormState>(),
-  //   GlobalKey<FormState>(),
-  //   GlobalKey<FormState>(),
-  // ];
-
-  // void nextStep() async{
-  //   if (_formKeys[currentStep].currentState?.validate() ?? false) {
-  //     if (currentStep < 2) {
-  //       setState(() {
-  //         currentStep++;
-  //       });
-  //     } else {
-  //       // Call the register API using the controller
-  //      await controller.register(UserModel(
-  //         firstName: _formKeys[0].currentState?.fields['firstName']?.value,
-  //         middleName: _formKeys[0].currentState?.fields['middleName']?.value,
-  //         lastName: _formKeys[0].currentState?.fields['lastName']?.value,
-  //      )).then(
-  //         (value) {
-  //            ScaffoldMessenger.of(context).showSnackBar(
-  //             SnackBar(content: Text(error.toString())),
-  //           );
-  //               context.push(AppRoutes.home);
-  //         }
-  //       );
-
-  //     }
-  //   }
-  // }
-
-  // void prevStep() {
-  //   if (currentStep > 0) {
-  //     setState(() {
-  //       currentStep--;
-  //     });
-  //   } else {
-  //     Navigator.pop(context);
-  //   }
-  // }
-
-  // Widget stepIndicator() {
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //     children: List.generate(3, (index) {
-  //       return Expanded(
-  //         child: Container(
-  //           height: 3,
-  //           margin: const EdgeInsets.symmetric(horizontal: 4),
-  //           decoration: BoxDecoration(
-  //             color: currentStep >= index ? AppColors.kcPrimaryColor : Colors.grey.shade300,
-  //             borderRadius: BorderRadius.circular(2),
-  //           ),
-  //         ),
-  //       );
-  //     }),
-  //   );
-  // }
-
+  
   @override
   void initState() {
     mobileController.text = widget.mobile;
@@ -299,12 +234,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 text: currentStep == 2 ? "Submit" : "Next",
                 onPressed: () async {
                   nextStep();
-
-                  // if (currentStep == 2) {
-                  //   nextStep();
-                  // } else {
-                  //   currentStep++;
-                  // }
                 },
               ),
               const SizedBox(height: 10),
@@ -316,6 +245,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget buildTextField(
+    
     String label,
     String hint,
     TextEditingController controller, {
@@ -339,6 +269,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget buildPersonalDetailsForm() {
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           buildTextField("First Name", "Ex. ABC", firstNameController),
           buildTextField("Middle Name", "Ex. Kumar", middleNameController),
@@ -364,6 +295,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CircleAvatar(
+                          backgroundColor: Colors.grey.shade100,
                           child: Icon(Icons.male, color: Colors.blue, size: 20),
                         ),
                         Text("Male"),
@@ -393,6 +325,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CircleAvatar(
+                            backgroundColor: Colors.grey.shade100,
                           child: Icon(
                             Icons.female,
                             color: Colors.blue,
@@ -600,6 +533,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ],
               ),
             ),
+       
         ],
       ),
     );

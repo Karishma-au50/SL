@@ -1,6 +1,16 @@
+import 'package:carousel_slider/carousel_options.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sl/features/home/controller/dashboard_controller.dart';
+import 'package:sl/model/user_model.dart';
+import 'package:sl/routes/app_routes.dart';
 
+import '../../../model/home_banner_model.dart';
 import '../../../shared/app_colors.dart';
+import '../../../shared/services/storage_service.dart' show StorageService;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,6 +21,26 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+   UserModel? user = StorageService.instance.getUserId();
+    int current = 0;
+  final List<HomeBannerModel> homeBanner = [];
+    DashboardController dashboardController = Get.isRegistered<DashboardController>()
+      ? Get.find<DashboardController>()
+      : Get.put(DashboardController());
+
+  @override
+  void initState() {
+    super.initState();
+    dashboardController.getHomeScreenBanner().then((offers) {
+      if (offers != null) {
+        setState(() {
+          homeBanner.addAll(offers);
+        });
+      }
+    });
+
+    
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
+                
                   ClipRRect(
                     borderRadius: BorderRadius.circular(24),
                     child: Image.network(
@@ -59,12 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  // const CircleAvatar(
-                  //   radius: 24,
-                  //   backgroundImage: AssetImage('assets/avatar.jpg'),
-                  // ),
                   const SizedBox(width: 12),
-                  const Column(
+                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -72,7 +99,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       Text(
-                        'Abhishant Kumar',
+                        // use decoded token for user name 
+                        '${user?.firstname} ${user?.lastname}',
+                        // '${dashboardController.userModel.value?.firstname} ${dashboardController.userModel.value?.lastname}',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -104,14 +133,50 @@ class _HomeScreenState extends State<HomeScreen> {
             // Banner
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  'https://i.pinimg.com/736x/6e/f8/07/6ef807006f13aee267a8058b316fb977.jpg',
-                  height: 120,
-                  fit: BoxFit.cover,
-                ),
-              ),
+              child: 
+                 AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: CarouselSlider(
+                                items: homeBanner.map((offer) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                    
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Image.network(
+                                        // offer.image,
+                                        'https://i.pinimg.com/1200x/ec/7b/3e/ec7b3eb153f227ff2bf90062bb28d7dd.jpg',
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                                options: CarouselOptions(
+                                  enlargeCenterPage: true,
+                                  enableInfiniteScroll: true,
+                                  viewportFraction: 1,
+                                  // limitedOffers.length >= 2 ? 0.8 : 1,
+                                  initialPage: 0,
+                                  onPageChanged: (index, reason) {
+                                    setState(() {
+                                      current = index;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                
+              // ClipRRect(
+              //   borderRadius: BorderRadius.circular(12),
+              //   child: Image.network(
+              //     'https://i.pinimg.com/736x/6e/f8/07/6ef807006f13aee267a8058b316fb977.jpg',
+              //     height: 120,
+              //     fit: BoxFit.cover,
+              //   ),
+              // ),
             ),
             const SizedBox(height: 16),
 
@@ -144,37 +209,43 @@ class _HomeScreenState extends State<HomeScreen> {
                             _actionBox(Icons.chat, 'Chat with us'),
                           ],
                         ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 2 - 24,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFDF3F4),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Column(
-                            children: [
-                              CircleAvatar(
-                                radius: 18,
-                                backgroundColor: AppColors.kcPrimaryColor
-                                    .withOpacity(0.1),
-                                child: Icon(
-                                  Icons.card_giftcard,
-                                  size: 18,
-                                  color: AppColors.kcPrimaryColor,
+                        GestureDetector(
+                          onTap: () {
+                            // Handle redeem points tap
+                            context.push(AppRoutes.redeemPoints);
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width / 2 - 24,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFDF3F4),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Column(
+                              children: [
+                                CircleAvatar(
+                                  radius: 18,
+                                  backgroundColor: AppColors.kcPrimaryColor
+                                      .withOpacity(0.1),
+                                  child: Icon(
+                                    Icons.card_giftcard,
+                                    size: 18,
+                                    color: AppColors.kcPrimaryColor,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                'Redeem MY Plus\nPoints',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Redeem MY Plus\nPoints',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -185,10 +256,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _iconCircle('Gift\nTracker', Icons.redeem),
-                        _iconCircle('Company\nPolicy', Icons.policy),
-                        _iconCircle('SLC\nVideo', Icons.ondemand_video),
-                        _iconCircle('About\nus', Icons.info_outline),
+                        _iconCircle('Gift\nTracker', Icons.redeem, () {
+                          context.push(AppRoutes.redeemPoints);
+                        }),
+                        _iconCircle('Company\nPolicy', Icons.policy, () {
+                          context.push(AppRoutes.companyPolicy);
+                        }),
+                        _iconCircle('SLC\nVideo', Icons.ondemand_video, () {
+                          // context.push(AppRoutes.slcVideo);
+                        }),
+                        _iconCircle('About\nus', Icons.info_outline, () {
+                          context.push(AppRoutes.aboutUs);
+                        }),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -203,37 +282,43 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                          Column(
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                               const Text(
-                            'Total Points (1 Point = ₹1)',
-                            style: TextStyle(color: Colors.white, fontSize: 12),
-                          ),
-                          // const SizedBox(height: 8),
-                          const Text(
-                            '₹ 22550.00',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                              Column(
+                                children: [
+                                  const Text(
+                                    'Total Points (1 Point = ₹1)',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  // const SizedBox(height: 8),
+                                  const Text(
+                                    '₹ 22550.00',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Image.asset(
+                                'assets/images/boy.png',
+                                width: 100,
+                                height: 100,
+                              ),
                             ],
                           ),
-                          Image.asset(
-                            'assets/images/boy.png',
-                            width: 100,
-                            height: 100,
-                          ),
-                         ],),
                           // const SizedBox(height: 10),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                context.push(AppRoutes.withdrawPoints);
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 foregroundColor: Colors.black,
@@ -261,7 +346,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.push(AppRoutes.myPoints);
+                          },
                           child: const Text(
                             'View All',
                             style: TextStyle(color: AppColors.kcPrimaryColor),
@@ -285,64 +372,78 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _actionBox(IconData icon, String title) {
-    return Container(
-      width: MediaQuery.of(context).size.width / 2 - 24,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFDF3F4),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: AppColors.kcPrimaryColor.withOpacity(0.1),
-            child: Icon(icon, size: 18, color: AppColors.kcPrimaryColor),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+    return GestureDetector(
+      onTap: () {
+        if (title == 'Scan Product') {
+          context.push(AppRoutes.qrScan);
+        } else if (title == 'Chat with us') {
+          context.push(AppRoutes.faq);
+          // Handle chat action
+        }
+        // Add more actions as needed
+        
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width / 2 - 24,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFDF3F4),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: AppColors.kcPrimaryColor.withOpacity(0.1),
+              child: Icon(icon, size: 18, color: AppColors.kcPrimaryColor),
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _iconCircle(String title, IconData icon) {
-    return Container(
-      decoration: BoxDecoration(
-        border: BoxBorder.all(
-          color: AppColors.kcPrimaryColor.withOpacity(0.2),
-          // width: 1,
-        ),
-          borderRadius: BorderRadius.circular(45),
-      
-      ),
-      padding: const EdgeInsets.all(4),
+  Widget _iconCircle(String title, IconData icon, void Function()? callback) {
+    return GestureDetector(
+      onTap: callback,
       child: Container(
-        width: 68,
-        height: 88,
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFFFDF3F4), // shape: BoxShape.circle,
+          border: BoxBorder.all(
+            color: AppColors.kcPrimaryColor.withOpacity(0.2),
+            // width: 1,
+          ),
           borderRadius: BorderRadius.circular(45),
-      
-          // boxShadow: [BoxShadow(color: const Color(0xFFFDF3F4), blurRadius: 6)],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 28, color: AppColors.kcPrimaryColor),
-            const SizedBox(height: 6),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 11),
-            ),
-          ],
+        padding: const EdgeInsets.all(4),
+        child: Container(
+          width: 68,
+          height: 88,
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFDF3F4), // shape: BoxShape.circle,
+            borderRadius: BorderRadius.circular(45),
+      
+            // boxShadow: [BoxShadow(color: const Color(0xFFFDF3F4), blurRadius: 6)],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 28, color: AppColors.kcPrimaryColor),
+              const SizedBox(height: 6),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 11),
+              ),
+            ],
+          ),
         ),
       ),
     );

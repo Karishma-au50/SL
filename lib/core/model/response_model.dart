@@ -18,13 +18,14 @@ class ResponseModel<T> {
         data = null;
 
   Map<String, dynamic> toJson() {
-    return {'message': message, 'error': status, 'data': data};
+    return {'message': message, 'status': status, 'data': data};
   }
 
   ResponseModel fromJson(Map<String, dynamic> json) {
+    
     return ResponseModel(
       message: json['message'],
-      status: json['error'],
+      status: json['statusCode'] >= 200 && json['statusCode'] < 300,
       data: T == BaseModel
           ? BaseModel.fromJson(json['data']) as T?
           : json['data'] as T?,
