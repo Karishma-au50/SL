@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:sl/features/myPoints/controller/redeem_points_controller.dart';
 import 'package:sl/model/withdrawal_model.dart';
 import 'package:sl/routes/app_routes.dart';
+import 'package:sl/shared/services/common_service.dart';
 import 'package:sl/widgets/buttons/my_button.dart';
 import 'package:sl/widgets/inputs/my_text_field.dart';
 
@@ -19,10 +20,24 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
   final TextEditingController _amountController = TextEditingController(
     text: '500',
   );
-  final double availableBalance = 1500.0;
+  late double availableBalance = 0;
   AccountDetails? _selectedAccountDetails;
   final OfferController _offerController = Get.put(OfferController());
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAvailableBalance();
+  }
+
+  void _fetchAvailableBalance({bool isRefresh = false}) async {
+    CommonService.to.getUserDetails(forceRefresh: isRefresh).then((details) {
+      setState(() {
+        availableBalance = details.availablePoints;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +110,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                     SizedBox(height: 10),
                     // Withdraw Amount Input
                     MyTextField(
+                      controller: _amountController,
                       labelText: 'Enter amount',
                       labelStyle: TextStyle(fontWeight: FontWeight.bold),
                       hintText: "₹500",
@@ -131,7 +147,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                           AppRoutes.bankDetailsForm,
                           extra: _selectedAccountDetails,
                         );
-                        
+
                         if (result != null) {
                           setState(() {
                             _selectedAccountDetails = result;
@@ -144,13 +160,13 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: _selectedAccountDetails != null 
-                              ? Colors.green.shade50 
+                          color: _selectedAccountDetails != null
+                              ? Colors.green.shade50
                               : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: _selectedAccountDetails != null 
-                                ? Colors.green.shade300 
+                            color: _selectedAccountDetails != null
+                                ? Colors.green.shade300
                                 : Colors.grey.shade300,
                             width: _selectedAccountDetails != null ? 2 : 1,
                           ),
@@ -158,11 +174,11 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                         child: Row(
                           children: [
                             Icon(
-                              _selectedAccountDetails != null 
-                                  ? Icons.account_balance 
+                              _selectedAccountDetails != null
+                                  ? Icons.account_balance
                                   : Icons.add_card,
-                              color: _selectedAccountDetails != null 
-                                  ? Colors.green.shade600 
+                              color: _selectedAccountDetails != null
+                                  ? Colors.green.shade600
                                   : Colors.blue,
                             ),
                             const SizedBox(width: 16),
@@ -171,19 +187,21 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    _selectedAccountDetails?.bankName ?? 'Add Bank Details',
+                                    _selectedAccountDetails?.bankName ??
+                                        'Add Bank Details',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
-                                      color: _selectedAccountDetails != null 
-                                          ? Colors.green.shade700 
+                                      color: _selectedAccountDetails != null
+                                          ? Colors.green.shade700
                                           : Colors.black87,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   if (_selectedAccountDetails != null) ...[
                                     Text(
-                                      _selectedAccountDetails!.accountHolderName,
+                                      _selectedAccountDetails!
+                                          .accountHolderName,
                                       style: TextStyle(
                                         color: Colors.grey[700],
                                         fontSize: 13,
@@ -218,8 +236,8 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                               ),
                             ),
                             Icon(
-                              _selectedAccountDetails != null 
-                                  ? Icons.edit 
+                              _selectedAccountDetails != null
+                                  ? Icons.edit
                                   : Icons.chevron_right,
                               color: Colors.grey,
                               size: 20,
@@ -246,10 +264,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                         padding: EdgeInsets.only(top: 8),
                         child: Text(
                           'Please add bank details to proceed',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: Colors.red, fontSize: 12),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -270,11 +285,8 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
     }
 
     final amount = double.tryParse(_amountController.text.trim()) ?? 0;
-    if (amount < 200) {
-      _showError('Minimum withdrawal is ₹200');
-      return;
-    } else if (amount > 50000) {
-      _showError('Maximum daily limit is ₹50,000');
+    if (amount < 1) {
+      _showError('Minimum withdrawal is ₹1');
       return;
     } else if (amount > availableBalance) {
       _showError('Insufficient balance');
@@ -291,8 +303,10 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
         accountDetails: _selectedAccountDetails!,
       );
 
-      final success = await _offerController.submitWithdrawal(withdrawalRequest);
-      
+      final success = await _offerController.submitWithdrawal(
+        withdrawalRequest,
+      );
+
       if (success && mounted) {
         // Show success bottom sheet
         showModalBottomSheet(
@@ -303,6 +317,8 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
           ),
           builder: (_) => WithdrawalSuccessBottomSheet(amount: amount),
         );
+
+        _fetchAvailableBalance(isRefresh: true);
       }
     } catch (e) {
       if (mounted) {
@@ -322,16 +338,12 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
       context,
     ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red));
   }
-
 }
 
 class WithdrawalSuccessBottomSheet extends StatelessWidget {
   final double amount;
-  
-  const WithdrawalSuccessBottomSheet({
-    super.key,
-    required this.amount,
-  });
+
+  const WithdrawalSuccessBottomSheet({super.key, required this.amount});
 
   @override
   Widget build(BuildContext context) {
@@ -358,9 +370,13 @@ class WithdrawalSuccessBottomSheet extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 24),
-          MyButton(text: 'Okay, Got it!', color: Color(0xFF001519), onPressed: () async {
-            Navigator.pop(context);
-          }),
+          MyButton(
+            text: 'Okay, Got it!',
+            color: Color(0xFF001519),
+            onPressed: () async {
+              Navigator.pop(context);
+            },
+          ),
         ],
       ),
     );

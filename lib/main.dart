@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:sl/routes/app_pages.dart';
-import 'package:sl/shared/services/storage_service.dart' show StorageService;
+
+import 'dependancy_injection.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +16,7 @@ void main() {
       statusBarBrightness: Brightness.dark,
     ),
   );
-  StorageService.instance.init(); 
+  DependancyInjection.init();
   runApp(const MyApp());
 }
 

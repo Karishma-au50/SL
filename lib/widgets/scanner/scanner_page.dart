@@ -167,7 +167,6 @@ class _ScannerPageState extends State<ScannerPage> {
         setState(() {
           isProcessing = false;
         });
-        controller.start();
       }
     } catch (e) {
       print("Error processing QR code: $e");

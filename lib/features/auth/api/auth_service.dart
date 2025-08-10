@@ -68,20 +68,26 @@ class AuthService extends BaseApiService {
 
   // Get user details
   Future<ResponseModel> getUserDetails(String userId) async {
-    final res = await get('${AuthEndpoint.getUserDetails}/$userId',
+    final res = await get(
+      '${AuthEndpoint.getUserDetails}/$userId',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
           "Authorization": StorageService.instance.getToken(),
         },
-      ),);
-    
+      ),
+    );
+
     ResponseModel resModel = ResponseModel<UserDetailModel>(
       message: res.data["message"] ?? "User details fetched successfully",
       status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
       data: UserDetailModel.fromJson(res.data["data"]),
     );
-    
+
+    if (resModel.status ?? false) {
+      StorageService.instance.setString("user_detail", resModel.data);
+    }
+
     return resModel;
   }
 

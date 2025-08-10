@@ -10,6 +10,7 @@ import 'package:sl/routes/app_routes.dart';
 
 import '../../../model/home_banner_model.dart';
 import '../../../shared/app_colors.dart';
+import '../../../shared/services/common_service.dart';
 import '../../../shared/services/storage_service.dart' show StorageService;
 import '../../../widgets/network_image_view.dart';
 
@@ -27,14 +28,13 @@ class _HomeScreenState extends State<HomeScreen> {
   int current = 0;
   final List<HomeBannerModel> homeBanner = [];
   bool isLoadingUserDetails = true;
-  
+
   DashboardController dashboardController =
       Get.isRegistered<DashboardController>()
       ? Get.find<DashboardController>()
       : Get.put(DashboardController());
-      
-  AuthController authController =
-      Get.isRegistered<AuthController>()
+
+  AuthController authController = Get.isRegistered<AuthController>()
       ? Get.find<AuthController>()
       : Get.put(AuthController());
 
@@ -55,9 +55,13 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
 
+    _loadUserDetails();
+  }
+
+  _loadUserDetails() async {
     // Load user details if user ID exists
     if (user.id?.isNotEmpty == true) {
-      final details = await authController.getUserDetails(user.id!);
+      final details = await CommonService.to.getUserDetails();
       if (mounted) {
         setState(() {
           userDetails = details;
@@ -139,8 +143,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Text(
                         // use decoded token for user name or user details
-                        userDetails?.displayName ?? 
-                        (user.firstname != null ? '${user.firstname} ${user.lastname}' : 'Guest'),
+                        userDetails?.displayName ??
+                            (user.firstname != null
+                                ? '${user.firstname} ${user.lastname}'
+                                : 'Guest'),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -177,13 +183,15 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: AspectRatio(
                 aspectRatio: 20 / 9,
-                child:
-                 CarouselSlider(
+                child: CarouselSlider(
                   items: homeBanner.map((offer) {
                     return GestureDetector(
                       onTap: () {},
-                      child: NetworkImageView(imgUrl: offer.image, radius: 8,fit: BoxFit.cover,),
-                   
+                      child: NetworkImageView(
+                        imgUrl: offer.image,
+                        radius: 8,
+                        fit: BoxFit.cover,
+                      ),
                     );
                   }).toList(),
                   options: CarouselOptions(
@@ -359,23 +367,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: 80,
                                     height: 80,
                                   ),
-                                  if (userDetails != null && !isLoadingUserDetails) ...[
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Total: ₹${userDetails!.totalPoints.toStringAsFixed(0)}',
-                                      style: const TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Redeemed: ₹${userDetails!.redeemedPoints.toStringAsFixed(0)}',
-                                      style: const TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ],
+                                  // if (userDetails != null &&
+                                  //     !isLoadingUserDetails) ...[
+                                  //   const SizedBox(height: 4),
+                                  //   Text(
+                                  //     'Total: ₹${userDetails!.totalPoints.toStringAsFixed(0)}',
+                                  //     style: const TextStyle(
+                                  //       color: Colors.white70,
+                                  //       fontSize: 10,
+                                  //     ),
+                                  //   ),
+                                  //   Text(
+                                  //     'Redeemed: ₹${userDetails!.redeemedPoints.toStringAsFixed(0)}',
+                                  //     style: const TextStyle(
+                                  //       color: Colors.white70,
+                                  //       fontSize: 10,
+                                  //     ),
+                                  //   ),
+                                  // ],
                                 ],
                               ),
                             ],
@@ -384,8 +393,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: () {
-                                context.push(AppRoutes.withdrawPoints);
+                              onPressed: () async {
+                                await context.push(AppRoutes.withdrawPoints);
+
+                                _loadUserDetails();
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,

@@ -57,16 +57,18 @@ class DashboardController extends GetxController {
       if (res.status ?? false) {
         // Show success toast with earned points
         MyToasts.toastSuccess(
-          "QR code scanned successfully! You earned ${res.data?.data.pointsEarned ?? 0} points!"
+          "QR code scanned successfully! You earned ${res.data?["pointsEarned"] ?? 0} points!",
         );
         return true;
       } else {
-        MyToasts.toastError(res.message ?? "Failed to verify QR code redemption");
-        return false;
+        // MyToasts.toastError(res.message ?? "Failed to verify QR code redemption");
+        throw Exception(res.message ?? "Failed to verify QR code redemption");
+        // return false;
       }
     } catch (e) {
-      MyToasts.toastError(e.toString());
-      return false;
+      // MyToasts.toastError(e.toString());
+      throw Exception("Error verifying QR code: ${e.toString()}");
+      // return false;
     }
   }
 }

@@ -57,13 +57,16 @@ class DashboardService extends BaseApiService {
 
     ResponseModel resModel = ResponseModel<UserModel>(
       message: res.data["message"],
-        status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
+      status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
       data: UserModel.fromJson(res.data["data"]),
     );
     return resModel;
   }
+
   // purchase verification
-  Future<ResponseModel> qrVerification({required String data}) async {
+  Future<ResponseModel<Map<String, dynamic>>> qrVerification({
+    required String data,
+  }) async {
     var res = await post(
       DashboardEndpoint.coupon,
       data: {"qrCodeData": data, "userId": "68864b5c3bbf41257312a747"},
@@ -75,11 +78,14 @@ class DashboardService extends BaseApiService {
       ),
     );
 
-    ResponseModel resModel = ResponseModel(
-      message: res.data["message"],
-      status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
-      data: res.data["data"],
-    );
+    ResponseModel<Map<String, dynamic>> resModel =
+        ResponseModel<Map<String, dynamic>>(
+          message: res.data["message"],
+          status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
+          data: res.data["data"] != null
+              ? Map<String, dynamic>.from(res.data["data"])
+              : {},
+        );
     return resModel;
   }
 }
