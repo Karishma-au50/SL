@@ -50,29 +50,18 @@ class DashboardController extends GetxController {
     }
   }
 
-  // scan the qr code
-  Future<void> scanQRCode(String data) async {
-    try {
-      final res = await _api.scanQRCode(data);
-      if (res.status ?? false) {
-        MyToasts.toastError("${res.data}");
-      } else {
-        MyToasts.toastError("Coupon not found");
-      }
-    } catch (e) {
-      MyToasts.toastError(e.toString());
-    }
-  }
-
   // purchase verification
   Future<bool> qrVerification({required String data}) async {
     try {
       final res = await _api.qrVerification(data: data);
       if (res.status ?? false) {
-        MyToasts.toastSuccess("Purchase verified successfully");
+        // Show success toast with earned points
+        MyToasts.toastSuccess(
+          "QR code scanned successfully! You earned ${res.data?.data.pointsEarned ?? 0} points!"
+        );
         return true;
       } else {
-        MyToasts.toastError(res.message ?? "Failed to verify purchase");
+        MyToasts.toastError(res.message ?? "Failed to verify QR code redemption");
         return false;
       }
     } catch (e) {

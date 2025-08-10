@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -159,11 +157,17 @@ class _ScannerPageState extends State<ScannerPage> {
 
     try {
       // Call API to verify the QR code
-      await dashboardCntlr.qrVerification(data: code);
+      final success = await dashboardCntlr.qrVerification(data: code);
 
       // Navigate back after successful verification
-      if (mounted) {
+      if (mounted && success) {
         Navigator.of(context).pop();
+      } else if (mounted && !success) {
+        // If verification failed, allow scanning again
+        setState(() {
+          isProcessing = false;
+        });
+        controller.start();
       }
     } catch (e) {
       print("Error processing QR code: $e");

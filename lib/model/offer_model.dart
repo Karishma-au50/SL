@@ -122,16 +122,15 @@ class OfferModel {
   }
 
   // generate random background colors
-  static final List<int> _presetColors = [
-    0xFFFF0000, // red
-    0xFF800080, // purple
-    0xFF008000, // green
-    0xFF0000FF, // blue
-    0xFFFFFF00, // yellow
-    0xFFFFC0CB, // pink
-    0xFFA52A2A, // brown
-  ];
+static final List<int> _presetColors = [
 
+  0xFF1B263B, // dark slate blue
+  0xFF283618, // deep olive green
+  0xFF432818, // dark coffee brown
+  0xFF3D0C11, // deep maroon red
+  0xFF2C3E50, // dark steel blue
+  0xFF102820, // deep forest green
+];
   static int generateRandomColor() {
     final random = Random();
     return _presetColors[random.nextInt(_presetColors.length)];

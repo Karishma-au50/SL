@@ -215,12 +215,10 @@ class CouponCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(coupon.detailBGColor).withValues(alpha: 0.5),
-            Color(coupon.detailBGColor).withValues(alpha: 0.9),
-          ],
-        ),
+        // color:  Colors.blueGrey.withValues(alpha: 0.9),
+       gradient: const LinearGradient(
+                        colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
+                      ),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -244,7 +242,7 @@ class CouponCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 18),
 
           // Main content with title, image, valid till, and button
           Expanded(
@@ -261,9 +259,10 @@ class CouponCard extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 5),
 
-                Divider(thickness: 0.2),
+                Divider(thickness: 0.4),
+                const SizedBox(height: 5),
 
                 // Valid Till + View Details Row
                 Row(
@@ -314,8 +313,8 @@ class CouponCard extends StatelessWidget {
                         backgroundColor: Colors.transparent,
                         foregroundColor: Colors.black,
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+                          horizontal: 10,
+                          vertical: 6,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),

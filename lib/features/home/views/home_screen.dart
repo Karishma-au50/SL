@@ -1,10 +1,10 @@
-import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sl/features/auth/controller/auth_controller.dart';
 import 'package:sl/features/home/controller/dashboard_controller.dart';
+import 'package:sl/model/user_detail_model.dart';
 import 'package:sl/model/user_model.dart';
 import 'package:sl/routes/app_routes.dart';
 
@@ -23,17 +23,30 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   late final UserModel user;
+  UserDetailModel? userDetails;
   int current = 0;
   final List<HomeBannerModel> homeBanner = [];
+  bool isLoadingUserDetails = true;
+  
   DashboardController dashboardController =
       Get.isRegistered<DashboardController>()
       ? Get.find<DashboardController>()
       : Get.put(DashboardController());
+      
+  AuthController authController =
+      Get.isRegistered<AuthController>()
+      ? Get.find<AuthController>()
+      : Get.put(AuthController());
 
   @override
   void initState() {
     super.initState();
-    user = StorageService.instance.getUserId()!;
+    user = StorageService.instance.getUserId() ?? UserModel();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    // Load banners
     dashboardController.getHomeScreenBanner().then((offers) {
       if (offers != null) {
         setState(() {
@@ -41,6 +54,21 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
+
+    // Load user details if user ID exists
+    if (user.id?.isNotEmpty == true) {
+      final details = await authController.getUserDetails(user.id!);
+      if (mounted) {
+        setState(() {
+          userDetails = details;
+          isLoadingUserDetails = false;
+        });
+      }
+    } else {
+      setState(() {
+        isLoadingUserDetails = false;
+      });
+    }
   }
 
   @override
@@ -110,10 +138,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       Text(
-                        // use decoded token for user name
-                        '${user.firstname} ${user.lastname}',
-                        // '${dashboardController.userModel.value?.firstname} ${dashboardController.userModel.value?.lastname}',
-                        style: TextStyle(
+                        // use decoded token for user name or user details
+                        userDetails?.displayName ?? 
+                        (user.firstname != null ? '${user.firstname} ${user.lastname}' : 'Guest'),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: Colors.white,
@@ -146,24 +174,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Banner
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: CarouselSlider(
+                aspectRatio: 20 / 9,
+                child:
+                 CarouselSlider(
                   items: homeBanner.map((offer) {
                     return GestureDetector(
                       onTap: () {},
-                      child: NetworkImageView(imgUrl: offer.image, radius: 8),
-                      // child: Container(
-                      //   decoration: BoxDecoration(
-                      //     borderRadius: BorderRadius.circular(8),
-                      //   ),
-                      //   child: Image.network(
-                      //     // offer.image,
-                      //     'https://i.pinimg.com/1200x/ec/7b/3e/ec7b3eb153f227ff2bf90062bb28d7dd.jpg',
-                      //     fit: BoxFit.cover,
-                      //   ),
-                      // ),
+                      child: NetworkImageView(imgUrl: offer.image, radius: 8,fit: BoxFit.cover,),
+                   
                     );
                   }).toList(),
                   options: CarouselOptions(
@@ -180,15 +200,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-
-              // ClipRRect(
-              //   borderRadius: BorderRadius.circular(12),
-              //   child: Image.network(
-              //     'https://i.pinimg.com/736x/6e/f8/07/6ef807006f13aee267a8058b316fb977.jpg',
-              //     height: 120,
-              //     fit: BoxFit.cover,
-              //   ),
-              // ),
             ),
             const SizedBox(height: 16),
 
@@ -206,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(6.0),
                 child: Column(
                   children: [
                     SizedBox(height: 10),
@@ -229,8 +240,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Container(
                             width: MediaQuery.of(context).size.width / 2 - 24,
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 10,
+                              horizontal: 8,
+                              vertical: 8,
                             ),
                             decoration: BoxDecoration(
                               color: const Color(0xFFFDF3F4),
@@ -282,11 +293,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         }),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Points Card
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: const Color(0xFF001519),
                         borderRadius: BorderRadius.circular(12),
@@ -298,29 +309,74 @@ class _HomeScreenState extends State<HomeScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    'Total Points (1 Point = ₹1)',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                    ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Available Points (1 Point = ₹1)',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      GestureDetector(
+                                        onTap: _loadData,
+                                        child: Icon(
+                                          Icons.refresh,
+                                          color: Colors.white70,
+                                          size: 16,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  // const SizedBox(height: 8),
-                                  const Text(
-                                    '₹ 22550.00',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 26,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                  const SizedBox(height: 8),
+                                  isLoadingUserDetails
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : Text(
+                                          '₹ ${userDetails?.availablePoints.toStringAsFixed(2) ?? '0.00'}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 26,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                 ],
                               ),
-                              Image.asset(
-                                'assets/images/boy.png',
-                                width: 100,
-                                height: 100,
+                              Column(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/boy.png',
+                                    width: 80,
+                                    height: 80,
+                                  ),
+                                  if (userDetails != null && !isLoadingUserDetails) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Total: ₹${userDetails!.totalPoints.toStringAsFixed(0)}',
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Redeemed: ₹${userDetails!.redeemedPoints.toStringAsFixed(0)}',
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
                             ],
                           ),
@@ -344,29 +400,32 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Redeem List Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Redeem Points',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Redeem Points',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            context.push(AppRoutes.myPoints);
-                          },
-                          child: const Text(
-                            'View All',
-                            style: TextStyle(color: AppColors.kcPrimaryColor),
+                          TextButton(
+                            onPressed: () {
+                              context.push(AppRoutes.myPoints);
+                            },
+                            child: const Text(
+                              'View All',
+                              style: TextStyle(color: AppColors.kcPrimaryColor),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
 
                     // Redeem List Items
@@ -396,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Container(
         width: MediaQuery.of(context).size.width / 2 - 24,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
           color: const Color(0xFFFDF3F4),
           borderRadius: BorderRadius.circular(14),
@@ -435,11 +494,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           borderRadius: BorderRadius.circular(45),
         ),
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(3.5),
         child: Container(
           width: 68,
-          height: 88,
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          height: 85,
+          // padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
           decoration: BoxDecoration(
             color: const Color(0xFFFDF3F4), // shape: BoxShape.circle,
             borderRadius: BorderRadius.circular(45),
@@ -465,7 +524,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _redeemTile(String name, String date, String points) {
     return ListTile(
-      contentPadding: EdgeInsets.zero,
+      contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
       leading: Image.network(
         "https://i.pinimg.com/736x/3c/07/d4/3c07d4d147861c7233aec7c824e34cb5.jpg",
         width: 50,

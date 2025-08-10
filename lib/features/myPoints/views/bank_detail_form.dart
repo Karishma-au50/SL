@@ -46,11 +46,15 @@ class _BankDetailFormState extends State<BankDetailForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+       backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
         backgroundColor: const Color(0xFF001519),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: const Text(
-          'Bank Account Details',
+          'Add Bank Details',
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -58,136 +62,154 @@ class _BankDetailFormState extends State<BankDetailForm> {
           ),
         ),
         centerTitle: true,
-        leading: const BackButton(color: Colors.white),
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Bank Account Information',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF001519),
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Bank Account Information',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF001519),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Please provide your bank account details for withdrawal',
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 24),
+              
+                      // Account Holder Name
+                      MyTextField(
+                        controller: _accountHolderNameController,
+                        labelText: 'Account Holder Name',
+                        hintText: 'Enter account holder name',
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter account holder name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+              
+                      // Account Number
+                      MyTextField(
+                        controller: _accountNumberController,
+                        labelText: 'Account Number',
+                        hintText: 'Enter account number',
+                        textInputType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter account number';
+                          }
+                          if (value.length < 9 || value.length > 18) {
+                            return 'Account number must be between 9-18 digits';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+              
+                      // Bank Name
+                      MyTextField(
+                        controller: _bankNameController,
+                        labelText: 'Bank Name',
+                        hintText: 'Enter bank name',
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter bank name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+              
+                      // IFSC Code
+                      MyTextField(
+                        controller: _ifscCodeController,
+                        labelText: 'IFSC Code',
+                        hintText: 'Enter IFSC code',
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter IFSC code';
+                          }
+                          // IFSC code validation pattern
+                          // if (!RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$').hasMatch(value.toUpperCase())) {
+                          //   return 'Please enter valid IFSC code';
+                          // }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 24),
+              Center(child: Text("OR")),
+                      // UPI Section
+                      // const Text(
+                      //   'UPI Information (Optional)',
+                      //   style: TextStyle(
+                      //     fontSize: 16,
+                      //     fontWeight: FontWeight.bold,
+                      //     color: Color(0xFF001519),
+                      //   ),
+                      // ),
+                       const SizedBox(height: 24),
+              
+                      // UPI ID
+                      MyTextField(
+                        controller: _upiIdController,
+                        labelText: 'UPI ID',
+                        hintText: 'Enter UPI ID (optional)',
+                        validator: (value) {
+                          if (value != null && value.trim().isNotEmpty) {
+                            // Basic UPI ID validation
+                            if (!RegExp(
+                              r'^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$',
+                            ).hasMatch(value)) {
+                              return 'Please enter valid UPI ID';
+                            }
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 32),
+              
+                      // Submit Button
+                      MyButton(
+                        text: 'Save Account Details',
+                        color: const Color(0xFF001519),
+                        onPressed: () async {
+                          _submitForm();
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Please provide your bank account details for withdrawal',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-              const SizedBox(height: 24),
-
-              // Account Holder Name
-              MyTextField(
-                controller: _accountHolderNameController,
-                labelText: 'Account Holder Name',
-                hintText: 'Enter account holder name',
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter account holder name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Account Number
-              MyTextField(
-                controller: _accountNumberController,
-                labelText: 'Account Number',
-                hintText: 'Enter account number',
-                textInputType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter account number';
-                  }
-                  if (value.length < 9 || value.length > 18) {
-                    return 'Account number must be between 9-18 digits';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Bank Name
-              MyTextField(
-                controller: _bankNameController,
-                labelText: 'Bank Name',
-                hintText: 'Enter bank name',
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter bank name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // IFSC Code
-              MyTextField(
-                controller: _ifscCodeController,
-                labelText: 'IFSC Code',
-                hintText: 'Enter IFSC code',
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter IFSC code';
-                  }
-                  // IFSC code validation pattern
-                  // if (!RegExp(r'^[A-Z]{4}0[A-Z0-9]{6}$').hasMatch(value.toUpperCase())) {
-                  //   return 'Please enter valid IFSC code';
-                  // }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24),
-
-              // UPI Section
-              const Text(
-                'UPI Information (Optional)',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF001519),
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // UPI ID
-              MyTextField(
-                controller: _upiIdController,
-                labelText: 'UPI ID',
-                hintText: 'Enter UPI ID (optional)',
-                validator: (value) {
-                  if (value != null && value.trim().isNotEmpty) {
-                    // Basic UPI ID validation
-                    if (!RegExp(
-                      r'^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$',
-                    ).hasMatch(value)) {
-                      return 'Please enter valid UPI ID';
-                    }
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 32),
-
-              // Submit Button
-              MyButton(
-                text: 'Save Account Details',
-                color: const Color(0xFF001519),
-                onPressed: () async {
-                  _submitForm();
-                },
-              ),
-              const SizedBox(height: 16),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

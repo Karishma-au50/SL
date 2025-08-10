@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
-import 'package:sl/routes/app_routes.dart';
 
+import '../../../model/user_detail_model.dart';
 import '../../../model/user_model.dart';
 import '../../../shared/services/storage_service.dart';
 import '../../../widgets/toast/my_toast.dart';
-import '../../home/controller/dashboard_controller.dart';
 import '../api/auth_service.dart';
 
 class AuthController extends GetxController {
@@ -60,6 +59,25 @@ class AuthController extends GetxController {
       MyToasts.toastError(e.response?.data["message"] ?? "Error");
       return null;
     } catch (e) {
+      MyToasts.toastError(e.toString());
+      return null;
+    }
+  }
+
+  // Get user details
+  Future<UserDetailModel?> getUserDetails(String userId) async {
+    try {
+      final res = await _api.getUserDetails(userId);
+      if (res.status ?? false) {
+        return res.data;
+      } else {
+        MyToasts.toastError(res.message ?? "Failed to fetch user details");
+        return null;
+      }
+    } on DioException catch (e) {
+      MyToasts.toastError(e.response?.data["message"] ?? "Network error occurred");
+      return null;
+    } on Exception catch (e) {
       MyToasts.toastError(e.toString());
       return null;
     }

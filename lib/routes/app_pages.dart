@@ -16,7 +16,6 @@ import '../features/myPoints/product_detail_screen.dart';
 import '../features/myPoints/redeem_pointers_screen.dart';
 import '../features/myPoints/views/bank_detail_form.dart';
 import '../features/myPoints/withdraw_screen.dart';
-import '../features/qrScanning/qr_scan_screen.dart';
 import '../model/withdrawal_model.dart';
 import '../widgets/scanner/scanner_page.dart';
 import 'app_routes.dart';
@@ -63,11 +62,6 @@ class AppPages {
         name: 'redeemPoints',
         builder: (context, state) => const RedeemPointsScreen(),
       ),
-      // GoRoute(
-      //   path: AppRoutes.qrScan,
-      //   name: 'qrScan',
-      //   builder: (context, state) => const QrScanPage(),
-      // ),
       GoRoute(
         path: AppRoutes.withdrawPoints,
         name: 'withdrawPoints',
