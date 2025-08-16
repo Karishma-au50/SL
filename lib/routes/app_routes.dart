@@ -17,5 +17,11 @@ class AppRoutes {
   static const String bankDetailsForm = '/bankDetailsForm';
   static const String faq = '/faq';
   static const String companyPolicy = '/companyPolicy';
+  static const String language = '/language';
+  static const String redeemHistory = '/redeemHistory';
+  static const String allOffers = '/allOffers';
+  static const String wallet = '/wallet';
+  static const String slcVideo = '/slcVideo';
+
 
 }

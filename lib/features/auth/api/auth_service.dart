@@ -5,6 +5,7 @@ import '../../../core/model/response_model.dart';
 import '../../../core/network/base_api_service.dart';
 import '../../../model/user_detail_model.dart';
 import '../../../model/user_model.dart';
+import '../../../model/user_redeem_history_model.dart';
 import '../../../shared/services/storage_service.dart';
 
 class AuthEndpoint {
@@ -12,6 +13,7 @@ class AuthEndpoint {
   static const register = '/api/users';
   static const verifyOtp = '/api/users/verify-otp';
   static const getUserDetails = '/api/users';
+  static const getRedemptionPointsSummary = '/api/redemptions/user';
 }
 
 class AuthService extends BaseApiService {
@@ -68,25 +70,37 @@ class AuthService extends BaseApiService {
 
   // Get user details
   Future<ResponseModel> getUserDetails(String userId) async {
-    final res = await get(
-      '${AuthEndpoint.getUserDetails}/$userId',
+    final res = await get('${AuthEndpoint.getUserDetails}/$userId',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
           "Authorization": StorageService.instance.getToken(),
         },
-      ),
-    );
-
+      ),);
+    
     ResponseModel resModel = ResponseModel<UserDetailModel>(
       message: res.data["message"] ?? "User details fetched successfully",
       status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
       data: UserDetailModel.fromJson(res.data["data"]),
     );
+    
+    return resModel;
+  }
+  // get user redeem points history
+  Future<ResponseModel> getRedemptionHistory(String userId) async {
+    final res = await get('${AuthEndpoint.getRedemptionPointsSummary}/$userId/points-summary',
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": StorageService.instance.getToken(),
+        },
+      ),);
 
-    if (resModel.status ?? false) {
-      StorageService.instance.setString("user_detail", resModel.data);
-    }
+    ResponseModel resModel = ResponseModel<UserRedeemHistoryModel>(
+      message: res.data["message"],
+      status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
+      data: UserRedeemHistoryModel.fromJson(res.data["data"]),
+    );
 
     return resModel;
   }

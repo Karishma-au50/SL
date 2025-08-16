@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import '../../../core/expections/custom_exception.dart';
 import '../../../model/home_banner_model.dart';
 import '../../../model/user_model.dart';
+import '../../../model/wallet_history_model.dart';
+import '../../../model/slc_video_model.dart';
 import '../../../shared/services/storage_service.dart';
 import '../../../widgets/toast/my_toast.dart';
 import '../api/dashboard_services.dart';
@@ -69,6 +71,35 @@ class DashboardController extends GetxController {
       // MyToasts.toastError(e.toString());
       throw Exception("Error verifying QR code: ${e.toString()}");
       // return false;
+    }
+  }
+
+  Future<List<WalletHistoryModel>?> getWalletHistory() async {
+   try{
+     final res = await _api.getWalletHistory();
+     if (res.status ?? false) {
+       return res.data!;
+     } else {
+       throw FetchDataException(res.message);
+     }
+   } catch (e) {
+     MyToasts.toastError(e.toString());
+     return null;
+   }
+   
+  }
+
+  Future<SLCVideoModel?> getSLCVideos() async {
+    try {
+      final res = await _api.getSLCVideos();
+      if (res.status ?? false) {
+        return res.data!;
+      } else {
+        throw FetchDataException(res.message);
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+      return null;
     }
   }
 }

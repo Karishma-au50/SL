@@ -162,36 +162,36 @@ class _BankDetailFormState extends State<BankDetailForm> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 24),
-              Center(child: Text("OR")),
-                      // UPI Section
-                      // const Text(
-                      //   'UPI Information (Optional)',
-                      //   style: TextStyle(
-                      //     fontSize: 16,
-                      //     fontWeight: FontWeight.bold,
-                      //     color: Color(0xFF001519),
-                      //   ),
-                      // ),
-                       const SizedBox(height: 24),
+              //         const SizedBox(height: 24),
+              // Center(child: Text("OR")),
+              //         // UPI Section
+              //         // const Text(
+              //         //   'UPI Information (Optional)',
+              //         //   style: TextStyle(
+              //         //     fontSize: 16,
+              //         //     fontWeight: FontWeight.bold,
+              //         //     color: Color(0xFF001519),
+              //         //   ),
+              //         // ),
+              //          const SizedBox(height: 24),
               
-                      // UPI ID
-                      MyTextField(
-                        controller: _upiIdController,
-                        labelText: 'UPI ID',
-                        hintText: 'Enter UPI ID (optional)',
-                        validator: (value) {
-                          if (value != null && value.trim().isNotEmpty) {
-                            // Basic UPI ID validation
-                            if (!RegExp(
-                              r'^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$',
-                            ).hasMatch(value)) {
-                              return 'Please enter valid UPI ID';
-                            }
-                          }
-                          return null;
-                        },
-                      ),
+              //         // UPI ID
+              //         MyTextField(
+              //           controller: _upiIdController,
+              //           labelText: 'UPI ID',
+              //           hintText: 'Enter UPI ID (optional)',
+              //           validator: (value) {
+              //             if (value != null && value.trim().isNotEmpty) {
+              //               // Basic UPI ID validation
+              //               if (!RegExp(
+              //                 r'^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$',
+              //               ).hasMatch(value)) {
+              //                 return 'Please enter valid UPI ID';
+              //               }
+              //             }
+              //             return null;
+              //           },
+              //         ),
                       const SizedBox(height: 32),
               
                       // Submit Button

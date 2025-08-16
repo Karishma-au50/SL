@@ -55,11 +55,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SizedBox.expand(
-        child: NetworkImageView(
-          imgUrl:
-              "https://i.pinimg.com/736x/16/a7/00/16a700c9f05550b1e45f963f3c611b50.jpg",
+        child: Image.asset(
+          "assets/images/Splash.png",
           fit: BoxFit.cover,
-          isFullPath: true,
         ),
 
         // child: Image.network(

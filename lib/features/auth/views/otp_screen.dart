@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +9,6 @@ import '../../../routes/app_routes.dart';
 import '../../../shared/utils/hex_color.dart';
 import 'package:pinput/pinput.dart';
 
-import '../../home/api/dashboard_services.dart';
 import '../controller/auth_controller.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
@@ -85,46 +83,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       ),
     );
 
-    // void handleOTPCompletion(String otp) {
-    //   if (otp == '${widget.otp}') {
-    //     setState(() {
-    //       isPinValid = true;
-    //     });
-    //     FirebaseMessaging.instance.getToken().then((token) {
-    //       print('Token: $token');
-    //       try {
-    //         DashboardService().updateDeviceToken(token!);
-    //       } catch (e) {
-    //         print(e);
-    //       }
-    //     });
-    //     // Automatically navigate after OTP is verified
-    //     // if (widget.isRegistered!) {
-    //     //   context.go(AppRoutes.home);
-    //     // } else {
-    //       // context.push(
-    //       //   AppRoutes.register,
-    //       //   extra: {
-    //       //     "mobile": widget.mobile,
-    //       //     "isRegistered": widget.isRegistered
-    //       //   },
-    //       // );
-    //     // }
-    //   } else {
-    //     setState(() {
-    //       isPinValid = false;
-    //     });
-    //   }
-    // }
-
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            // const SizedBox(height: 60),
-
             // White Bottom Section
             Expanded(
               child: Form(
@@ -159,20 +123,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       ),
                       // const SizedBox(height: 20),
                       const SizedBox(height: 10),
-
-                      // OTP Image Placeholder
-                      CircleAvatar(
-                        radius: 50,
-                        // ignore: deprecated_member_use
-                        backgroundColor: AppColors.backgroundColor.withOpacity(
-                          0.1,
+                         Image.asset(
+                          "assets/images/otpIcon.png",
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
                         ),
-                        child: const Icon(
-                          Icons.email_outlined,
-                          size: 50,
-                          color: Colors.red,
-                        ),
-                      ),
                       const SizedBox(height: 24),
 
                       Padding(
@@ -202,12 +158,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         focusNode: focusNode,
                         defaultPinTheme: defaultPinTheme,
                         separatorBuilder: (index) => const SizedBox(width: 8),
-                        // validator: (value) {
-                        //   setState(() {
-                        //     isPinValid = value == '${widget.otp}';
-                        //   });
-                        //   return isPinValid ? null : 'Pin is incorrect';
-                        // },
+                     
                         hapticFeedbackType: HapticFeedbackType.lightImpact,
                         onChanged: (value) {
                           debugPrint('onChanged: $value');
@@ -248,7 +199,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       MyButton(
                         text: "Verify Now",
                         borderRadius: BorderRadius.circular(8),
-                        // disabled: !isPinValid,
+                    
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             await controller
@@ -265,17 +216,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                       extra: widget.mobile,
                                     );
                                   }
-                                  // context.push(AppRoutes.home);
-                                  // final int? otp = value['otp'];
-                                  // final bool? isRegistered = value['isRegistered'];
-                                  // context.push(
-                                  //   AppRoutes.otpVerification,
-                                  //   extra: {
-                                  //     "mobile": widget.mobile,
-                                  //     "otp": otp,
-                                  //     // "isRegistered": isRegistered,
-                                  //   },
-                                  // );
+                                
                                 });
                             // FirebaseMessaging.instance.getToken().then((token) {
                             //   print('Token: $token');

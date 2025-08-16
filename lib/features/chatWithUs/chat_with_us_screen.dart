@@ -78,35 +78,53 @@ class _ChatWithUsScreenState extends State<ChatWithUsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
-        title: const Text('Chat with Us'),
+        backgroundColor: const Color(0xFF001519),
+        title: const Text(
+          'Chat with Us',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
+        leading: const BackButton(color: Colors.white),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.only(top: 12),
-              itemCount: chatMessages.length,
-              itemBuilder: (context, index) {
-                final message = chatMessages[index];
-                return _buildMessageBubble(
-                  message['text']!,
-                  message['type'] == 'question',
-                );
-              },
+      body: Container(
+        
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.only(top: 12),
+                itemCount: chatMessages.length,
+                itemBuilder: (context, index) {
+                  final message = chatMessages[index];
+                  return _buildMessageBubble(
+                    message['text']!,
+                    message['type'] == 'question',
+                  );
+                },
+              ),
             ),
-          ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Tap a question below to ask:",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Tap a question below to ask:",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
             ),
-          ),
-          _buildFAQOptions(),
-        ],
+            _buildFAQOptions(),
+          ],
+        ),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../model/user_detail_model.dart';
 import '../../../model/user_model.dart';
+import '../../../model/user_redeem_history_model.dart';
 import '../../../shared/services/storage_service.dart';
 import '../../../widgets/toast/my_toast.dart';
 import '../api/auth_service.dart';
@@ -72,6 +73,24 @@ class AuthController extends GetxController {
         return res.data;
       } else {
         MyToasts.toastError(res.message ?? "Failed to fetch user details");
+        return null;
+      }
+    } on DioException catch (e) {
+      MyToasts.toastError(e.response?.data["message"] ?? "Network error occurred");
+      return null;
+    } on Exception catch (e) {
+      MyToasts.toastError(e.toString());
+      return null;
+    }
+  }
+
+  Future<UserRedeemHistoryModel?> getRedemptionHistory(String userId) async {
+    try {
+      final res = await _api.getRedemptionHistory(userId);
+      if (res.status ?? false) {
+        return res.data;
+      } else {
+        MyToasts.toastError(res.message ?? "Failed to fetch redemption history");
         return null;
       }
     } on DioException catch (e) {

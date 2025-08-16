@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sl/features/myPoints/controller/redeem_points_controller.dart';
 
-import '../../model/offer_model.dart';
-import '../../shared/constant/font_helper.dart' show FontHelper;
-import '../../shared/utils/date_formators.dart';
-import '../../widgets/network_image_view.dart';
-import '../../widgets/toast/my_toast.dart';
+import '../../../model/offer_model.dart';
+import '../../../shared/constant/font_helper.dart' show FontHelper;
+import '../../../shared/utils/date_formators.dart';
+import '../../../widgets/network_image_view.dart';
+import '../../../widgets/toast/my_toast.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;

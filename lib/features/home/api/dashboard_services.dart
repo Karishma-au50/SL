@@ -5,6 +5,8 @@ import '../../../core/model/response_model.dart';
 import '../../../core/network/base_api_service.dart';
 import '../../../model/home_banner_model.dart';
 import '../../../model/user_model.dart';
+import '../../../model/wallet_history_model.dart';
+import '../../../model/slc_video_model.dart';
 import '../../../shared/constant/enums.dart';
 import '../../../shared/services/storage_service.dart';
 
@@ -12,6 +14,8 @@ class DashboardEndpoint {
   static const String user = '/users';
   static const String homeScreenBanner = '/api/banners';
   static const String coupon = '/api/qrcode/redeem';
+  static const String rewardClaimsHistory = '/api/rewardClaims/history';
+  static const String slcVideos = '/api/slc/videos';
 }
 
 class DashboardService extends BaseApiService {
@@ -57,16 +61,13 @@ class DashboardService extends BaseApiService {
 
     ResponseModel resModel = ResponseModel<UserModel>(
       message: res.data["message"],
-      status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
+        status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
       data: UserModel.fromJson(res.data["data"]),
     );
     return resModel;
   }
-
   // purchase verification
-  Future<ResponseModel<Map<String, dynamic>>> qrVerification({
-    required String data,
-  }) async {
+  Future<ResponseModel> qrVerification({required String data}) async {
     var res = await post(
       DashboardEndpoint.coupon,
       data: {"qrCodeData": data, "userId": "68864b5c3bbf41257312a747"},
@@ -78,14 +79,50 @@ class DashboardService extends BaseApiService {
       ),
     );
 
-    ResponseModel<Map<String, dynamic>> resModel =
-        ResponseModel<Map<String, dynamic>>(
-          message: res.data["message"],
-          status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
-          data: res.data["data"] != null
-              ? Map<String, dynamic>.from(res.data["data"])
-              : {},
-        );
+    ResponseModel resModel = ResponseModel(
+      message: res.data["message"],
+      status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
+      data: res.data["data"],
+    );
+    return resModel;
+  }
+
+  // get wallet history
+  Future<ResponseModel> getWalletHistory() async {
+    var res = await get(DashboardEndpoint.rewardClaimsHistory,
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer ${StorageService.instance.getToken()}",
+        },
+      ),
+    );
+
+    ResponseModel resModel = ResponseModel<List<WalletHistoryModel>>(
+      message: res.data["message"],
+      status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
+      data: res.data["data"]
+          .map<WalletHistoryModel>((e) => WalletHistoryModel.fromJson(e))
+          .toList(),
+    );
+    return resModel;
+  }
+
+  Future<ResponseModel> getSLCVideos() async {
+    var res = await get(DashboardEndpoint.slcVideos,
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer ${StorageService.instance.getToken()}",
+        },
+      ),
+    );
+
+    ResponseModel resModel = ResponseModel<SLCVideoModel>(
+      message: res.data["message"],
+      status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
+      data: SLCVideoModel.fromJson(res.data["data"]),
+    );
     return resModel;
   }
 }

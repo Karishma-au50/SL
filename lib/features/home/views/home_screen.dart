@@ -3,16 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sl/features/auth/controller/auth_controller.dart';
+import 'package:sl/features/chatWithUs/chat_with_us_screen.dart';
 import 'package:sl/features/home/controller/dashboard_controller.dart';
 import 'package:sl/model/user_detail_model.dart';
 import 'package:sl/model/user_model.dart';
 import 'package:sl/routes/app_routes.dart';
 
 import '../../../model/home_banner_model.dart';
+import '../../../model/user_redeem_history_model.dart';
 import '../../../shared/app_colors.dart';
 import '../../../shared/services/common_service.dart';
 import '../../../shared/services/storage_service.dart' show StorageService;
+import '../../../shared/utils/date_formators.dart' show DateFormators;
 import '../../../widgets/network_image_view.dart';
+import '../../../widgets/toast/my_toast.dart';
+import '../../myPoints/views/all_offers_screen.dart';
+import '../../profile/profile_screen.dart';
+import '../../wallet/wallet_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,11 +29,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+
   late final UserModel user;
   UserDetailModel? userDetails;
   int current = 0;
   final List<HomeBannerModel> homeBanner = [];
+  UserRedeemHistoryModel? userRedeemHistory ;
   bool isLoadingUserDetails = true;
 
   DashboardController dashboardController =
@@ -38,11 +46,14 @@ class _HomeScreenState extends State<HomeScreen> {
       ? Get.find<AuthController>()
       : Get.put(AuthController());
 
+
+
   @override
   void initState() {
     super.initState();
     user = StorageService.instance.getUserId() ?? UserModel();
     _loadData();
+    _loadUserRedeemHistory();
   }
 
   Future<void> _loadData() async {
@@ -56,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     _loadUserDetails();
+    
   }
 
   _loadUserDetails() async {
@@ -74,36 +86,38 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
+  _loadUserRedeemHistory() async {
+    if (user.id?.isNotEmpty == true) {
+      try {
+        final history = await authController.getRedemptionHistory(user.id!);
+        if (mounted) {
+          setState(() {
+            // Update UI with redemption history
+            userRedeemHistory = history;
+            isLoadingUserDetails = false;
 
+          });
+        }
+        else{
+          setState(() {
+            isLoadingUserDetails = false;
+          });
+        }
+      } catch (e) {
+        MyToasts.toastError(e.toString());
+      }
+    }
+  }
+
+            
+
+       
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF001519),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        backgroundColor: const Color(0xFF001519),
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_offer),
-            label: 'Offer',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            label: 'Wallet',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.help_outline),
-            label: 'Help',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
-        ],
-      ),
-      body: SafeArea(
+   body:
+       SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(0),
           children: [
@@ -113,8 +127,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 children: [
                   SizedBox(
-                    width: 50,
-                    height: 50,
+                    width: 40,
+                    height: 40,
                     child: NetworkImageView(
                       imgUrl:
                           "https://i.pinimg.com/736x/4c/53/91/4c5391c2a69855120a204971a728f421.jpg",
@@ -122,17 +136,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       isFullPath: true,
                     ),
                   ),
-
-                  // ClipRRect(
-                  //   borderRadius: BorderRadius.circular(24),
-                  //   child: Image.network(
-                  //     "https://i.pinimg.com/736x/4c/53/91/4c5391c2a69855120a204971a728f421.jpg",
-                  //     width: 50,
-                  //     height: 50,
-
-                  //     fit: BoxFit.cover,
-                  //   ),
-                  // ),
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,11 +161,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Spacer(),
                   IconButton(
                     onPressed: () {
-                      context.push(AppRoutes.login);
-                      StorageService.instance.clear();
+                      context.push(AppRoutes.language);
+                      // StorageService.instance.clear();
                     },
                     icon: const Icon(
-                      Icons.wallet_travel_outlined,
+                      Icons.language,
                       color: Colors.white,
                     ),
                   ),
@@ -170,6 +173,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {},
                     icon: const Icon(
                       Icons.notifications_active_outlined,
+                      color: Colors.white,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      // authController.logout();
+                      context.push(AppRoutes.login);
+                      StorageService.instance.clear();
+                    },
+                    icon: const Icon(
+                      Icons.logout,
                       color: Colors.white,
                     ),
                   ),
@@ -238,6 +252,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             _actionBox(Icons.qr_code_scanner, 'Scan Product'),
                             const SizedBox(height: 10),
                             _actionBox(Icons.chat, 'Chat with us'),
+                            const SizedBox(height: 10),
+                            _actionBox(Icons.play_circle_filled, 'SLC Videos'),
                           ],
                         ),
                         GestureDetector(
@@ -367,24 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: 80,
                                     height: 80,
                                   ),
-                                  // if (userDetails != null &&
-                                  //     !isLoadingUserDetails) ...[
-                                  //   const SizedBox(height: 4),
-                                  //   Text(
-                                  //     'Total: ₹${userDetails!.totalPoints.toStringAsFixed(0)}',
-                                  //     style: const TextStyle(
-                                  //       color: Colors.white70,
-                                  //       fontSize: 10,
-                                  //     ),
-                                  //   ),
-                                  //   Text(
-                                  //     'Redeemed: ₹${userDetails!.redeemedPoints.toStringAsFixed(0)}',
-                                  //     style: const TextStyle(
-                                  //       color: Colors.white70,
-                                  //       fontSize: 10,
-                                  //     ),
-                                  //   ),
-                                  // ],
+                              
                                 ],
                               ),
                             ],
@@ -440,10 +439,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
 
                     // Redeem List Items
-                    _redeemTile('Manisha Sharma', '20 Mar, 2023', '500'),
-                    _redeemTile('Manisha Sharma', '20 Mar, 2023', '500'),
-                    _redeemTile('Aarti Kumari', '19 Mar, 2023', '1500'),
-                  ],
+                    // _redeemTilae(userRedeemHistory!),
+               ],
                 ),
               ),
             ),
@@ -459,8 +456,9 @@ class _HomeScreenState extends State<HomeScreen> {
         if (title == 'Scan Product') {
           context.push(AppRoutes.qrScan);
         } else if (title == 'Chat with us') {
-          context.push(AppRoutes.faq);
-          // Handle chat action
+          context.push(AppRoutes.chatWithUs);
+        } else if (title == 'SLC Videos') {
+          context.push(AppRoutes.slcVideo);
         }
         // Add more actions as needed
       },
@@ -533,35 +531,48 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _redeemTile(String name, String date, String points) {
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-      leading: Image.network(
-        "https://i.pinimg.com/736x/3c/07/d4/3c07d4d147861c7233aec7c824e34cb5.jpg",
-        width: 50,
-        height: 50,
-        fit: BoxFit.cover,
-      ),
-      title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text(date, style: const TextStyle(color: Colors.grey)),
-      trailing: RichText(
-        text: TextSpan(
-          style: const TextStyle(fontFamily: 'Poppins'),
-          children: [
-            TextSpan(
-              text: '$points ',
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+  Widget _redeemTile(UserRedeemHistoryModel redeemHistory) {
+    return 
+    ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: redeemHistory.recentRedemptions?.length ?? 0,
+      itemBuilder: (context, index) {
+        final redemption = redeemHistory.recentRedemptions![index];
+        final name = userDetails?.fullName ?? 'No Name';
+        final date = redemption.completedAt ?? '';
+        final points = redemption.pointsEarned?.toString() ?? '0';
+        return ListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+          leading: Image.asset(
+            "assets/images/redeem_history.png",
+            width: 50,
+            height: 50,
+            fit: BoxFit.cover,
+          ),
+          title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+          subtitle: Text( DateFormators.formatDate(DateTime.tryParse(date.toString()) ?? DateTime.now()),
+                           style: const TextStyle(color: Colors.grey)),
+          trailing: RichText(
+            text: TextSpan(
+              style: const TextStyle(fontFamily: 'Poppins'),
+              children: [
+                TextSpan(
+                  text: '$points ',
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                WidgetSpan(
+                  child: Icon(Icons.arrow_outward, size: 14, color: Colors.red),
+                ),
+              ],
             ),
-            WidgetSpan(
-              child: Icon(Icons.arrow_outward, size: 14, color: Colors.red),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+          ),
+        );
+      },
+    )
+;  }
 }

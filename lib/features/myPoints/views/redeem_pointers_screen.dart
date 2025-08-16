@@ -1,12 +1,16 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:sl/features/myPoints/controller/redeem_points_controller.dart';
 import 'package:sl/model/offer_model.dart';
 import 'package:sl/routes/app_routes.dart';
 
-import '../../shared/utils/date_formators.dart';
-import '../../widgets/network_image_view.dart';
+import '../../../shared/services/common_service.dart';
+import '../../../shared/utils/date_formators.dart';
+import '../../../widgets/network_image_view.dart';
 
 class RedeemPointsScreen extends StatefulWidget {
   const RedeemPointsScreen({super.key});
@@ -24,11 +28,26 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
   RxList<OfferModel> filteredCoupons = <OfferModel>[].obs;
   String searchQuery = '';
   RxBool isLoading = true.obs;
+   late double availableBalance = 0;
+     final List<String> bgImages = [
+    "assets/images/offer1.png",
+    "assets/images/offer2.png",
+    "assets/images/offer3.png",
+  ];
 
   @override
   void initState() {
     super.initState();
     _loadOffers();
+      _fetchAvailableBalance();
+  }
+
+  void _fetchAvailableBalance({bool isRefresh = false}) async {
+    CommonService.to.getUserDetails(forceRefresh: isRefresh).then((details) {
+      setState(() {
+        availableBalance = details.availablePoints;
+      });
+    });
   }
 
   Future<void> _loadOffers() async {
@@ -69,6 +88,8 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
 
   @override
   Widget build(BuildContext context) {
+       final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
+
     return Scaffold(
       backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
@@ -91,32 +112,50 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
         return isLoading.value
             ? const Center(child: CircularProgressIndicator())
             : filteredCoupons.isEmpty
-            ? const Center(
-                child: Text(
-                  'No offers available',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+            ?  Center(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/emptyIcon.png',
+                        height: 120,
+                      ),
+                      Text(
+                        'No offers available',
+                        style: TextStyle(color: Colors.black, fontSize: 16),
+                      ),
+                    ],
+                  ),
                 ),
               )
             : Column(
                 children: [
                   // Balance Points Card
                   Container(
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
+            
+            decoration: BoxDecoration(
+              image: DecorationImage(image: Image.asset("assets/images/amountBg.png").image, fit: BoxFit.contain),
+              // gradient: const LinearGradient(
+              //   colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
+              // ),
+              borderRadius: BorderRadius.circular(16),
+            ),
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.card_giftcard,
-                          color: Colors.white,
-                          size: 36,
-                        ),
-                        const SizedBox(width: 16),
+                        // const Icon(
+                        //   Icons.card_giftcard,
+                        //   color: Colors.white,
+                        //   size: 36,
+                        // ),
+                        const SizedBox(width: 100),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -125,7 +164,7 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
                               style: TextStyle(color: Colors.white70),
                             ),
                             Text(
-                              '$balancePoints',
+                                currencyFormat.format(balancePoints),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
@@ -188,7 +227,7 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
                             child: ListView.builder(
                               itemCount: filteredCoupons.length,
                               itemBuilder: (context, index) {
-                                final coupon = filteredCoupons[index];
+                              final coupon = filteredCoupons[index];
                                 return CouponCard(coupon: coupon);
                               },
                             ),
@@ -204,21 +243,39 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
   }
 }
 
-class CouponCard extends StatelessWidget {
+class CouponCard extends StatefulWidget {
   final OfferModel coupon;
 
   const CouponCard({super.key, required this.coupon});
 
   @override
+  State<CouponCard> createState() => _CouponCardState();
+}
+
+class _CouponCardState extends State<CouponCard> {
+      final List<String> bgImages = [
+    "assets/images/offer1.png",
+    "assets/images/offer2.png",
+    "assets/images/offer3.png",
+  ];
+
+  @override
   Widget build(BuildContext context) {
+      final random = Random();
+           final bgImage = bgImages[random.nextInt(bgImages.length)];
+                               
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
+          image: DecorationImage(
+                image: AssetImage(bgImage),
+                fit: BoxFit.cover,
+              ),
         // color:  Colors.blueGrey.withValues(alpha: 0.9),
-       gradient: const LinearGradient(
-                        colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
-                      ),
+      //  gradient: const LinearGradient(
+      //                   colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
+      //                 ),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -228,13 +285,13 @@ class CouponCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.white24,
+              // color: Colors.white24,
               borderRadius: BorderRadius.circular(12),
             ),
             child: RotatedBox(
               quarterTurns: -1,
               child: Text(
-                'Plus Point: ${coupon.points}',
+                'Plus Point: ${widget.coupon.points}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -251,7 +308,7 @@ class CouponCard extends StatelessWidget {
               children: [
                 // Title and Image Row
                 Text(
-                  coupon.title,
+                  widget.coupon.title,
 
                   style: const TextStyle(
                     color: Colors.white,
@@ -280,17 +337,17 @@ class CouponCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            DateFormators.formatDate(coupon.validTill),
+                            DateFormators.formatDate(widget.coupon.validTill),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          if (coupon.qrCodeStats != null) ...[
+                          if (widget.coupon.qrCodeStats != null) ...[
                             const SizedBox(height: 4),
                             Text(
-                              'Available: ${coupon.qrCodeStats!.available}/${coupon.qrCodeStats!.total}',
+                              'Available: ${widget.coupon.qrCodeStats!.available}/${widget.coupon.qrCodeStats!.total}',
                               style: const TextStyle(
                                 color: Colors.white70,
                                 fontSize: 11,
@@ -301,11 +358,11 @@ class CouponCard extends StatelessWidget {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: coupon.isRedeemable
+                      onPressed: widget.coupon.isRedeemable
                           ? () {
                               context.push(
                                 AppRoutes.productDetail,
-                                extra: coupon.id,
+                                extra: widget.coupon.id,
                               );
                             }
                           : null,
@@ -320,15 +377,15 @@ class CouponCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         side: BorderSide(
-                          color: coupon.isRedeemable
+                          color: widget.coupon.isRedeemable
                               ? Colors.white
                               : Colors.white54,
                         ),
                       ),
                       child: Text(
-                        coupon.isRedeemable ? 'View Details' : 'Not Available',
+                        widget.coupon.isRedeemable ? 'View Details' : 'Not Available',
                         style: TextStyle(
-                          color: coupon.isRedeemable
+                          color: widget.coupon.isRedeemable
                               ? Colors.white
                               : Colors.white54,
                           fontWeight: FontWeight.bold,
