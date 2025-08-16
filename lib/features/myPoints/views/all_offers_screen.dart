@@ -26,49 +26,49 @@ class _AllOffersScreenState extends State<AllOffersScreen> {
     {
       "title": "SL Paints and Chemicals Dhamaka Offer, 2025",
       "date": "26 August, 2025",
-      "image": "assets/images/defaultProductLogo.png"
+      "image": "assets/images/defaultProductLogo.png",
     },
     {
       "title": "SL Paints and Chemicals Dhamaka Offer, 2025",
       "date": "26 August, 2025",
-      "image": "assets/images/defaultProductLogo.png"
+      "image": "assets/images/defaultProductLogo.png",
     },
     {
       "title": "SL Paints and Chemicals Dhamaka Offer, 2025",
       "date": "26 August, 2025",
-      "image": "assets/images/defaultProductLogo.png"
+      "image": "assets/images/defaultProductLogo.png",
     },
     {
       "title": "SL Paints and Chemicals Dhamaka Offer, 2025",
       "date": "26 August, 2025",
-      "image": "assets/images/defaultProductLogo.png"
+      "image": "assets/images/defaultProductLogo.png",
     },
     {
       "title": "SL Paints and Chemicals Dhamaka Offer, 2025",
       "date": "26 August, 2025",
-      "image": "assets/images/defaultProductLogo.png"
+      "image": "assets/images/defaultProductLogo.png",
     },
   ];
-    OfferController offerController = Get.isRegistered<OfferController>()
+  OfferController offerController = Get.isRegistered<OfferController>()
       ? Get.find<OfferController>()
       : Get.put(OfferController());
-    RxBool isLoading = true.obs;
-    RxList<OfferModel> allCoupons = <OfferModel>[].obs;
+  RxBool isLoading = true.obs;
+  RxList<OfferModel> allCoupons = <OfferModel>[].obs;
 
-   @override
+  @override
   void initState() {
     super.initState();
     _loadOffers();
   }
 
-    Future<void> _loadOffers() async {
+  Future<void> _loadOffers() async {
     try {
       isLoading.value = true;
       final coupons = await offerController.getAllOffers();
 
       if (coupons != null) {
         allCoupons.value = coupons;
-     }
+      }
     } catch (error) {
       // Handle error, show a toast or dialog
       Get.snackbar(
@@ -83,18 +83,21 @@ class _AllOffersScreenState extends State<AllOffersScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final random = Random();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF002B23),
       appBar: AppBar(
         backgroundColor: const Color(0xFF002B23),
         title: const Text(
           "Offers",
-          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
@@ -103,19 +106,15 @@ class _AllOffersScreenState extends State<AllOffersScreen> {
         //   onPressed: () => Navigator.pop(context),
         // ),
       ),
-      body: Obx(
-      () {
-           return isLoading.value
+      body: Obx(() {
+        return isLoading.value
             ? const Center(child: CircularProgressIndicator())
             : allCoupons.isEmpty
-            ?  Center(
+            ? Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/emptyIcon.png',
-                      height: 120,
-                    ),
+                    Image.asset('assets/images/emptyIcon.png', height: 120),
                     Text(
                       'No offers available',
                       style: TextStyle(color: Colors.white, fontSize: 16),
@@ -124,82 +123,106 @@ class _AllOffersScreenState extends State<AllOffersScreen> {
                 ),
               )
             : Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: allCoupons.length,
-                    itemBuilder: (context, index) {
-                      final offer = allCoupons[index];
-                      final bgImage = bgImages[random.nextInt(bgImages.length)];
-                      return GestureDetector(
-                        onTap: () {
-                          // Handle offer tap
-                            context.push(
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(12),
+                        itemCount: allCoupons.length,
+                        itemBuilder: (context, index) {
+                          final offer = allCoupons[index];
+                          final bgImage =
+                              bgImages[random.nextInt(bgImages.length)];
+                          return GestureDetector(
+                            onTap: () {
+                              // Handle offer tap
+                              context.push(
                                 AppRoutes.productDetail,
                                 extra: offer.id,
                               );
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(bgImage),
-                              fit: BoxFit.cover,
-                            ),
-                            // borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image.asset('assets/images/defaultProductLogo.png', height: 60),
-                              const SizedBox(width: 50),
-                              // Spacer(),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      offer.title,
-                                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(bgImage),
+                                  fit: BoxFit.cover,
+                                ),
+                                // borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.all(12),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Image.asset(
+                                      'assets/images/defaultProductLogo.png',
+                                      height: 60,
                                     ),
-                                    const SizedBox(height: 8),
-                                    Row(
+                                  ),
+                                  // Spacer(),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        const Icon(Icons.calendar_today, size: 14, color: Colors.black54),
-                                        const SizedBox(width: 4),
                                         Text(
-                                          "Valid date\n${DateFormators.formatDate(offer.validTill)}",
-                                          style: const TextStyle(fontSize: 12, color: Colors.black54),
+                                          offer.title,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.calendar_today,
+                                              size: 14,
+                                              color: Colors.black54,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              "Valid date\n${DateFormators.formatDate(offer.validTill)}",
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                          "View Details →",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.black54,
+                                          ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 8),
-                                    const Text(
-                                      "View Details →",
-                                      style: TextStyle(fontSize: 12, color: Colors.black54),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        }
-      ),
+              );
+      }),
     );
   }
 }

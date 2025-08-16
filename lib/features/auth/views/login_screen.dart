@@ -42,23 +42,25 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: const Color(0xFFFFF3F2),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          size: 16,
-                          color: Colors.black,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).maybePop();
-                        },
-                      ),
-                    ),
-                  ),
+                  context.canPop()
+                      ? Align(
+                          alignment: Alignment.centerLeft,
+                          child: CircleAvatar(
+                            radius: 18,
+                            backgroundColor: const Color(0xFFFFF3F2),
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                size: 16,
+                                color: Colors.black,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).maybePop();
+                              },
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
                   const SizedBox(height: 20),
                   const Center(
                     child: Text(

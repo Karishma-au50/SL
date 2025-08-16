@@ -1,41 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:sl/model/user_redeem_history_model.dart';
 import 'package:sl/shared/constant/app_colors.dart';
+import 'package:sl/shared/utils/date_formators.dart';
 
 class RedeemHistoryScreen extends StatelessWidget {
-  RedeemHistoryScreen({super.key});
+  const RedeemHistoryScreen({super.key, required this.redeemHistory});
 
-  final List<Map<String, dynamic>> redeemPoints = [
-    {
-      "title": "SL Points and Chemicals",
-      "date": "20 Mar, 2023",
-      "points": 500,
-      "icon": "assets/images/defaultProductLogo.png",
-    },
-    {
-      "title": "SL Points and Chemicals",
-      "date": "20 Mar, 2023",
-      "points": 1500,
-      "icon": "assets/images/defaultProductLogo.png",
-    },
-    {
-      "title": "SL Points and Chemicals",
-      "date": "20 Mar, 2023",
-      "points": 500,
-      "icon": "assets/images/defaultProductLogo.png",
-    },
-    {
-      "title": "SL Points and Chemicals",
-      "date": "20 Mar, 2023",
-      "points": 500,
-      "icon": "assets/images/defaultProductLogo.png",
-    },
-    {
-      "title": "SL Points and Chemicals",
-      "date": "20 Mar, 2023",
-      "points": 1500,
-      "icon": "assets/images/defaultProductLogo.png",
-    },
-  ];
+  final UserRedeemHistoryModel redeemHistory;
 
   @override
   Widget build(BuildContext context) {
@@ -59,15 +30,20 @@ class RedeemHistoryScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: Container(
+        clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
         ),
         child: ListView.builder(
-          itemCount: redeemPoints.length,
+          itemCount: redeemHistory.recentRedemptions.length,
           padding: EdgeInsets.zero,
           itemBuilder: (context, index) {
-            final item = redeemPoints[index];
+            final redemption = redeemHistory.recentRedemptions![index];
+            final points = redemption.pointsEarned?.toString() ?? '0';
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               decoration: BoxDecoration(
@@ -82,7 +58,7 @@ class RedeemHistoryScreen extends StatelessWidget {
                     // radius: 50,
                     backgroundColor: AppColors.kcPrimaryColor.withOpacity(0.1),
                     child: Image.asset(
-                      item["icon"],
+                      "assets/images/defaultProductLogo.png",
                       height: 30,
                       width: 30,
                       fit: BoxFit.contain,
@@ -96,7 +72,7 @@ class RedeemHistoryScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item["title"],
+                          redemption.redemptionCode,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -105,7 +81,7 @@ class RedeemHistoryScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          item["date"],
+                          redemption.completedAt.toFormattedString(),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade500,
@@ -119,7 +95,7 @@ class RedeemHistoryScreen extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        "${item["points"]}",
+                        points,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,

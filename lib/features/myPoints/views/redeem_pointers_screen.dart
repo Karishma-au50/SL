@@ -23,13 +23,12 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
   OfferController offerController = Get.isRegistered<OfferController>()
       ? Get.find<OfferController>()
       : Get.put(OfferController());
-  int balancePoints = 100;
   RxList<OfferModel> allCoupons = <OfferModel>[].obs;
   RxList<OfferModel> filteredCoupons = <OfferModel>[].obs;
   String searchQuery = '';
   RxBool isLoading = true.obs;
-   late double availableBalance = 0;
-     final List<String> bgImages = [
+  late double availableBalance = 0;
+  final List<String> bgImages = [
     "assets/images/offer1.png",
     "assets/images/offer2.png",
     "assets/images/offer3.png",
@@ -39,7 +38,7 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
   void initState() {
     super.initState();
     _loadOffers();
-      _fetchAvailableBalance();
+    _fetchAvailableBalance();
   }
 
   void _fetchAvailableBalance({bool isRefresh = false}) async {
@@ -88,7 +87,7 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
 
   @override
   Widget build(BuildContext context) {
-       final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
+    final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '₹ ');
 
     return Scaffold(
       backgroundColor: const Color(0xFF001519),
@@ -112,7 +111,7 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
         return isLoading.value
             ? const Center(child: CircularProgressIndicator())
             : filteredCoupons.isEmpty
-            ?  Center(
+            ? Center(
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -122,10 +121,7 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Image.asset(
-                        'assets/images/emptyIcon.png',
-                        height: 120,
-                      ),
+                      Image.asset('assets/images/emptyIcon.png', height: 120),
                       Text(
                         'No offers available',
                         style: TextStyle(color: Colors.black, fontSize: 16),
@@ -138,16 +134,19 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
                 children: [
                   // Balance Points Card
                   Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(16),
-            
-            decoration: BoxDecoration(
-              image: DecorationImage(image: Image.asset("assets/images/amountBg.png").image, fit: BoxFit.contain),
-              // gradient: const LinearGradient(
-              //   colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
-              // ),
-              borderRadius: BorderRadius.circular(16),
-            ),
+                    margin: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
+
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: Image.asset("assets/images/amountBg.png").image,
+                        fit: BoxFit.contain,
+                      ),
+                      // gradient: const LinearGradient(
+                      //   colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
+                      // ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: Row(
                       children: [
                         // const Icon(
@@ -164,7 +163,7 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
                               style: TextStyle(color: Colors.white70),
                             ),
                             Text(
-                                currencyFormat.format(balancePoints),
+                              currencyFormat.format(availableBalance),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
@@ -227,7 +226,7 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
                             child: ListView.builder(
                               itemCount: filteredCoupons.length,
                               itemBuilder: (context, index) {
-                              final coupon = filteredCoupons[index];
+                                final coupon = filteredCoupons[index];
                                 return CouponCard(coupon: coupon);
                               },
                             ),
@@ -253,7 +252,7 @@ class CouponCard extends StatefulWidget {
 }
 
 class _CouponCardState extends State<CouponCard> {
-      final List<String> bgImages = [
+  final List<String> bgImages = [
     "assets/images/offer1.png",
     "assets/images/offer2.png",
     "assets/images/offer3.png",
@@ -261,21 +260,18 @@ class _CouponCardState extends State<CouponCard> {
 
   @override
   Widget build(BuildContext context) {
-      final random = Random();
-           final bgImage = bgImages[random.nextInt(bgImages.length)];
-                               
+    final random = Random();
+    final bgImage = bgImages[random.nextInt(bgImages.length)];
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-          image: DecorationImage(
-                image: AssetImage(bgImage),
-                fit: BoxFit.cover,
-              ),
+        image: DecorationImage(image: AssetImage(bgImage), fit: BoxFit.cover),
         // color:  Colors.blueGrey.withValues(alpha: 0.9),
-      //  gradient: const LinearGradient(
-      //                   colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
-      //                 ),
+        //  gradient: const LinearGradient(
+        //                   colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
+        //                 ),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -383,7 +379,9 @@ class _CouponCardState extends State<CouponCard> {
                         ),
                       ),
                       child: Text(
-                        widget.coupon.isRedeemable ? 'View Details' : 'Not Available',
+                        widget.coupon.isRedeemable
+                            ? 'View Details'
+                            : 'Not Available',
                         style: TextStyle(
                           color: widget.coupon.isRedeemable
                               ? Colors.white

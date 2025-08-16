@@ -74,24 +74,9 @@ class DashboardController extends GetxController {
     }
   }
 
-  Future<List<WalletHistoryModel>?> getWalletHistory() async {
-   try{
-     final res = await _api.getWalletHistory();
-     if (res.status ?? false) {
-       return res.data!;
-     } else {
-       throw FetchDataException(res.message);
-     }
-   } catch (e) {
-     MyToasts.toastError(e.toString());
-     return null;
-   }
-   
-  }
-
-  Future<SLCVideoModel?> getSLCVideos() async {
+  Future<WalletHistoryModel?> getWalletHistory() async {
     try {
-      final res = await _api.getSLCVideos();
+      final res = await _api.getWalletHistory();
       if (res.status ?? false) {
         return res.data!;
       } else {
@@ -100,6 +85,71 @@ class DashboardController extends GetxController {
     } catch (e) {
       MyToasts.toastError(e.toString());
       return null;
+    }
+  }
+
+  Future<List<SLCVideoModel>> getSLCVideos() async {
+    try {
+      // Return static/dummy video URLs instead of API call
+      await Future.delayed(
+        Duration(milliseconds: 500),
+      ); // Simulate network delay
+
+      return [
+        SLCVideoModel(
+          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+          description: 'Sample YouTube Video 1',
+        ),
+        SLCVideoModel(
+          url: 'https://www.youtube.com/watch?v=9bZkp7q19f0',
+          description: 'Sample YouTube Video 2',
+        ),
+        SLCVideoModel(
+          url: 'https://www.youtube.com/watch?v=ScMzIvxBSi4',
+          description: 'Sample YouTube Video 3',
+        ),
+        SLCVideoModel(
+          url: 'https://www.youtube.com/watch?v=fJ9rUzIMcZQ',
+          description: 'Sample YouTube Video 4',
+        ),
+        // Add more sample videos as needed other then YouTube
+        SLCVideoModel(
+          url:
+              'https://videos.pexels.com/video-files/8859849/8859849-uhd_1440_2560_25fps.mp4',
+          description: 'Sample Network Video 1',
+        ),
+      ];
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>> getAboutUsDetails() async {
+    try {
+      final res = await _api.getAboutUs();
+      if (res.status ?? false) {
+        return res.data!;
+      } else {
+        throw FetchDataException(res.message);
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+      return {};
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getCompanyPolicyDetails() async {
+    try {
+      final res = await _api.getCompanyPolicy();
+      if (res.status ?? false) {
+        return res.data!;
+      } else {
+        throw FetchDataException(res.message);
+      }
+    } catch (e) {
+      MyToasts.toastError(e.toString());
+      return [];
     }
   }
 }

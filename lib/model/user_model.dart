@@ -1,8 +1,6 @@
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
-
-import '../core/model/base_model.dart';
 
 class UserModel {
   String? id;
@@ -21,16 +19,14 @@ class UserModel {
   String? pincode;
   String? country;
   String? role;
-  List<String>? documentsName;
-  List<String>? documentsDetails;
-  List<String>? images;
+  Map<String, dynamic>? aadhar;
+  Map<String, dynamic>? pan;
   bool? isVerified;
   int? createdAt;
   int? updatedAt;
   bool? isDeleted;
   int? deletedAt;
   String? deletedBy;
-  int? v;
 
   UserModel({
     this.id,
@@ -49,16 +45,14 @@ class UserModel {
     this.pincode,
     this.country,
     this.role,
-    this.documentsName = const [],
-    this.documentsDetails = const [],
-    this.images = const [],
+    this.aadhar,
+    this.pan,
     this.isVerified,
     this.createdAt,
     this.updatedAt,
     this.isDeleted,
     this.deletedAt,
     this.deletedBy,
-    this.v,
   });
   UserModel copyWith({
     String? id,
@@ -77,16 +71,14 @@ class UserModel {
     String? pincode,
     String? country,
     String? role,
-    List<String>? documentsName,
-    List<String>? documentsDetails,
-    List<String>? images,
+    Map<String, dynamic>? aadhar,
+    Map<String, dynamic>? pan,
     bool? isVerified,
     int? createdAt,
     int? updatedAt,
     bool? isDeleted,
     int? deletedAt,
     String? deletedBy,
-    int? v,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -105,16 +97,14 @@ class UserModel {
       pincode: pincode ?? this.pincode,
       country: country ?? this.country,
       role: role ?? this.role,
-      documentsName: documentsName ?? this.documentsName,
-      documentsDetails: documentsDetails ?? this.documentsDetails,
-      images: images ?? this.images,
+      aadhar: aadhar,
+      pan: pan,
       isVerified: isVerified ?? this.isVerified,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isDeleted: isDeleted ?? this.isDeleted,
       deletedAt: deletedAt ?? this.deletedAt,
       deletedBy: deletedBy ?? this.deletedBy,
-      v: v ?? this.v,
     );
   }
 
@@ -136,22 +126,33 @@ class UserModel {
       pincode: json['pincode'],
       country: json['country'],
       role: json['role'],
-      documentsName: List<String>.from(json['documentsName'] ?? []),
-      documentsDetails: List<String>.from(json['documentsDetails'] ?? []),
-      images: List<String>.from(json['images'] ?? []),
+      aadhar: json["aadhar"],
+      pan: json["pan"],
       isVerified: json['isVerified'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       isDeleted: json['isDeleted'],
       deletedAt: json['deletedAt'],
       deletedBy: json['deletedBy'],
-      v: json['__v'],
     );
   }
 
   Map<String, dynamic> toJson() {
+    // if aadhar["images"] file is File then remove the key
+    Map<String, dynamic> dupAadhar = {};
+    if (aadhar != null && aadhar!["images"] is File) {
+      dupAadhar = {...aadhar!};
+      dupAadhar.remove("images");
+    }
+
+    Map<String, dynamic> dupPan = {};
+    if (pan != null && pan!["images"] is File) {
+      dupPan = {...pan!};
+      dupPan.remove("images");
+    }
+
     return {
-       '_id': id,
+      '_id': id,
       'firstname': firstname,
       'lastname': lastname,
       'middlename': middlename,
@@ -167,21 +168,47 @@ class UserModel {
       'pincode': pincode,
       'country': country,
       'role': role,
-      'documentsName': documentsName,
-      'documentsDetails': documentsDetails,
-      'images': images,
+      'aadhar': dupAadhar,
+      'pan': dupPan,
       'isVerified': isVerified,
       // 'createdAt': createdAt,
       // 'updatedAt': updatedAt,
       // 'isDeleted': isDeleted,
       // 'deletedAt': deletedAt,
       // 'deletedBy': deletedBy,
-      '__v': v,
     };
   }
 
   // comvert to FormData
   FormData toFormData() {
-    return FormData.fromMap(toJson());
+    FormData data = FormData.fromMap(toJson());
+    // aadhar and pan images contain value type of file then add this to formdata file
+    if (aadhar != null && aadhar!["images"] is List<File>) {
+      for (var file in aadhar!["images"]) {
+        data.files.add(
+          MapEntry(
+            "aadhar[]",
+            MultipartFile.fromFileSync(
+              file.path,
+              filename: file.path.split(Platform.pathSeparator).last,
+            ),
+          ),
+        );
+      }
+    }
+    if (pan != null && pan!["images"] is List<File>) {
+      for (var file in pan!["images"]) {
+        data.files.add(
+          MapEntry(
+            "pan[]",
+            MultipartFile.fromFileSync(
+              file.path,
+              filename: file.path.split(Platform.pathSeparator).last,
+            ),
+          ),
+        );
+      }
+    }
+    return data;
   }
 }

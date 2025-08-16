@@ -29,8 +29,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final redColor = const Color(0xFFB10606);
   GenderEnum genderGroup = GenderEnum.male;
   final _picker = ImagePicker();
-  XFile? frontImage;
-  XFile? backImage;
 
   final AuthController controller = Get.put(AuthController());
 
@@ -54,11 +52,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final cityController = TextEditingController();
   final pincodeController = TextEditingController();
   final countryController = TextEditingController();
-  final documentNumberController = TextEditingController();
+  final aadharNumberController = TextEditingController();
+  final panNumberController = TextEditingController();
 
-  String? selectedDocumentType;
+  XFile? aadharFrontImage;
+  XFile? aadharBackImage;
+  XFile? panFrontImage;
+  XFile? panBackImage;
   void nextStep() async {
     if (_formKeys[currentStep].currentState?.validate() ?? false) {
+      // Additional validation for document step
+      if (currentStep == 2) {
+        // Validate Aadhar details
+        if (aadharNumberController.text.isEmpty) {
+          MyToasts.toastError("Please enter Aadhar number");
+          return;
+        }
+        if (aadharFrontImage == null) {
+          MyToasts.toastError("Please upload Aadhar front image");
+          return;
+        }
+        if (aadharBackImage == null) {
+          MyToasts.toastError("Please upload Aadhar back image");
+          return;
+        }
+
+        // Validate PAN details
+        if (panNumberController.text.isEmpty) {
+          MyToasts.toastError("Please enter PAN number");
+          return;
+        }
+        if (panFrontImage == null) {
+          MyToasts.toastError("Please upload PAN front image");
+          return;
+        }
+      }
+
       if (currentStep < 2) {
         setState(() => currentStep++);
       } else {
@@ -78,8 +107,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           pincode: pincodeController.text,
           country: countryController.text,
           role: "customer",
-          documentsName: [selectedDocumentType ?? ''],
-          documentsDetails: [documentNumberController.text],
+          aadhar: {
+            'number': aadharNumberController.text,
+            'images': [aadharFrontImage, aadharBackImage],
+          },
+          pan: {
+            'number': panNumberController.text,
+            'images': [panFrontImage, panBackImage],
+          },
           isVerified: true,
           isDeleted: false,
           createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -89,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await controller
             .register(user)
             .then((value) {
-              if (value) context.go(AppRoutes.home);
+              if (value && mounted) context.go(AppRoutes.home);
             })
             .catchError((e) {
               MyToasts.toastError(e.toString());
@@ -142,25 +177,146 @@ class _RegisterScreenState extends State<RegisterScreen> {
     cityController.dispose();
     pincodeController.dispose();
     countryController.dispose();
-    documentNumberController.dispose();
+    aadharNumberController.dispose();
+    panNumberController.dispose();
     super.dispose();
   }
-  
+
   @override
   void initState() {
     mobileController.text = widget.mobile;
     super.initState();
   }
 
-  Future<void> pickImage(bool isFront) async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      if (isFront) {
-        frontImage = image;
-      } else {
-        backImage = image;
+  Future<void> pickImage(String documentType, bool isFront) async {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Select Image Source',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      Navigator.pop(context);
+                      await _pickImageFromSource(
+                        documentType,
+                        isFront,
+                        ImageSource.camera,
+                      );
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: AppColors.kcPrimaryColor.withValues(
+                              alpha: 0.1,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Icon(
+                            Icons.camera_alt,
+                            size: 40,
+                            color: AppColors.kcPrimaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Camera',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      Navigator.pop(context);
+                      await _pickImageFromSource(
+                        documentType,
+                        isFront,
+                        ImageSource.gallery,
+                      );
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: AppColors.kcPrimaryColor.withValues(
+                              alpha: 0.1,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Icon(
+                            Icons.photo_library,
+                            size: 40,
+                            color: AppColors.kcPrimaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Gallery',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImageFromSource(
+    String documentType,
+    bool isFront,
+    ImageSource source,
+  ) async {
+    try {
+      final XFile? image = await _picker.pickImage(source: source);
+      if (image != null) {
+        setState(() {
+          if (documentType == 'aadhar') {
+            if (isFront) {
+              aadharFrontImage = image;
+            } else {
+              aadharBackImage = image;
+            }
+          } else if (documentType == 'pan') {
+            if (isFront) {
+              panFrontImage = image;
+            } else {
+              panBackImage = image;
+            }
+          }
+        });
       }
-    });
+    } catch (e) {
+      MyToasts.toastError('Failed to pick image: ${e.toString()}');
+    }
   }
 
   @override
@@ -245,12 +401,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget buildTextField(
-    
     String label,
     String hint,
     TextEditingController controller, {
     TextInputType type = TextInputType.text,
     VoidCallback? onTap,
+    int? maxLength,
   }) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -262,6 +418,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         validator: (value) =>
             value == null || value.isEmpty ? 'Required' : null,
         onTap: onTap,
+        maxLength: maxLength,
       ),
     );
   }
@@ -325,7 +482,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CircleAvatar(
-                            backgroundColor: Colors.grey.shade100,
+                          backgroundColor: Colors.grey.shade100,
                           child: Icon(
                             Icons.female,
                             color: Colors.blue,
@@ -375,6 +532,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             "Ex. +91 9876543210",
             mobileController,
             type: TextInputType.phone,
+            maxLength: 10,
           ),
           buildTextField(
             "Email Address",
@@ -413,6 +571,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             "000000",
             pincodeController,
             type: TextInputType.number,
+            maxLength: 6,
           ),
           buildTextField("Country", "Ex. India", countryController),
         ],
@@ -424,116 +583,341 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: "Select Document",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+          // Aadhar Card Section
+          Container(
+            margin: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.credit_card, color: AppColors.kcPrimaryColor),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "Aadhar Card Details",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
+                const SizedBox(height: 16),
+                buildTextField(
+                  "Aadhar Number",
+                  "Ex. 123456789012",
+                  aadharNumberController,
+                  type: TextInputType.number,
+                  maxLength: 12,
                 ),
-              ),
-              value: selectedDocumentType,
-              items: ['PAN Card', 'Aadhar Card']
-                  .map(
-                    (type) => DropdownMenuItem(value: type, child: Text(type)),
-                  )
-                  .toList(),
-              validator: (value) => value == null ? 'Required' : null,
-              onChanged: (value) {
-                setState(() {
-                  selectedDocumentType = value;
-                });
-              },
+                const SizedBox(height: 8),
+                const Text("Upload Aadhar Front Image"),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () => pickImage('aadhar', true),
+                  child: Container(
+                    height: 120,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                        style: BorderStyle.solid,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey.shade50,
+                    ),
+                    child: aadharFrontImage == null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_a_photo,
+                                size: 40,
+                                color: Colors.grey.shade600,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Tap to upload image',
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  File(aadharFrontImage!.path),
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                              ),
+                              Positioned(
+                                top: 5,
+                                right: 5,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black54,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text("Upload Aadhar Back Image"),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () => pickImage('aadhar', false),
+                  child: Container(
+                    height: 120,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                        style: BorderStyle.solid,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey.shade50,
+                    ),
+                    child: aadharBackImage == null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_a_photo,
+                                size: 40,
+                                color: Colors.grey.shade600,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Tap to upload image',
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  File(aadharBackImage!.path),
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                              ),
+                              Positioned(
+                                top: 5,
+                                right: 5,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black54,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+              ],
             ),
           ),
-          if (selectedDocumentType != null)
-            buildTextField(
-              selectedDocumentType == 'PAN Card'
-                  ? "PAN Number"
-                  : "Aadhar Number",
-              selectedDocumentType == 'PAN Card'
-                  ? "Ex. XXXXX3256X"
-                  : "Ex. 123456789012",
-              documentNumberController,
-              type: selectedDocumentType == 'PAN Card'
-                  ? TextInputType.text
-                  : TextInputType.number,
-            ),
 
-          if (selectedDocumentType != null)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Upload Front Image"),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () => pickImage(true),
-                    child: Container(
-                      height: 120,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: frontImage == null
-                          ? const Center(
-                              child: Icon(
-                                Icons.upload_file,
-                                size: 40,
-                                color: Colors.grey,
-                              ),
-                            )
-                          : Image.file(
-                              File(frontImage!.path),
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                  ),
-                ],
-              ),
+          // PAN Card Section
+          Container(
+            margin: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
             ),
-          if (selectedDocumentType != null)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Upload Back Image"),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () => pickImage(false),
-                    child: Container(
-                      height: 120,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.assignment_ind, color: AppColors.kcPrimaryColor),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "PAN Card Details",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: backImage == null
-                          ? const Center(
-                              child: Icon(
-                                Icons.upload_file,
-                                size: 40,
-                                color: Colors.grey,
-                              ),
-                            )
-                          : Image.file(
-                              File(backImage!.path),
-                              fit: BoxFit.cover,
-                            ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                buildTextField(
+                  "PAN Number",
+                  "Ex. XXXXX3256X",
+                  panNumberController,
+                  type: TextInputType.text,
+                  maxLength: 10,
+                ),
+                const SizedBox(height: 8),
+                const Text("Upload PAN Front Image"),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () => pickImage('pan', true),
+                  child: Container(
+                    height: 120,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                        style: BorderStyle.solid,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey.shade50,
+                    ),
+                    child: panFrontImage == null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_a_photo,
+                                size: 40,
+                                color: Colors.grey.shade600,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Tap to upload image',
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  File(panFrontImage!.path),
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                              ),
+                              Positioned(
+                                top: 5,
+                                right: 5,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black54,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+                const Text("Upload PAN Back Image"),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () => pickImage('pan', false),
+                  child: Container(
+                    height: 120,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                        style: BorderStyle.solid,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey.shade50,
+                    ),
+                    child: panBackImage == null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_a_photo,
+                                size: 40,
+                                color: Colors.grey.shade600,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Tap to upload image',
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  File(panBackImage!.path),
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                              ),
+                              Positioned(
+                                top: 5,
+                                right: 5,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black54,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+              ],
             ),
-       
+          ),
         ],
       ),
     );

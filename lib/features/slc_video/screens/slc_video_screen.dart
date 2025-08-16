@@ -17,10 +17,8 @@ class SLCVideoScreen extends StatefulWidget {
 
 class _SLCVideoScreenState extends State<SLCVideoScreen> {
   final DashboardController _controller = Get.find<DashboardController>();
-  SLCVideoModel? videoData;
+  List<SLCVideoModel> videoList = [];
   bool isLoading = true;
-  int selectedTabIndex = 0;
-  
   // Video player controllers
   Map<String, VideoPlayerController> videoControllers = {};
   Map<String, YoutubePlayerController> youtubeControllers = {};
@@ -40,18 +38,11 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
       });
 
       final data = await _controller.getSLCVideos();
-      if (data != null) {
-        setState(() {
-          videoData = data;
-          isLoading = false;
-        });
-        _initializeControllers();
-      } else {
-        setState(() {
-          isLoading = false;
-        });
-        MyToasts.toastError("Failed to load videos");
-      }
+      setState(() {
+        videoList = data;
+        isLoading = false;
+      });
+      _initializeControllers();
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -61,32 +52,28 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
   }
 
   void _initializeControllers() {
-    if (videoData == null) return;
-
-    // Initialize video player controllers for network videos
-    for (String videoUrl in videoData!.video) {
-      if (_isValidUrl(videoUrl)) {
-        final controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
-        videoControllers[videoUrl] = controller;
+    for (var video in videoList) {
+      final url = video.url;
+      final isYouTube = url.contains('youtube.com') || url.contains('youtu.be');
+      if (isYouTube) {
+        final videoId = YoutubePlayerController.convertUrlToId(url);
+        if (videoId != null) {
+          final controller = YoutubePlayerController.fromVideoId(
+            videoId: videoId,
+            autoPlay: false,
+            params: const YoutubePlayerParams(
+              mute: false,
+              showControls: true,
+              showFullscreenButton: false,
+              loop: false,
+            ),
+          );
+          youtubeControllers[url] = controller;
+        }
+      } else if (_isValidUrl(url)) {
+        final controller = VideoPlayerController.networkUrl(Uri.parse(url));
+        videoControllers[url] = controller;
         controller.initialize();
-      }
-    }
-
-    // Initialize YouTube controllers
-    for (String youtubeUrl in videoData!.url) {
-      final videoId = YoutubePlayerController.convertUrlToId(youtubeUrl);
-      if (videoId != null) {
-        final controller = YoutubePlayerController.fromVideoId(
-          videoId: videoId,
-          autoPlay: false,
-          params: const YoutubePlayerParams(
-            mute: false,
-            showControls: true,
-            showFullscreenButton: false,
-            loop: false,
-          ),
-        );
-        youtubeControllers[youtubeUrl] = controller;
       }
     }
   }
@@ -107,12 +94,12 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
         controller.pause();
       }
     }
-    
+
     // Pause all YouTube videos
     for (var controller in youtubeControllers.values) {
       controller.pauseVideo();
     }
-    
+
     currentPlayingVideo = null;
     currentPlayingYoutube = null;
   }
@@ -145,7 +132,9 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
                       });
                     },
                     icon: Icon(
-                      controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                      controller.value.isPlaying
+                          ? Icons.pause
+                          : Icons.play_arrow,
                       color: Colors.white,
                       size: 50,
                     ),
@@ -171,9 +160,7 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
         } else {
           return const AspectRatio(
             aspectRatio: 16 / 9,
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
+            child: Center(child: CircularProgressIndicator()),
           );
         }
       },
@@ -194,111 +181,47 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
   }
 
   Widget _buildVideoList() {
-    if (videoData == null) return const SizedBox();
-
-    if (selectedTabIndex == 0) {
-      // Network videos tab
-      if (videoData!.video.isEmpty) {
-        return const Center(
-          child: Text(
-            "No network videos available",
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-        );
-      }
-
-      return ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: videoData!.video.length,
-        itemBuilder: (context, index) {
-          final videoUrl = videoData!.video[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Video ${index + 1}",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: _buildVideoPlayer(videoUrl),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    videoUrl,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    } else {
-      // YouTube videos tab
-      if (videoData!.url.isEmpty) {
-        return const Center(
-          child: Text(
-            "No YouTube videos available",
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-        );
-      }
-
-      return ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: videoData!.url.length,
-        itemBuilder: (context, index) {
-          final youtubeUrl = videoData!.url[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "YouTube Video ${index + 1}",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: _buildYouTubePlayer(youtubeUrl),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    youtubeUrl,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+    if (videoList.isEmpty) {
+      return const Center(
+        child: Text(
+          "No videos available",
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
       );
     }
+
+    return ListView.builder(
+      // padding: const EdgeInsets.all(16),
+      itemCount: videoList.length,
+      itemBuilder: (context, index) {
+        final video = videoList[index];
+        final url = video.url;
+        final isYouTube =
+            url.contains('youtube.com') || url.contains('youtu.be');
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: isYouTube
+                    ? _buildYouTubePlayer(url)
+                    : _buildVideoPlayer(url),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                video.description,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -307,161 +230,49 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
     for (var controller in videoControllers.values) {
       controller.dispose();
     }
-    
+
     // Dispose YouTube controllers
     for (var controller in youtubeControllers.values) {
       controller.close();
     }
-    
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF002B23),
       appBar: AppBar(
+        backgroundColor: const Color(0xFF002B23),
         title: const Text(
-          'SLC Videos',
+          "SLC Videos",
           style: TextStyle(
             color: Colors.white,
-            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: AppColors.kcPrimaryColor,
-        iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
         elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: _loadSLCVideos,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, size: 18, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.kcPrimaryColor,
-              ),
-            )
-          : videoData == null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: Colors.grey,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "Failed to load videos",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadSLCVideos,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.kcPrimaryColor,
-                          foregroundColor: Colors.white,
-                        ),
-                        child: const Text("Retry"),
-                      ),
-                    ],
-                  ),
-                )
-              : Column(
-                  children: [
-                    // Tab bar
-                    Container(
-                      color: Colors.grey[100],
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedTabIndex = 0;
-                                });
-                                _pauseAllVideos();
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                decoration: BoxDecoration(
-                                  color: selectedTabIndex == 0
-                                      ? AppColors.kcPrimaryColor
-                                      : Colors.transparent,
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: selectedTabIndex == 0
-                                          ? AppColors.kcPrimaryColor
-                                          : Colors.transparent,
-                                      width: 2,
-                                    ),
-                                  ),
-                                ),
-                                child: Text(
-                                  "Network Videos (${videoData!.video.length})",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: selectedTabIndex == 0
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedTabIndex = 1;
-                                });
-                                _pauseAllVideos();
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                decoration: BoxDecoration(
-                                  color: selectedTabIndex == 1
-                                      ? AppColors.kcPrimaryColor
-                                      : Colors.transparent,
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: selectedTabIndex == 1
-                                          ? AppColors.kcPrimaryColor
-                                          : Colors.transparent,
-                                      width: 2,
-                                    ),
-                                  ),
-                                ),
-                                child: Text(
-                                  "YouTube Videos (${videoData!.url.length})",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: selectedTabIndex == 1
-                                        ? Colors.white
-                                        : Colors.grey[600],
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Video list
-                    Expanded(
-                      child: _buildVideoList(),
-                    ),
-                  ],
-                ),
+      body: Container(
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _buildVideoList(),
+      ),
     );
   }
 }

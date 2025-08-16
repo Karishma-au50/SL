@@ -8,13 +8,29 @@ class UserRedeemHistoryModel {
   });
 
   factory UserRedeemHistoryModel.fromJson(Map<String, dynamic> json) {
-    return UserRedeemHistoryModel(
-      pointsSummary: PointsSummary.fromJson(json['pointsSummary']?[0] ?? {}),
-      recentRedemptions: (json['recentRedemptions'] as List<dynamic>?)
-              ?.map((e) => RecentRedemption.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-    );
+    // first check points summary has rows or not
+
+    UserRedeemHistoryModel model;
+
+    final recentRedemptions = (json['recentRedemptions'] as List<dynamic>)
+        .map((e) => RecentRedemption.fromJson(e as Map<String, dynamic>))
+        .toList();
+
+    if (json['pointsSummary'] != null && json['pointsSummary'].isNotEmpty) {
+      model = UserRedeemHistoryModel(
+        pointsSummary: PointsSummary.fromJson(
+          json['pointsSummary'][0] as Map<String, dynamic>,
+        ),
+        recentRedemptions: recentRedemptions,
+      );
+    } else {
+      model = UserRedeemHistoryModel(
+        pointsSummary: PointsSummary(id: '', count: 0, totalPoints: 0),
+        recentRedemptions: recentRedemptions,
+      );
+    }
+
+    return model;
   }
 
   Map<String, dynamic> toJson() {
@@ -50,11 +66,7 @@ class PointsSummary {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'count': count,
-      'totalPoints': totalPoints,
-    };
+    return {'_id': id, 'count': count, 'totalPoints': totalPoints};
   }
 
   @override
@@ -177,23 +189,14 @@ class OfferInfo {
   final String id;
   final int points;
 
-  OfferInfo({
-    required this.id,
-    required this.points,
-  });
+  OfferInfo({required this.id, required this.points});
 
   factory OfferInfo.fromJson(Map<String, dynamic> json) {
-    return OfferInfo(
-      id: json['_id'] ?? '',
-      points: json['points'] ?? 0,
-    );
+    return OfferInfo(id: json['_id'] ?? '', points: json['points'] ?? 0);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'points': points,
-    };
+    return {'_id': id, 'points': points};
   }
 
   @override

@@ -58,7 +58,7 @@ class AuthService extends BaseApiService {
       status: res.data["error"],
       data: res.data['data'],
     );
-    if (!(resModel.status ?? true)) {
+    if (!(resModel.status ?? true) && resModel.data['isUserExist'] == true) {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(
         res.data["data"]['token'],
       );
@@ -70,31 +70,36 @@ class AuthService extends BaseApiService {
 
   // Get user details
   Future<ResponseModel> getUserDetails(String userId) async {
-    final res = await get('${AuthEndpoint.getUserDetails}/$userId',
+    final res = await get(
+      '${AuthEndpoint.getUserDetails}/$userId',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
           "Authorization": StorageService.instance.getToken(),
         },
-      ),);
-    
+      ),
+    );
+
     ResponseModel resModel = ResponseModel<UserDetailModel>(
       message: res.data["message"] ?? "User details fetched successfully",
       status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
       data: UserDetailModel.fromJson(res.data["data"]),
     );
-    
+
     return resModel;
   }
+
   // get user redeem points history
   Future<ResponseModel> getRedemptionHistory(String userId) async {
-    final res = await get('${AuthEndpoint.getRedemptionPointsSummary}/$userId/points-summary',
+    final res = await get(
+      '${AuthEndpoint.getRedemptionPointsSummary}/6890f8872e67eb2c7960e481/points-summary',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
           "Authorization": StorageService.instance.getToken(),
         },
-      ),);
+      ),
+    );
 
     ResponseModel resModel = ResponseModel<UserRedeemHistoryModel>(
       message: res.data["message"],

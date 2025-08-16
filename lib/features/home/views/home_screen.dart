@@ -29,12 +29,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   late final UserModel user;
   UserDetailModel? userDetails;
   int current = 0;
   final List<HomeBannerModel> homeBanner = [];
-  UserRedeemHistoryModel? userRedeemHistory ;
+  UserRedeemHistoryModel? userRedeemHistory;
   bool isLoadingUserDetails = true;
 
   DashboardController dashboardController =
@@ -45,8 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
   AuthController authController = Get.isRegistered<AuthController>()
       ? Get.find<AuthController>()
       : Get.put(AuthController());
-
-
 
   @override
   void initState() {
@@ -67,7 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     _loadUserDetails();
-    
   }
 
   _loadUserDetails() async {
@@ -86,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
+
   _loadUserRedeemHistory() async {
     if (user.id?.isNotEmpty == true) {
       try {
@@ -95,10 +92,8 @@ class _HomeScreenState extends State<HomeScreen> {
             // Update UI with redemption history
             userRedeemHistory = history;
             isLoadingUserDetails = false;
-
           });
-        }
-        else{
+        } else {
           setState(() {
             isLoadingUserDetails = false;
           });
@@ -109,15 +104,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-            
-
-       
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF001519),
-   body:
-       SafeArea(
+      body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(0),
           children: [
@@ -164,26 +155,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       context.push(AppRoutes.language);
                       // StorageService.instance.clear();
                     },
-                    icon: const Icon(
-                      Icons.language,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.language, color: Colors.white),
                   ),
                   IconButton(
                     onPressed: () {},
                     icon: const Icon(
                       Icons.notifications_active_outlined,
-                      color: Colors.white,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      // authController.logout();
-                      context.push(AppRoutes.login);
-                      StorageService.instance.clear();
-                    },
-                    icon: const Icon(
-                      Icons.logout,
                       color: Colors.white,
                     ),
                   ),
@@ -243,59 +220,66 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: [
                     SizedBox(height: 10),
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: [
-                        Column(
-                          children: [
-                            _actionBox(Icons.qr_code_scanner, 'Scan Product'),
-                            const SizedBox(height: 10),
-                            _actionBox(Icons.chat, 'Chat with us'),
-                            const SizedBox(height: 10),
-                            _actionBox(Icons.play_circle_filled, 'SLC Videos'),
-                          ],
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            // Handle redeem points tap
-                            context.push(AppRoutes.redeemPoints);
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width / 2 - 24,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFDF3F4),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
+                    SizedBox(
+                      height: 120,
+                      child: Row(
+                        children: [
+                          Expanded(
                             child: Column(
                               children: [
-                                CircleAvatar(
-                                  radius: 18,
-                                  backgroundColor: AppColors.kcPrimaryColor
-                                      .withOpacity(0.1),
-                                  child: Icon(
-                                    Icons.card_giftcard,
-                                    size: 18,
-                                    color: AppColors.kcPrimaryColor,
-                                  ),
+                                _actionBox(
+                                  Icons.qr_code_scanner,
+                                  'Scan Product',
                                 ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  'Redeem MY Plus\nPoints',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+                                Spacer(),
+                                _actionBox(Icons.chat, 'Chat with us'),
                               ],
                             ),
                           ),
-                        ),
-                      ],
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                // Handle redeem points tap
+                                context.push(AppRoutes.redeemPoints);
+                              },
+                              child: Container(
+                                width:
+                                    MediaQuery.of(context).size.width / 2 - 24,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFDF3F4),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 18,
+                                      backgroundColor: AppColors.kcPrimaryColor
+                                          .withOpacity(0.1),
+                                      child: Icon(
+                                        Icons.card_giftcard,
+                                        size: 18,
+                                        color: AppColors.kcPrimaryColor,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      'Redeem MY Plus\nPoints',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
 
@@ -310,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           context.push(AppRoutes.companyPolicy);
                         }),
                         _iconCircle('SLC\nVideo', Icons.ondemand_video, () {
-                          // context.push(AppRoutes.slcVideo);
+                          context.push(AppRoutes.slcVideo);
                         }),
                         _iconCircle('About\nus', Icons.info_outline, () {
                           context.push(AppRoutes.aboutUs);
@@ -383,7 +367,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: 80,
                                     height: 80,
                                   ),
-                              
                                 ],
                               ),
                             ],
@@ -412,35 +395,47 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 10),
 
-                    // Redeem List Header
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    if (userRedeemHistory != null &&
+                        userRedeemHistory!.recentRedemptions.isNotEmpty)
+                      Column(
                         children: [
-                          const Text(
-                            'Redeem Points',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Redeem Points',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    context.push(
+                                      AppRoutes.redeemHistory,
+                                      extra: userRedeemHistory,
+                                    );
+                                  },
+                                  child: const Text(
+                                    'View All',
+                                    style: TextStyle(
+                                      color: AppColors.kcPrimaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              context.push(AppRoutes.myPoints);
-                            },
-                            child: const Text(
-                              'View All',
-                              style: TextStyle(color: AppColors.kcPrimaryColor),
-                            ),
-                          ),
+
+                          // Redeem List Items
+                          _redeemTile(userRedeemHistory!),
                         ],
                       ),
-                    ),
-
-                    // Redeem List Items
-                    // _redeemTilae(userRedeemHistory!),
-               ],
+                  ],
                 ),
               ),
             ),
@@ -457,8 +452,6 @@ class _HomeScreenState extends State<HomeScreen> {
           context.push(AppRoutes.qrScan);
         } else if (title == 'Chat with us') {
           context.push(AppRoutes.chatWithUs);
-        } else if (title == 'SLC Videos') {
-          context.push(AppRoutes.slcVideo);
         }
         // Add more actions as needed
       },
@@ -532,11 +525,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _redeemTile(UserRedeemHistoryModel redeemHistory) {
-    return 
-    ListView.builder(
+    return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      itemCount: redeemHistory.recentRedemptions?.length ?? 0,
+      itemCount: 2,
       itemBuilder: (context, index) {
         final redemption = redeemHistory.recentRedemptions![index];
         final name = userDetails?.fullName ?? 'No Name';
@@ -545,14 +537,21 @@ class _HomeScreenState extends State<HomeScreen> {
         return ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
           leading: Image.asset(
-            "assets/images/redeem_history.png",
+            "assets/images/defaultProductLogo.png",
             width: 50,
             height: 50,
             fit: BoxFit.cover,
           ),
-          title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-          subtitle: Text( DateFormators.formatDate(DateTime.tryParse(date.toString()) ?? DateTime.now()),
-                           style: const TextStyle(color: Colors.grey)),
+          title: Text(
+            name,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          subtitle: Text(
+            DateFormators.formatDate(
+              DateTime.tryParse(date.toString()) ?? DateTime.now(),
+            ),
+            style: const TextStyle(color: Colors.grey),
+          ),
           trailing: RichText(
             text: TextSpan(
               style: const TextStyle(fontFamily: 'Poppins'),
@@ -573,6 +572,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
-    )
-;  }
+    );
+  }
 }

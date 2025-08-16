@@ -13,7 +13,8 @@ class WalletScreen extends StatefulWidget {
 }
 
 class _WalletScreenState extends State<WalletScreen> {
-  final DashboardController dashboardController = Get.find<DashboardController>();
+  final DashboardController dashboardController =
+      Get.find<DashboardController>();
 
   WalletHistoryModel? walletHistory;
   bool isLoading = true;
@@ -34,15 +35,9 @@ class _WalletScreenState extends State<WalletScreen> {
 
       final response = await dashboardController.getWalletHistory();
 
-      if (response != null && response.isNotEmpty) {
-        // If the controller returns List<WalletHistoryModel>, combine them
-        List<WithdrawalRequest> allRequests = [];
-        for (var model in response) {
-          allRequests.addAll(model.data);
-        }
-        
+      if (response != null) {
         setState(() {
-          walletHistory = WalletHistoryModel(data: allRequests);
+          walletHistory = response;
           isLoading = false;
         });
       } else {
@@ -77,7 +72,11 @@ class _WalletScreenState extends State<WalletScreen> {
         ),
         title: const Text(
           'Wallet',
-          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -119,18 +118,36 @@ class _WalletScreenState extends State<WalletScreen> {
       child: Row(
         children: [
           Expanded(
-            child: _buildSummaryCard('Pending', pendingCount, pendingAmt, Colors.orange, Icons.pending),
+            child: _buildSummaryCard(
+              'Pending',
+              pendingCount,
+              pendingAmt,
+              Colors.orange,
+              Icons.pending,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: _buildSummaryCard('Completed', completedCount, completedAmt, Colors.green, Icons.check_circle),
+            child: _buildSummaryCard(
+              'Completed',
+              completedCount,
+              completedAmt,
+              Colors.green,
+              Icons.check_circle,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryCard(String title, String count, String amount, Color color, IconData icon) {
+  Widget _buildSummaryCard(
+    String title,
+    String count,
+    String amount,
+    Color color,
+    IconData icon,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -145,12 +162,33 @@ class _WalletScreenState extends State<WalletScreen> {
             children: [
               Icon(icon, color: color, size: 20),
               const SizedBox(width: 8),
-              Text(title, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(count, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-          Text(amount, style: TextStyle(color: color, fontSize: 14, fontWeight: FontWeight.w600)),
+          Text(
+            count,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            amount,
+            style: TextStyle(
+              color: color,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -168,9 +206,16 @@ class _WalletScreenState extends State<WalletScreen> {
           children: [
             Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
-            Text(errorMessage!, style: TextStyle(color: Colors.grey[600], fontSize: 16), textAlign: TextAlign.center),
+            Text(
+              errorMessage!,
+              style: TextStyle(color: Colors.grey[600], fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _refreshWalletHistory, child: const Text('Retry')),
+            ElevatedButton(
+              onPressed: _refreshWalletHistory,
+              child: const Text('Retry'),
+            ),
           ],
         ),
       );
@@ -182,13 +227,25 @@ class _WalletScreenState extends State<WalletScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.account_balance_wallet_outlined, size: 64, color: Colors.grey[400]),
+            Icon(
+              Icons.account_balance_wallet_outlined,
+              size: 64,
+              color: Colors.grey[400],
+            ),
             const SizedBox(height: 16),
-            Text('No wallet history found',
-                style: TextStyle(color: Colors.grey[600], fontSize: 16, fontWeight: FontWeight.w500)),
+            Text(
+              'No wallet history found',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text('Your withdrawal history will appear here',
-                style: TextStyle(color: Colors.grey[500], fontSize: 14)),
+            Text(
+              'Your withdrawal history will appear here',
+              style: TextStyle(color: Colors.grey[500], fontSize: 14),
+            ),
           ],
         ),
       );
@@ -202,7 +259,11 @@ class _WalletScreenState extends State<WalletScreen> {
           padding: const EdgeInsets.all(16),
           child: Text(
             'Transaction History (${walletHistory!.data.length})',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
           ),
         ),
         Expanded(
@@ -212,7 +273,8 @@ class _WalletScreenState extends State<WalletScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: walletHistory!.data.length,
               separatorBuilder: (context, _) => const SizedBox(height: 12),
-              itemBuilder: (context, index) => _buildHistoryCard(walletHistory!.data[index]),
+              itemBuilder: (context, index) =>
+                  _buildHistoryCard(walletHistory!.data[index]),
             ),
           ),
         ),
@@ -221,7 +283,9 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 
   Widget _buildHistoryCard(WithdrawalRequest request) {
-    final safeId = request.id.length > 8 ? request.id.substring(request.id.length - 8) : request.id;
+    final safeId = request.id.length > 8
+        ? request.id.substring(request.id.length - 8)
+        : request.id;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -229,7 +293,13 @@ class _WalletScreenState extends State<WalletScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey[200]!),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,28 +312,53 @@ class _WalletScreenState extends State<WalletScreen> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: request.statusColor.withOpacity(0.1), shape: BoxShape.circle),
-                    child: Icon(request.statusIcon, color: request.statusColor, size: 20),
+                    decoration: BoxDecoration(
+                      color: request.statusColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      request.statusIcon,
+                      color: request.statusColor,
+                      size: 20,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(request.formattedAmount,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
-                      Text(request.timeSinceCreated, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                      Text(
+                        request.formattedAmount,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      Text(
+                        request.timeSinceCreated,
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
                     ],
                   ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: request.statusColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text(request.statusDisplayText,
-                    style: TextStyle(color: request.statusColor, fontSize: 12, fontWeight: FontWeight.w600)),
+                child: Text(
+                  request.statusDisplayText,
+                  style: TextStyle(
+                    color: request.statusColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),
@@ -273,21 +368,36 @@ class _WalletScreenState extends State<WalletScreen> {
           // Bank Details
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.grey[50], borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.account_balance, size: 16, color: Colors.grey[600]),
+                    Icon(
+                      Icons.account_balance,
+                      size: 16,
+                      color: Colors.grey[600],
+                    ),
                     const SizedBox(width: 8),
-                    Text(request.accountDetails.displayBankInfo,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87)),
+                    Text(
+                      request.accountDetails.displayBankInfo,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(request.accountDetails.accountHolderName,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                Text(
+                  request.accountDetails.accountHolderName,
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
               ],
             ),
           ),
@@ -298,11 +408,19 @@ class _WalletScreenState extends State<WalletScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Request ID: $safeId',
-                  style: TextStyle(fontSize: 11, color: Colors.grey[500], fontFamily: 'monospace')),
+              Text(
+                'Request ID: $safeId',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey[500],
+                  fontFamily: 'monospace',
+                ),
+              ),
               if (request.isCompleted && request.processedBy != null)
-                Text('By: ${request.processedBy!.fullName}',
-                    style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+                Text(
+                  'By: ${request.processedBy!.fullName}',
+                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                ),
             ],
           ),
         ],

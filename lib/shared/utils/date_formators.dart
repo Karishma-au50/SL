@@ -14,3 +14,9 @@ class DateFormators {
     return DateFormat("dd MMMM yyyy").format(dateTime);
   }
 }
+
+extension DateTimeFormatting on DateTime {
+  String toFormattedString() {
+    return DateFormators.formatDateTime(this);
+  }
+}

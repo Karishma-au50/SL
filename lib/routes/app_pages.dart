@@ -1,8 +1,10 @@
 // import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sl/features/myPoints/views/my_points_screen.dart' show MyPointsScreen;
+import 'package:sl/features/myPoints/views/my_points_screen.dart'
+    show MyPointsScreen;
 import 'package:sl/features/splash/splash_screen.dart';
+import 'package:sl/model/user_redeem_history_model.dart';
 
 import '../features/FAQs/faqs_screen.dart';
 import '../features/aboutUs/about_us_screen.dart';
@@ -50,41 +52,44 @@ class AppPages {
     //  observers: [AnalyticsRouteObserver()],
     routes: [
       ShellRoute(
-            builder: (context, state, child) => MainShell(child: child),
-      
+        builder: (context, state, child) => MainShell(child: child),
+
         routes: [
-            GoRoute(
-        path: AppRoutes.home,
-        name: 'home',
-        builder: (context, state) {
-          return const HomeScreen();
-        },
-      ),
-        GoRoute(
-        path: AppRoutes.allOffers,
-        name: 'allOffers',
-        builder: (context, state) =>  AllOffersScreen(),
-      ),
-     
-         GoRoute(
-        path: AppRoutes.faq,
-        name: 'faq',
-        builder: (context, state) => const FaqScreen(),
-      ),
-      
-      GoRoute(path: AppRoutes.profile, name: 'profile', builder: (context, state) {
-        return const ProfileScreen();
-      }),
+          GoRoute(
+            path: AppRoutes.home,
+            name: 'home',
+            builder: (context, state) {
+              return const HomeScreen();
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.allOffers,
+            name: 'allOffers',
+            builder: (context, state) => AllOffersScreen(),
+          ),
 
-    
-      GoRoute(
-        path: AppRoutes.wallet,
-        name: 'wallet',
-        builder: (context, state) => const WalletScreen(),
+          GoRoute(
+            path: AppRoutes.faq,
+            name: 'faq',
+            builder: (context, state) => const FaqScreen(),
+          ),
+
+          GoRoute(
+            path: AppRoutes.profile,
+            name: 'profile',
+            builder: (context, state) {
+              return const ProfileScreen();
+            },
+          ),
+
+          GoRoute(
+            path: AppRoutes.wallet,
+            name: 'wallet',
+            builder: (context, state) => const WalletScreen(),
+          ),
+        ],
       ),
 
-      ]),
-    
       GoRoute(
         path: AppRoutes.productDetail,
         name: 'productDetail',
@@ -153,7 +158,7 @@ class AppPages {
           return BankDetailForm(initialData: initialData);
         },
       ),
-   
+
       GoRoute(
         path: AppRoutes.companyPolicy,
         name: 'companyPolicy',
@@ -169,20 +174,20 @@ class AppPages {
         name: 'language',
         builder: (context, state) => const ChooseLanguageScreen(),
       ),
-         GoRoute(
+      GoRoute(
         path: AppRoutes.redeemHistory,
         name: 'redeemHistory',
-        builder: (context, state) =>  RedeemHistoryScreen(),
+        builder: (context, state) {
+          UserRedeemHistoryModel model = state.extra as UserRedeemHistoryModel;
+          return RedeemHistoryScreen(redeemHistory: model);
+        },
       ),
-      
+
       GoRoute(
         path: AppRoutes.slcVideo,
         name: 'slcVideo',
         builder: (context, state) => const SLCVideoScreen(),
       ),
-    
     ],
-
-
   );
 }

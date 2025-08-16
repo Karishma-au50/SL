@@ -1,56 +1,31 @@
 class SLCVideoModel {
-  final List<String> video;
-  final List<String> url;
+  final String url;
+  final String description;
 
-  SLCVideoModel({
-    required this.video,
-    required this.url,
-  });
+  SLCVideoModel({required this.url, required this.description});
 
   factory SLCVideoModel.fromJson(Map<String, dynamic> json) {
     return SLCVideoModel(
-      video: (json['video'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
-      url: (json['url'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
+      url: json['url'] as String,
+      description: json['description'] as String,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'video': video,
-      'url': url,
-    };
+    return {'url': url, 'description': description};
   }
 
   List<VideoItem> get allVideoItems {
-    List<VideoItem> items = [];
-    
-    // Add network videos
-    for (int i = 0; i < video.length; i++) {
-      items.add(VideoItem(
-        title: "SLC Video ${i + 1}",
-        videoUrl: video[i],
-        type: VideoType.networkVideo,
-        thumbnailUrl: null, // You can add thumbnail URLs from API if available
-      ));
-    }
-    
-    // Add YouTube URLs
-    for (int i = 0; i < url.length; i++) {
-      items.add(VideoItem(
-        title: "SLC YouTube Video ${i + 1}",
-        videoUrl: url[i],
-        type: VideoType.youtubeUrl,
-        thumbnailUrl: _getYouTubeThumbnail(url[i]),
-      ));
-    }
-    
-    return items;
+    // Determine type based on URL
+    final isYouTube = url.contains('youtube.com') || url.contains('youtu.be');
+    return [
+      VideoItem(
+        title: description,
+        videoUrl: url,
+        type: isYouTube ? VideoType.youtubeUrl : VideoType.networkVideo,
+        thumbnailUrl: isYouTube ? _getYouTubeThumbnail(url) : null,
+      ),
+    ];
   }
 
   String? _getYouTubeThumbnail(String youtubeUrl) {
@@ -66,7 +41,7 @@ class SLCVideoModel {
 
   @override
   String toString() {
-    return 'SLCVideoModel(video: $video, url: $url)';
+    return 'SLCVideoModel(url: $url, description: $description)';
   }
 }
 

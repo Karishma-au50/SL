@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       // Clear storage
       await StorageService.instance.clear();
-      
+
       if (mounted) {
         MyToasts.toastSuccess("Logged out successfully");
         // Navigate to login screen
@@ -62,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       backgroundColor: const Color(0xFF001519),
+      backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
         backgroundColor: const Color(0xFF001519),
         // leading: IconButton(
@@ -100,7 +100,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     content: const Text('Are you sure you want to logout?'),
                     actions: [
                       TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                         child: const Text('Cancel'),
                       ),
                       TextButton(
@@ -119,9 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
       body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            )
+          ? const Center(child: CircularProgressIndicator(color: Colors.white))
           : Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -140,22 +140,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Center(
                       child: CircleAvatar(
                         radius: 50,
-                        backgroundImage: userDetails?.imageURL.isNotEmpty == true
+                        backgroundImage:
+                            userDetails?.imageURL.isNotEmpty == true
                             ? NetworkImage(userDetails!.imageURL.first)
-                            : const AssetImage("assets/images/Union.png") as ImageProvider,
+                            : const AssetImage("assets/images/Union.png")
+                                  as ImageProvider,
                         child: userDetails?.imageURL.isEmpty == true
-                            ? const Icon(Icons.person, size: 50, color: Colors.grey)
+                            ? const Icon(
+                                Icons.person,
+                                size: 50,
+                                color: Colors.grey,
+                              )
                             : null,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // User Details
                     _buildTextField("First Name", userDetails?.firstname ?? ""),
-                    _buildTextField("Middle Name", userDetails?.middlename ?? ""),
+                    _buildTextField(
+                      "Middle Name",
+                      userDetails?.middlename ?? "",
+                    ),
                     _buildTextField("Last Name", userDetails?.lastname ?? ""),
-                    _buildTextField("Date of Birth", _formatDate(userDetails?.dob)),
+                    _buildTextField(
+                      "Date of Birth",
+                      _formatDate(userDetails?.dob),
+                    ),
                     _buildTextField("Phone Number", _formatPhoneNumber()),
                     _buildTextField("Email Address", userDetails?.email ?? ""),
                     _buildTextField("Gender", userDetails?.gender ?? ""),
@@ -164,9 +176,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildTextField("State", userDetails?.state ?? ""),
                     _buildTextField("Pincode", userDetails?.pincode ?? ""),
                     _buildTextField("Country", userDetails?.country ?? ""),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Document Information
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -189,9 +201,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Account Information (if available)
                     if (userDetails?.savedAccountDetails != null)
                       Container(
@@ -215,10 +227,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ),
-                    
+
                     if (userDetails?.savedAccountDetails != null)
                       const SizedBox(height: 24),
-                    
+
                     // Points Information
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -243,7 +255,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               const Text("Available Points:"),
                               Text(
                                 "${userDetails?.availablePoints ?? 0}",
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -253,7 +267,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               const Text("Total Points:"),
                               Text(
                                 "${userDetails?.totalPoints ?? 0}",
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -263,7 +279,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               const Text("Redeemed Points:"),
                               Text(
                                 "${userDetails?.redeemedPoints ?? 0}",
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -289,7 +307,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userDetails?.address2 ?? "",
       userDetails?.address3 ?? "",
     ].where((part) => part.trim().isNotEmpty).toList();
-    
+
     return addressParts.isEmpty ? "" : addressParts.join(", ");
   }
 
@@ -303,7 +321,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildTextField(String? label, String? hint) {
     // Show "N/A" if hint is null, empty, or only whitespace
     String displayValue = (hint?.trim().isEmpty ?? true) ? "N/A" : hint!;
-    
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: MyTextField(
@@ -311,23 +329,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
         labelText: label ?? "",
         hindStyle: TextStyle(
           color: displayValue == "N/A" ? Colors.grey : Colors.black,
-          fontStyle: displayValue == "N/A" ? FontStyle.italic : FontStyle.normal,
+          fontStyle: displayValue == "N/A"
+              ? FontStyle.italic
+              : FontStyle.normal,
         ),
-        isReadOnly: true, // Make fields read-only since this is a display screen
+        isReadOnly:
+            true, // Make fields read-only since this is a display screen
       ),
     );
   }
 
   Widget _buildDocumentInfo() {
-    if (userDetails?.documentsName == null || userDetails!.documentsName.isEmpty) {
+    if (userDetails?.documentsName == null ||
+        userDetails!.documentsName.isEmpty) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 8.0),
         child: Text(
           "No documents uploaded",
-          style: TextStyle(
-            color: Colors.grey,
-            fontStyle: FontStyle.italic,
-          ),
+          style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
         ),
       );
     }
@@ -360,8 +379,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            userDetails!.documentsName[i].isNotEmpty 
-                                ? userDetails!.documentsName[i] 
+                            userDetails!.documentsName[i].isNotEmpty
+                                ? userDetails!.documentsName[i]
                                 : "Document ${i + 1}",
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
@@ -381,22 +400,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ],
                 ),
-                
+
                 // Show verification status
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                    color: userDetails!.isVerified 
-                        ? Colors.green.shade100 
+                    color: userDetails!.isVerified
+                        ? Colors.green.shade100
                         : Colors.orange.shade100,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    userDetails!.isVerified ? "Verified" : "Pending Verification",
+                    userDetails!.isVerified
+                        ? "Verified"
+                        : "Pending Verification",
                     style: TextStyle(
-                      color: userDetails!.isVerified 
-                          ? Colors.green.shade700 
+                      color: userDetails!.isVerified
+                          ? Colors.green.shade700
                           : Colors.orange.shade700,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,

@@ -3,40 +3,42 @@ import 'package:flutter/material.dart';
 class WalletHistoryModel {
   final List<WithdrawalRequest> data;
 
-  WalletHistoryModel({
-    required this.data,
-  });
+  WalletHistoryModel({required this.data});
 
-  factory WalletHistoryModel.fromJson(Map<String, dynamic> json) {
+  factory WalletHistoryModel.fromJson(List<dynamic> json) {
     return WalletHistoryModel(
-      data: (json['data'] as List<dynamic>?)
-              ?.map((item) => WithdrawalRequest.fromJson(item as Map<String, dynamic>))
+      data:
+          (json as List<dynamic>?)
+              ?.map(
+                (item) =>
+                    WithdrawalRequest.fromJson(item as Map<String, dynamic>),
+              )
               .toList() ??
           [],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'data': data.map((item) => item.toJson()).toList(),
-    };
+    return {'data': data.map((item) => item.toJson()).toList()};
   }
 
   // Helper methods
-  List<WithdrawalRequest> get pendingRequests => 
+  List<WithdrawalRequest> get pendingRequests =>
       data.where((request) => request.isPending).toList();
-  
-  List<WithdrawalRequest> get completedRequests => 
+
+  List<WithdrawalRequest> get completedRequests =>
       data.where((request) => request.isCompleted).toList();
-  
-  List<WithdrawalRequest> get rejectedRequests => 
+
+  List<WithdrawalRequest> get rejectedRequests =>
       data.where((request) => request.isRejected).toList();
-  
-  int get totalPendingAmount => 
+
+  int get totalPendingAmount =>
       pendingRequests.fold(0, (sum, request) => sum + request.pointsRequested);
-  
-  int get totalCompletedAmount => 
-      completedRequests.fold(0, (sum, request) => sum + request.pointsRequested);
+
+  int get totalCompletedAmount => completedRequests.fold(
+    0,
+    (sum, request) => sum + request.pointsRequested,
+  );
 
   @override
   String toString() {
@@ -77,16 +79,22 @@ class WithdrawalRequest {
       userId: json['userId'] as String? ?? '',
       pointsRequested: json['pointsRequested'] as int? ?? 0,
       status: json['status'] as String? ?? '',
-      createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now(),
-      updatedAt: DateTime.tryParse(json['updatedAt'] as String? ?? '') ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+          DateTime.now(),
+      updatedAt:
+          DateTime.tryParse(json['updatedAt'] as String? ?? '') ??
+          DateTime.now(),
       version: json['__v'] as int? ?? 0,
-      accountDetails: AccountDetails.fromJson(json['accountDetails'] as Map<String, dynamic>? ?? {}),
+      accountDetails: AccountDetails.fromJson(
+        json['accountDetails'] as Map<String, dynamic>? ?? {},
+      ),
       adminNotes: json['adminNotes'] as String?,
-      processedAt: json['processedAt'] != null 
-          ? DateTime.tryParse(json['processedAt'] as String) 
+      processedAt: json['processedAt'] != null
+          ? DateTime.tryParse(json['processedAt'] as String)
           : null,
-      processedBy: json['processedBy'] != null 
-          ? ProcessedBy.fromJson(json['processedBy'] as Map<String, dynamic>) 
+      processedBy: json['processedBy'] != null
+          ? ProcessedBy.fromJson(json['processedBy'] as Map<String, dynamic>)
           : null,
     );
   }
@@ -178,7 +186,7 @@ class WithdrawalRequest {
   String get timeSinceCreated {
     final now = DateTime.now();
     final difference = now.difference(createdAt);
-    
+
     if (difference.inDays > 0) {
       return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
     } else if (difference.inHours > 0) {
@@ -270,9 +278,13 @@ class AccountDetails {
     // Extract acronym from bank name
     final words = bankName.split(' ');
     if (words.length > 1) {
-      return words.map((word) => word.isNotEmpty ? word[0].toUpperCase() : '').join('');
+      return words
+          .map((word) => word.isNotEmpty ? word[0].toUpperCase() : '')
+          .join('');
     }
-    return bankName.length > 3 ? bankName.substring(0, 3).toUpperCase() : bankName.toUpperCase();
+    return bankName.length > 3
+        ? bankName.substring(0, 3).toUpperCase()
+        : bankName.toUpperCase();
   }
 
   @override
@@ -321,15 +333,11 @@ class ProcessedBy {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'firstname': firstname,
-      'lastname': lastname,
-    };
+    return {'_id': id, 'firstname': firstname, 'lastname': lastname};
   }
 
   String get fullName => '$firstname $lastname'.trim();
-  
+
   String get initials {
     final first = firstname.isNotEmpty ? firstname[0].toUpperCase() : '';
     final last = lastname.isNotEmpty ? lastname[0].toUpperCase() : '';

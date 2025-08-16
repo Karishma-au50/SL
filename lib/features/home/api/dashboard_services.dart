@@ -61,11 +61,12 @@ class DashboardService extends BaseApiService {
 
     ResponseModel resModel = ResponseModel<UserModel>(
       message: res.data["message"],
-        status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
+      status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
       data: UserModel.fromJson(res.data["data"]),
     );
     return resModel;
   }
+
   // purchase verification
   Future<ResponseModel> qrVerification({required String data}) async {
     var res = await post(
@@ -89,7 +90,8 @@ class DashboardService extends BaseApiService {
 
   // get wallet history
   Future<ResponseModel> getWalletHistory() async {
-    var res = await get(DashboardEndpoint.rewardClaimsHistory,
+    var res = await get(
+      DashboardEndpoint.rewardClaimsHistory,
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -98,18 +100,17 @@ class DashboardService extends BaseApiService {
       ),
     );
 
-    ResponseModel resModel = ResponseModel<List<WalletHistoryModel>>(
+    ResponseModel resModel = ResponseModel<WalletHistoryModel>(
       message: res.data["message"],
       status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
-      data: res.data["data"]
-          .map<WalletHistoryModel>((e) => WalletHistoryModel.fromJson(e))
-          .toList(),
+      data: WalletHistoryModel.fromJson(res.data["data"]),
     );
     return resModel;
   }
 
   Future<ResponseModel> getSLCVideos() async {
-    var res = await get(DashboardEndpoint.slcVideos,
+    var res = await get(
+      DashboardEndpoint.slcVideos,
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -124,5 +125,60 @@ class DashboardService extends BaseApiService {
       data: SLCVideoModel.fromJson(res.data["data"]),
     );
     return resModel;
+  }
+
+  // fetch about us data
+  Future<ResponseModel> getAboutUs() async {
+    try {
+      final res = await get(
+        '/api/about/about',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer ${StorageService.instance.getToken()}",
+          },
+        ),
+      );
+      ResponseModel resModel = ResponseModel(
+        message: res.data["message"],
+        status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
+        data: res.data["data"],
+      );
+      return resModel;
+    } on DioException catch (e) {
+      return ResponseModel.error(
+        message: e.response?.data["message"] ?? "Error",
+      );
+    } catch (e) {
+      return ResponseModel.error(message: e.toString());
+    }
+  }
+
+  Future<ResponseModel<List<Map<String, dynamic>>>> getCompanyPolicy() async {
+    try {
+      final res = await get(
+        '/api/about/company-policy',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer ${StorageService.instance.getToken()}",
+          },
+        ),
+      );
+      ResponseModel<List<Map<String, dynamic>>> resModel =
+          ResponseModel<List<Map<String, dynamic>>>(
+            message: res.data["message"],
+            status:
+                res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
+            data: List<Map<String, dynamic>>.from(res.data["data"]),
+          );
+      return resModel;
+    } on DioException catch (e) {
+      return ResponseModel.error(
+        message: e.response?.data["message"] ?? "Error",
+      );
+    } catch (e) {
+      return ResponseModel.error(message: e.toString());
+    }
   }
 }
