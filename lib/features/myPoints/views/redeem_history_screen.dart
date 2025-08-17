@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sl/model/user_redeem_history_model.dart';
 import 'package:sl/shared/constant/app_colors.dart';
 import 'package:sl/shared/utils/date_formators.dart';
+import 'package:sl/widgets/network_image_view.dart';
 
 class RedeemHistoryScreen extends StatelessWidget {
   const RedeemHistoryScreen({super.key, required this.redeemHistory});
@@ -11,16 +12,16 @@ class RedeemHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF002B23),
+      backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF002B23), // dark green
+          backgroundColor: const Color(0xFF001519), // dark green
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 18),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          "Wallet",
+          "Redeem History",
           style: TextStyle(
             color: Colors.white,
             fontSize: 16,
@@ -40,7 +41,7 @@ class RedeemHistoryScreen extends StatelessWidget {
         ),
         child: ListView.builder(
           itemCount: redeemHistory.recentRedemptions.length,
-          padding: EdgeInsets.zero,
+          padding: EdgeInsets.only(top: 12, bottom: 12),
           itemBuilder: (context, index) {
             final redemption = redeemHistory.recentRedemptions![index];
             final points = redemption.pointsEarned?.toString() ?? '0';
@@ -57,13 +58,16 @@ class RedeemHistoryScreen extends StatelessWidget {
                   CircleAvatar(
                     // radius: 50,
                     backgroundColor: AppColors.kcPrimaryColor.withOpacity(0.1),
-                    child: Image.asset(
-                      "assets/images/defaultProductLogo.png",
-                      height: 30,
-                      width: 30,
-                      fit: BoxFit.contain,
-                    ),
+                    child: redemption.offerId.productId?.images.isEmpty ?? true
+                        ? Image.asset(
+                            "assets/images/defaultProductLogo.png",
+                            height: 30,
+                            width: 30,
+                            fit: BoxFit.contain,
+                          )
+                        : NetworkImageView(imgUrl: redemption.offerId.productId?.images.first ?? ''),
                   ),
+
                   const SizedBox(width: 12),
 
                   // Texts
@@ -72,7 +76,7 @@ class RedeemHistoryScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          redemption.redemptionCode,
+                          redemption.offerId.productId?.title ?? 'Product',
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,

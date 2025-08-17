@@ -13,7 +13,10 @@ import 'storage_service.dart';
 class CommonService extends BaseApiService {
   static CommonService get to => Get.find();
 
-  Future<CommonService> init() async => this;
+  Future<CommonService> init() async {
+    getUserDetails(forceRefresh: true);
+    return this;
+  }
 
   Future<Response> getImage(String url) {
     return get(url, options: Options(responseType: ResponseType.bytes));

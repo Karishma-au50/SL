@@ -32,6 +32,9 @@ class WalletHistoryModel {
   List<WithdrawalRequest> get rejectedRequests =>
       data.where((request) => request.isRejected).toList();
 
+  List<WithdrawalRequest> get approvedRequests =>
+      data.where((request) => request.isApproved).toList();
+
   int get totalPendingAmount =>
       pendingRequests.fold(0, (sum, request) => sum + request.pointsRequested);
 
@@ -39,6 +42,12 @@ class WalletHistoryModel {
     0,
     (sum, request) => sum + request.pointsRequested,
   );
+
+  int get totalApprovedAmount =>
+      approvedRequests.fold(0, (sum, request) => sum + request.pointsRequested);
+
+  int get totalRejectedAmount =>
+      rejectedRequests.fold(0, (sum, request) => sum + request.pointsRequested);
 
   @override
   String toString() {
@@ -54,7 +63,7 @@ class WithdrawalRequest {
   final DateTime createdAt;
   final DateTime updatedAt;
   final int version;
-  final AccountDetails accountDetails;
+  final AccountDetail accountDetails;
   final String? adminNotes;
   final DateTime? processedAt;
   final ProcessedBy? processedBy;
@@ -86,7 +95,7 @@ class WithdrawalRequest {
           DateTime.tryParse(json['updatedAt'] as String? ?? '') ??
           DateTime.now(),
       version: json['__v'] as int? ?? 0,
-      accountDetails: AccountDetails.fromJson(
+      accountDetails: AccountDetail.fromJson(
         json['accountDetails'] as Map<String, dynamic>? ?? {},
       ),
       adminNotes: json['adminNotes'] as String?,
@@ -120,6 +129,8 @@ class WithdrawalRequest {
     switch (status.toLowerCase()) {
       case 'pending':
         return 'Pending';
+      case 'approved':
+        return 'Approved';
       case 'completed':
         return 'Completed';
       case 'rejected':
@@ -135,12 +146,14 @@ class WithdrawalRequest {
     switch (status.toLowerCase()) {
       case 'pending':
         return Colors.orange;
+      case 'approved':
+        return Colors.blue;
       case 'completed':
         return Colors.green;
       case 'rejected':
         return Colors.red;
       case 'processing':
-        return Colors.blue;
+        return Colors.purple;
       default:
         return Colors.grey;
     }
@@ -149,7 +162,9 @@ class WithdrawalRequest {
   IconData get statusIcon {
     switch (status.toLowerCase()) {
       case 'pending':
-        return Icons.pending;
+        return Icons.pending_actions;
+      case 'approved':
+        return Icons.check_circle_outline;
       case 'completed':
         return Icons.check_circle;
       case 'rejected':
@@ -199,6 +214,7 @@ class WithdrawalRequest {
   }
 
   bool get isPending => status.toLowerCase() == 'pending';
+  bool get isApproved => status.toLowerCase() == 'approved';
   bool get isCompleted => status.toLowerCase() == 'completed';
   bool get isRejected => status.toLowerCase() == 'rejected';
   bool get isProcessing => status.toLowerCase() == 'processing';
@@ -218,14 +234,14 @@ class WithdrawalRequest {
   int get hashCode => id.hashCode;
 }
 
-class AccountDetails {
+class AccountDetail {
   final String accountHolderName;
   final String accountNumber;
   final String bankName;
   final String ifscCode;
   final String upiId;
 
-  AccountDetails({
+  AccountDetail({
     required this.accountHolderName,
     required this.accountNumber,
     required this.bankName,
@@ -233,8 +249,8 @@ class AccountDetails {
     required this.upiId,
   });
 
-  factory AccountDetails.fromJson(Map<String, dynamic> json) {
-    return AccountDetails(
+  factory AccountDetail.fromJson(Map<String, dynamic> json) {
+    return AccountDetail(
       accountHolderName: json['accountHolderName'] as String? ?? '',
       accountNumber: json['accountNumber'] as String? ?? '',
       bankName: json['bankName'] as String? ?? '',
@@ -289,13 +305,13 @@ class AccountDetails {
 
   @override
   String toString() {
-    return 'AccountDetails(accountHolderName: $accountHolderName, bankName: $bankName, maskedAccountNumber: $maskedAccountNumber)';
+    return 'AccountDetail(accountHolderName: $accountHolderName, bankName: $bankName, maskedAccountNumber: $maskedAccountNumber)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is AccountDetails &&
+    return other is AccountDetail &&
         other.accountHolderName == accountHolderName &&
         other.accountNumber == accountNumber &&
         other.bankName == bankName &&

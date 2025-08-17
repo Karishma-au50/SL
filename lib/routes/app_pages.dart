@@ -5,6 +5,8 @@ import 'package:sl/features/myPoints/views/my_points_screen.dart'
     show MyPointsScreen;
 import 'package:sl/features/splash/splash_screen.dart';
 import 'package:sl/model/user_redeem_history_model.dart';
+import 'package:sl/model/wallet_history_model.dart';
+import 'package:sl/model/withdrawal_model.dart';
 
 import '../features/FAQs/faqs_screen.dart';
 import '../features/aboutUs/about_us_screen.dart';
@@ -22,9 +24,10 @@ import '../features/myPoints/views/redeem_pointers_screen.dart';
 import '../features/myPoints/views/bank_detail_form.dart';
 import '../features/myPoints/views/withdraw_screen.dart';
 import '../features/profile/profile_screen.dart' show ProfileScreen;
+import '../features/wallet/wallet_history_screen.dart';
 import '../features/wallet/wallet_screen.dart';
 import '../features/slc_video/screens/slc_video_screen.dart';
-import '../model/withdrawal_model.dart';
+import '../features/notifications/notification_screen.dart';
 import '../widgets/main_shell.dart';
 import '../widgets/scanner/scanner_page.dart';
 import 'app_routes.dart';
@@ -182,11 +185,24 @@ class AppPages {
           return RedeemHistoryScreen(redeemHistory: model);
         },
       ),
-
+      GoRoute(
+        path: AppRoutes.walletHistory,
+        name: 'walletHistory',
+        builder: (context, state){
+          WalletHistoryModel initialData = state.extra as WalletHistoryModel;
+          return WalletHistoryScreen(initialData: initialData);
+        }
+      ),
       GoRoute(
         path: AppRoutes.slcVideo,
         name: 'slcVideo',
         builder: (context, state) => const SLCVideoScreen(),
+      ),
+      
+      GoRoute(
+        path: AppRoutes.notifications,
+        name: 'notifications',
+        builder: (context, state) => const NotificationScreen(),
       ),
     ],
   );

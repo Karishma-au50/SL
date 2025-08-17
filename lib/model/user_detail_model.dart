@@ -62,6 +62,8 @@ class UserDetailModel {
   final List<String> documentsName;
   final List<String> documentsDetails;
   final List<String> imageURL;
+  final Map<String, dynamic>? aadhar;
+  final Map<String, dynamic>? pan;
   final bool isVerified;
   final int createdAt;
   final int updatedAt;
@@ -94,6 +96,8 @@ class UserDetailModel {
     required this.documentsName,
     required this.documentsDetails,
     required this.imageURL,
+    this.aadhar,
+    this.pan,
     required this.isVerified,
     required this.createdAt,
     required this.updatedAt,
@@ -128,6 +132,8 @@ class UserDetailModel {
       documentsName: List<String>.from(json['documentsName'] ?? []),
       documentsDetails: List<String>.from(json['documentsDetails'] ?? []),
       imageURL: List<String>.from(json['imageURL'] ?? []),
+      aadhar: json['aadhar'],
+      pan: json['pan'],
       isVerified: json['isVerified'] ?? false,
       createdAt: json['createdAt'] ?? 0,
       updatedAt: json['updatedAt'] ?? 0,
@@ -165,6 +171,8 @@ class UserDetailModel {
       'documentsName': documentsName,
       'documentsDetails': documentsDetails,
       'imageURL': imageURL,
+      'aadhar': aadhar,
+      'pan': pan,
       'isVerified': isVerified,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
@@ -186,6 +194,13 @@ class UserDetailModel {
   String get completeAddress => [address1, address2, address3, city, state, pincode]
       .where((element) => element.isNotEmpty)
       .join(', ');
+  
+  // Aadhar and PAN helper getters
+  String get aadharNumber => aadhar?['number']?.toString() ?? '';
+  String get panNumber => pan?['number']?.toString() ?? '';
+  
+  bool get hasAadhar => aadharNumber.isNotEmpty;
+  bool get hasPan => panNumber.isNotEmpty;
 
   @override
   String toString() {

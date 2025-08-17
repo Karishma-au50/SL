@@ -1,29 +1,78 @@
-class SLCVideoModel {
-  final String url;
-  final String description;
+class SLCVideoResponse {
+  final List<SLCVideoModel> data;
 
-  SLCVideoModel({required this.url, required this.description});
+  SLCVideoResponse({required this.data});
 
-  factory SLCVideoModel.fromJson(Map<String, dynamic> json) {
-    return SLCVideoModel(
-      url: json['url'] as String,
-      description: json['description'] as String,
+  factory SLCVideoResponse.fromJson(Map<String, dynamic> json) {
+    return SLCVideoResponse(
+      data: (json['data'] as List<dynamic>)
+          .map((item) => SLCVideoModel.fromJson(item as Map<String, dynamic>))
+          .toList(),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'url': url, 'description': description};
+    return {
+      'data': data.map((video) => video.toJson()).toList(),
+    };
+  }
+
+  @override
+  String toString() {
+    return 'SLCVideoResponse(data: $data)';
+  }
+}
+
+class SLCVideoModel {
+  final String id;
+  final String type;
+  final String videoUrl;
+  final String description;
+  final String createdAt;
+  final String updatedAt;
+
+  SLCVideoModel({
+    required this.id,
+    required this.type,
+    required this.videoUrl,
+    required this.description,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory SLCVideoModel.fromJson(Map<String, dynamic> json) {
+    return SLCVideoModel(
+      id: json['_id'] as String,
+      type: json['type'] as String,
+      videoUrl: json['VideoUrl'] as String,
+      description: json['description'] as String,
+      createdAt: json['createdAt'] as String,
+      updatedAt: json['updatedAt'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'type': type,
+      'VideoUrl': videoUrl,
+      'description': description,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
   }
 
   List<VideoItem> get allVideoItems {
-    // Determine type based on URL
-    final isYouTube = url.contains('youtube.com') || url.contains('youtu.be');
+    // Determine type based on VideoUrl and type field
+    final isYouTube = type.toLowerCase() == 'youtube' || 
+                      videoUrl.contains('youtube.com') || 
+                      videoUrl.contains('youtu.be');
     return [
       VideoItem(
         title: description,
-        videoUrl: url,
+        videoUrl: videoUrl,
         type: isYouTube ? VideoType.youtubeUrl : VideoType.networkVideo,
-        thumbnailUrl: isYouTube ? _getYouTubeThumbnail(url) : null,
+        thumbnailUrl: isYouTube ? _getYouTubeThumbnail(videoUrl) : null,
       ),
     ];
   }
@@ -41,7 +90,7 @@ class SLCVideoModel {
 
   @override
   String toString() {
-    return 'SLCVideoModel(url: $url, description: $description)';
+    return 'SLCVideoModel(id: $id, type: $type, videoUrl: $videoUrl, description: $description)';
   }
 }
 

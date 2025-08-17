@@ -1,88 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'controller/chat_controller.dart';
 
 class ChatWithUsScreen extends StatefulWidget {
   const ChatWithUsScreen({super.key});
 
   @override
-  State<ChatWithUsScreen> createState() => _ChatWithUsScreenState();
+  _ChatWithUsScreenState createState() => _ChatWithUsScreenState();
 }
 
 class _ChatWithUsScreenState extends State<ChatWithUsScreen> {
-  final List<Map<String, String>> chatMessages = [];
+  late ChatController controller;
 
-  // Simulating API questions and answers
-  final List<Map<String, String>> faqData = [
-    {
-      'question': 'What are your service hours?',
-      'answer': 'Our service hours are from 9 AM to 6 PM, Monday to Saturday.',
-    },
-    {
-      'question': 'How do I reset my password?',
-      'answer': 'You can reset your password from the login screen by tapping "Forgot Password".',
-    },
-    {
-      'question': 'Where can I find my invoices?',
-      'answer': 'Invoices are available under your profile in the "Billing" section.',
-    },
-  ];
-
-  void _handleQuestionTap(String question, String answer) {
-    setState(() {
-      chatMessages.add({'type': 'question', 'text': question});
-      chatMessages.add({'type': 'answer', 'text': answer});
-    });
+  String _getMonthName(int month) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return months[month - 1];
   }
 
-  Widget _buildMessageBubble(String text, bool isUser) {
-    return Align(
-      alignment: isUser ? Alignment.centerLeft : Alignment.centerRight,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-        decoration: BoxDecoration(
-          color: isUser ? Colors.yellow.shade100 : Colors.orange.shade100,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 15),
-        ),
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    // Delete any existing controller first
+    if (Get.isRegistered<ChatController>()) {
+      Get.delete<ChatController>();
+    }
+    // Create a fresh controller instance
+    controller = Get.put(ChatController());
   }
 
-  Widget _buildFAQOptions() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: faqData.map((faq) {
-        return GestureDetector(
-          onTap: () => _handleQuestionTap(faq['question']!, faq['answer']!),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: Text(
-              faq['question']!,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-        );
-      }).toList(),
-    );
+  @override
+  void dispose() {
+    // Clean up the controller when leaving the screen
+    if (Get.isRegistered<ChatController>()) {
+      Get.delete<ChatController>();
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF001519),
+        backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
         backgroundColor: const Color(0xFF001519),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: const Text(
-          'Chat with Us',
+          'Redeem My Plus Points',
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -90,42 +59,155 @@ class _ChatWithUsScreenState extends State<ChatWithUsScreen> {
           ),
         ),
         centerTitle: true,
-        leading: const BackButton(color: Colors.white),
+          actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => controller.resetChat(),
+          ),
+        ],
       ),
-      body: Container(
-        
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+    
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            children: [
+              // Date Chip
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Chip(
+                  label: Text(
+                    "${DateTime.now().day} ${_getMonthName(DateTime.now().month)}, ${DateTime.now().year}",
+                    style: const TextStyle(color: Colors.black54, fontSize: 12),
+                  ),
+                  backgroundColor: Colors.grey.shade100,
+                ),
+              ),
           
-        ),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.only(top: 12),
-                itemCount: chatMessages.length,
-                itemBuilder: (context, index) {
-                  final message = chatMessages[index];
-                  return _buildMessageBubble(
-                    message['text']!,
-                    message['type'] == 'question',
-                  );
-                },
+              // Chat Messages
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical:0),
+                  itemCount: controller.chatHistory.length,
+                  itemBuilder: (context, index) {
+                    final item = controller.chatHistory[index];
+          
+                    // Bot Question
+                    if (item.containsKey("question")) {
+                      return Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          // width: MediaQuery.of(context).size.width * 0.8,
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("SL Chemicals",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.orange.shade800)),
+                              const SizedBox(height: 6),
+                              Text(item["question"],
+                                  style: const TextStyle(fontSize: 14)),
+                              const SizedBox(height: 8),
+                              ...(item["answers"] as List)
+                                  .map<Widget>(
+                                    (ans) => GestureDetector(
+                                      onTap: () => controller.selectAnswer(ans),
+                                      child: Container(
+                                        width: double.infinity,
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 4),
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(
+                                              color: Colors.grey.shade300),
+                                        ),
+                                        child: Text(
+                                          ans["text"],
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+          
+                    // User Selected Answer
+                    else if (item.containsKey("answer")) {
+                      return Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.yellow.shade100,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("You",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.brown.shade700)),
+                              const SizedBox(height: 4),
+                              Text(item["answer"],
+                                  style: const TextStyle(fontSize: 14)),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+          
+                    // End Message
+                    else if (item.containsKey("end")) {
+                      return Center(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(item["end"],
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.bold)),
+                        ),
+                      );
+                    }
+          
+                    return const SizedBox.shrink();
+                  },
+                ),
               ),
-            ),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "Tap a question below to ask:",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-              ),
-            ),
-            _buildFAQOptions(),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

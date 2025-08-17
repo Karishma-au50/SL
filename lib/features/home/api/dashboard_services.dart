@@ -7,6 +7,7 @@ import '../../../model/home_banner_model.dart';
 import '../../../model/user_model.dart';
 import '../../../model/wallet_history_model.dart';
 import '../../../model/slc_video_model.dart';
+import '../../../model/faq_model.dart';
 import '../../../shared/constant/enums.dart';
 import '../../../shared/services/storage_service.dart';
 
@@ -15,7 +16,8 @@ class DashboardEndpoint {
   static const String homeScreenBanner = '/api/banners';
   static const String coupon = '/api/qrcode/redeem';
   static const String rewardClaimsHistory = '/api/rewardClaims/history';
-  static const String slcVideos = '/api/slc/videos';
+  static const String slcVideos = '/api/faq/slc-videos';
+  static const String faq = '/api/faq';
 }
 
 class DashboardService extends BaseApiService {
@@ -71,7 +73,7 @@ class DashboardService extends BaseApiService {
   Future<ResponseModel> qrVerification({required String data}) async {
     var res = await post(
       DashboardEndpoint.coupon,
-      data: {"qrCodeData": data, "userId": "68864b5c3bbf41257312a747"},
+      data: {"qrCodeData": data, "userId": "${StorageService.instance.getUserId()?.id}"},
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -119,10 +121,12 @@ class DashboardService extends BaseApiService {
       ),
     );
 
-    ResponseModel resModel = ResponseModel<SLCVideoModel>(
+    ResponseModel resModel = ResponseModel<List<SLCVideoModel>>(
       message: res.data["message"],
       status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
-      data: SLCVideoModel.fromJson(res.data["data"]),
+      data: (res.data["data"] as List<dynamic>)
+          .map((item) => SLCVideoModel.fromJson(item as Map<String, dynamic>))
+          .toList(),
     );
     return resModel;
   }
@@ -180,5 +184,25 @@ class DashboardService extends BaseApiService {
     } catch (e) {
       return ResponseModel.error(message: e.toString());
     }
+  }
+
+  Future<ResponseModel> getFAQs() async {
+    var res = await get(DashboardEndpoint.faq,
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer ${StorageService.instance.getToken()}",
+        },
+      ),
+    );
+
+    ResponseModel resModel = ResponseModel<List<FaqModel>>(
+      message: res.data["message"],
+      status: res.data["statusCode"] >= 200 && res.data["statusCode"] < 300,
+      data: res.data["data"]
+          .map<FaqModel>((e) => FaqModel.fromJson(e))
+          .toList(),
+    );
+    return resModel;
   }
 }

@@ -6,6 +6,7 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import '../../../features/home/controller/dashboard_controller.dart';
 import '../../../model/slc_video_model.dart';
 import '../../../shared/app_colors.dart';
+import '../../../shared/constant/app_constants.dart';
 import '../../../widgets/toast/my_toast.dart';
 
 class SLCVideoScreen extends StatefulWidget {
@@ -53,7 +54,7 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
 
   void _initializeControllers() {
     for (var video in videoList) {
-      final url = video.url;
+      final url = video.videoUrl;
       final isYouTube = url.contains('youtube.com') || url.contains('youtu.be');
       if (isYouTube) {
         final videoId = YoutubePlayerController.convertUrlToId(url);
@@ -64,14 +65,14 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
             params: const YoutubePlayerParams(
               mute: false,
               showControls: true,
-              showFullscreenButton: false,
+              showFullscreenButton: false,  
               loop: false,
             ),
           );
           youtubeControllers[url] = controller;
         }
-      } else if (_isValidUrl(url)) {
-        final controller = VideoPlayerController.networkUrl(Uri.parse(url));
+      } else if (_isValidUrl(AppConstants.videoUrl+url)) {
+        final controller = VideoPlayerController.networkUrl(Uri.parse(AppConstants.videoUrl+url));
         videoControllers[url] = controller;
         controller.initialize();
       }
@@ -113,7 +114,7 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return AspectRatio(
-            aspectRatio: controller.value.aspectRatio,
+            aspectRatio: 16 / 9,
             child: Stack(
               children: [
                 VideoPlayer(controller),
@@ -195,7 +196,7 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
       itemCount: videoList.length,
       itemBuilder: (context, index) {
         final video = videoList[index];
-        final url = video.url;
+        final url = video.videoUrl;
         final isYouTube =
             url.contains('youtube.com') || url.contains('youtu.be');
         return Padding(

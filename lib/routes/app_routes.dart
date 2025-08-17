@@ -22,6 +22,8 @@ class AppRoutes {
   static const String allOffers = '/allOffers';
   static const String wallet = '/wallet';
   static const String slcVideo = '/slcVideo';
+  static const String notifications = '/notifications';
+  static const String walletHistory = '/walletHistory';
 
 
 }

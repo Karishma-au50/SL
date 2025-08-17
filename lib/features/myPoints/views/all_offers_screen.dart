@@ -88,9 +88,9 @@ class _AllOffersScreenState extends State<AllOffersScreen> {
     final random = Random();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF002B23),
+      backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF002B23),
+        backgroundColor: const Color(0xFF001519),
         title: const Text(
           "Offers",
           style: TextStyle(
@@ -133,6 +133,7 @@ class _AllOffersScreenState extends State<AllOffersScreen> {
                 ),
                 child: Column(
                   children: [
+                    SizedBox(height: 12),
                     Expanded(
                       child: ListView.builder(
                         padding: const EdgeInsets.all(12),

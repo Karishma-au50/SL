@@ -93,13 +93,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
 
-                      // Product Image
-                      // Center(
-                      //   child: Image.network(
-                      //    "https://i.pinimg.com/1200x/3b/48/36/3b4836cfe35bb48df602697edca97521.jpg",
-                      //     height: 200,
-                      //   ),
-                      // ),
                       const SizedBox(height: 12),
 
                       // Title

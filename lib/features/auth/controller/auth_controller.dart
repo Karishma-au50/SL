@@ -16,9 +16,10 @@ class AuthController extends GetxController {
     try {
       final res = await _api.register(user);
       if (!(res.status ?? true)) {
+        MyToasts.toastSuccess(res.message ?? "Registration successful,Please login");
         return true;
       } else {
-        // MyToasts.toastError(res.message ?? "Error");
+         MyToasts.toastError(res.message ?? "Error");
       }
     } on DioException catch (e) {
       MyToasts.toastError(e.response?.data["message"] ?? "Error");

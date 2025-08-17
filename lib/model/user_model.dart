@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UserModel {
   String? id;
@@ -140,13 +141,13 @@ class UserModel {
   Map<String, dynamic> toJson() {
     // if aadhar["images"] file is File then remove the key
     Map<String, dynamic> dupAadhar = {};
-    if (aadhar != null && aadhar!["images"] is File) {
+    if (aadhar != null ) {
       dupAadhar = {...aadhar!};
       dupAadhar.remove("images");
     }
 
     Map<String, dynamic> dupPan = {};
-    if (pan != null && pan!["images"] is File) {
+    if (pan != null) {
       dupPan = {...pan!};
       dupPan.remove("images");
     }
@@ -156,7 +157,7 @@ class UserModel {
       'firstname': firstname,
       'lastname': lastname,
       'middlename': middlename,
-      // 'dob': dob,
+      'dob': dob,
       'mobile': mobile,
       'gender': gender,
       'email': email,
@@ -171,11 +172,6 @@ class UserModel {
       'aadhar': dupAadhar,
       'pan': dupPan,
       'isVerified': isVerified,
-      // 'createdAt': createdAt,
-      // 'updatedAt': updatedAt,
-      // 'isDeleted': isDeleted,
-      // 'deletedAt': deletedAt,
-      // 'deletedBy': deletedBy,
     };
   }
 
@@ -183,11 +179,11 @@ class UserModel {
   FormData toFormData() {
     FormData data = FormData.fromMap(toJson());
     // aadhar and pan images contain value type of file then add this to formdata file
-    if (aadhar != null && aadhar!["images"] is List<File>) {
+    if (aadhar != null) {
       for (var file in aadhar!["images"]) {
         data.files.add(
           MapEntry(
-            "aadhar[]",
+            "aadharImages",
             MultipartFile.fromFileSync(
               file.path,
               filename: file.path.split(Platform.pathSeparator).last,
@@ -196,11 +192,12 @@ class UserModel {
         );
       }
     }
-    if (pan != null && pan!["images"] is List<File>) {
-      for (var file in pan!["images"]) {
+    if (pan != null) {
+      for (var file in pan!["images"] ) {
+        if(file==null) continue;
         data.files.add(
           MapEntry(
-            "pan[]",
+            "panImages",
             MultipartFile.fromFileSync(
               file.path,
               filename: file.path.split(Platform.pathSeparator).last,

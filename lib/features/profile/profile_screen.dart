@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sl/widgets/network_image_view.dart';
 
 import '../../model/user_detail_model.dart';
 import '../../routes/app_routes.dart';
@@ -27,7 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserDetails() async {
     try {
-      final details = await CommonService.to.getUserDetails();
+      final details = await CommonService.to.getUserDetails(forceRefresh: true);
       if (mounted) {
         setState(() {
           userDetails = details;
@@ -176,10 +177,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildTextField("State", userDetails?.state ?? ""),
                     _buildTextField("Pincode", userDetails?.pincode ?? ""),
                     _buildTextField("Country", userDetails?.country ?? ""),
+                    _buildTextField("Aadhar Number", userDetails?.aadharNumber ?? ""),
+                    _buildTextField("PAN Number", userDetails?.panNumber ?? ""),
 
                     const SizedBox(height: 24),
 
-                    // Document Information
+                    // Personal Documents Section
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -190,105 +193,130 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Document Information",
+                            "Personal Documents",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 12),
-                          _buildDocumentInfo(),
+                          _buildPersonalDocuments(),
                         ],
                       ),
                     ),
 
                     const SizedBox(height: 24),
 
-                    // Account Information (if available)
-                    if (userDetails?.savedAccountDetails != null)
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Saved Account Details",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            // _buildAccountInfo(),
-                          ],
-                        ),
-                      ),
+                    // Document Information
+                    // Container(
+                    //   padding: const EdgeInsets.all(16),
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.grey.shade100,
+                    //     borderRadius: BorderRadius.circular(12),
+                    //   ),
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     children: [
+                    //       const Text(
+                    //         "Document Information",
+                    //         style: TextStyle(
+                    //           fontSize: 16,
+                    //           fontWeight: FontWeight.bold,
+                    //         ),
+                    //       ),
+                    //       const SizedBox(height: 12),
+                    //       _buildDocumentInfo(),
+                    //     ],
+                    //   ),
+                    // ),
 
-                    if (userDetails?.savedAccountDetails != null)
-                      const SizedBox(height: 24),
+                    // const SizedBox(height: 24),
+
+                    // // Account Information (if available)
+                    // if (userDetails?.savedAccountDetails != null)
+                    //   Container(
+                    //     padding: const EdgeInsets.all(16),
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.grey.shade100,
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //     child: Column(
+                    //       crossAxisAlignment: CrossAxisAlignment.start,
+                    //       children: [
+                    //         const Text(
+                    //           "Saved Account Details",
+                    //           style: TextStyle(
+                    //             fontSize: 16,
+                    //             fontWeight: FontWeight.bold,
+                    //           ),
+                    //         ),
+                    //         const SizedBox(height: 8),
+                    //         // _buildAccountInfo(),
+                    //       ],
+                    //     ),
+                    //   ),
+
+                    // if (userDetails?.savedAccountDetails != null)
+                    //   const SizedBox(height: 24),
 
                     // Points Information
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Points Information",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text("Available Points:"),
-                              Text(
-                                "${userDetails?.availablePoints ?? 0}",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text("Total Points:"),
-                              Text(
-                                "${userDetails?.totalPoints ?? 0}",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text("Redeemed Points:"),
-                              Text(
-                                "${userDetails?.redeemedPoints ?? 0}",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24), // Add some bottom padding
+                    // Container(
+                    //   padding: const EdgeInsets.all(16),
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.grey.shade100,
+                    //     borderRadius: BorderRadius.circular(12),
+                    //   ),
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     children: [
+                    //       const Text(
+                    //         "Points Information",
+                    //         style: TextStyle(
+                    //           fontSize: 16,
+                    //           fontWeight: FontWeight.bold,
+                    //         ),
+                    //       ),
+                    //       const SizedBox(height: 8),
+                    //       Row(
+                    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //         children: [
+                    //           const Text("Available Points:"),
+                    //           Text(
+                    //             "${userDetails?.availablePoints ?? 0}",
+                    //             style: const TextStyle(
+                    //               fontWeight: FontWeight.bold,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       Row(
+                    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //         children: [
+                    //           const Text("Total Points:"),
+                    //           Text(
+                    //             "${userDetails?.totalPoints ?? 0}",
+                    //             style: const TextStyle(
+                    //               fontWeight: FontWeight.bold,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       Row(
+                    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //         children: [
+                    //           const Text("Redeemed Points:"),
+                    //           Text(
+                    //             "${userDetails?.redeemedPoints ?? 0}",
+                    //             style: const TextStyle(
+                    //               fontWeight: FontWeight.bold,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 24), // Add some bottom padding
                   ],
                 ),
               ),
@@ -336,6 +364,265 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isReadOnly:
             true, // Make fields read-only since this is a display screen
       ),
+    );
+  }
+
+  Widget _buildPersonalDocuments() {
+    return Column(
+      children: [
+        // Aadhar Card
+        Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.fingerprint,
+                color: Color(0xFF001519),
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Aadhar Card",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Number: ${userDetails?.hasAadhar == true ? userDetails!.aadharNumber : 'N/A'}",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: userDetails?.hasAadhar == true
+                            ? Colors.green.shade100
+                            : Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        userDetails?.hasAadhar == true ? "Available" : "Not Available",
+                        style: TextStyle(
+                          color: userDetails?.hasAadhar == true
+                              ? Colors.green.shade700
+                              : Colors.grey.shade600,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Aadhar Images
+              if (userDetails?.aadhar?['images'] != null && userDetails!.aadhar!['images'].isNotEmpty)
+                _buildDocumentImages(userDetails!.aadhar!['images'])
+              else
+                Container(
+                  width: 60,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Icon(
+                    Icons.image_not_supported,
+                    color: Colors.grey.shade400,
+                    size: 20,
+                  ),
+                ),
+            ],
+          ),
+        ),
+
+        // PAN Card
+        Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.credit_card,
+                color: Color(0xFF001519),
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "PAN Card",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Number: ${userDetails?.hasPan == true ? userDetails!.panNumber : 'N/A'}",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: userDetails?.hasPan == true
+                            ? Colors.green.shade100
+                            : Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        userDetails?.hasPan == true ? "Available" : "Not Available",
+                        style: TextStyle(
+                          color: userDetails?.hasPan == true
+                              ? Colors.green.shade700
+                              : Colors.grey.shade600,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // PAN Images
+              if (userDetails?.pan?['images'] != null && userDetails!.pan!['images'].isNotEmpty)
+                _buildDocumentImages(userDetails!.pan!['images'])
+              else
+                Container(
+                  width: 60,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Icon(
+                    Icons.image_not_supported,
+                    color: Colors.grey.shade400,
+                    size: 20,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDocumentImages(List<dynamic> images) {
+    if (images.isEmpty) {
+      return Container(
+        width: 60,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Icon(
+          Icons.image_not_supported,
+          color: Colors.grey.shade400,
+          size: 20,
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: 60,
+      height: 40,
+      child: PageView.builder(
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          String imageUrl = images[index].toString();
+          return Container(
+            margin: const EdgeInsets.only(right: 4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: GestureDetector(
+                onTap: () => _showImageDialog(imageUrl),
+                child: NetworkImageView(imgUrl: imageUrl)
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showImageDialog(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.8,
+              maxWidth: MediaQuery.of(context).size.width * 0.9,
+            ),
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: NetworkImageView(imgUrl: imageUrl),
+                ),
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: Colors.black54,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

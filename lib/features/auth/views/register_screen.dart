@@ -124,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await controller
             .register(user)
             .then((value) {
-              if (value && mounted) context.go(AppRoutes.home);
+              if (value && mounted) context.go(AppRoutes.login);
             })
             .catchError((e) {
               MyToasts.toastError(e.toString());

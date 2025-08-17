@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sl/widgets/toast/my_toast.dart';
 
+import '../../model/user_detail_model.dart';
+import '../../model/user_model.dart';
 import '../../model/wallet_history_model.dart';
+import '../../routes/app_routes.dart';
+import '../../shared/services/common_service.dart';
+import '../../shared/services/storage_service.dart';
 import '../home/controller/dashboard_controller.dart';
 
 class WalletScreen extends StatefulWidget {
@@ -15,7 +21,8 @@ class WalletScreen extends StatefulWidget {
 class _WalletScreenState extends State<WalletScreen> {
   final DashboardController dashboardController =
       Get.find<DashboardController>();
-
+  UserDetailModel? userDetails;
+  late final UserModel user;
   WalletHistoryModel? walletHistory;
   bool isLoading = true;
   String? errorMessage;
@@ -23,7 +30,25 @@ class _WalletScreenState extends State<WalletScreen> {
   @override
   void initState() {
     super.initState();
+    user = StorageService.instance.getUserId() ?? UserModel();
     _loadWalletHistory();
+  }
+
+  _loadUserDetails() async {
+    // Load user details if user ID exists
+    if (user.id?.isNotEmpty == true) {
+      final details = await CommonService.to.getUserDetails();
+      if (mounted) {
+        setState(() {
+          userDetails = details;
+          isLoading = false;
+        });
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> _loadWalletHistory() async {
@@ -47,6 +72,7 @@ class _WalletScreenState extends State<WalletScreen> {
           isLoading = false;
         });
       }
+      _loadUserDetails();
     } catch (e) {
       setState(() {
         errorMessage = 'Error: ${e.toString()}';
@@ -66,12 +92,9 @@ class _WalletScreenState extends State<WalletScreen> {
       backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
         backgroundColor: const Color(0xFF001519),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+        elevation: 0,
         title: const Text(
-          'Wallet',
+          "Wallet",
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -86,23 +109,36 @@ class _WalletScreenState extends State<WalletScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          if (walletHistory != null) _buildSummaryCards(),
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.only(top: 16),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
-                ),
-              ),
-              child: _buildHistoryContent(),
+      body: Container(
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12),
+            topRight: Radius.circular(12),
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Balance Card
+                _buildBalanceCard(),
+                const SizedBox(height: 20),
+                // Winnings Card
+                _buildWinningsCard(),
+                const SizedBox(height: 20),
+                // My Transactions Header
+                _buildTransactionHeader(),
+                const SizedBox(height: 10),
+                // Transactions List
+                _buildTransactionsList(),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -425,6 +461,240 @@ class _WalletScreenState extends State<WalletScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildBalanceCard() {
+    // Calculate total balance from wallet history
+    final totalBalance = walletHistory?.totalCompletedAmount ?? 0.0;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        // color: Colors.blue.shade900,
+        image: DecorationImage(
+          image: AssetImage("assets/images/walletBg.png"),
+          fit: BoxFit.cover,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          const Text(
+            "Available Balance (5 Point = ₹1)",
+            style: TextStyle(color: Colors.white70, fontSize: 14),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            "₹${userDetails?.availablePoints.toStringAsFixed(2) ?? '0.00'}",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () async {
+              await context.push(AppRoutes.withdrawPoints);
+
+              _loadUserDetails();
+            },
+            child: const Text(
+              "Get it Now Withdraw",
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWinningsCard() {
+    // Calculate winnings from approved and completed amounts
+    final totalWinnings =
+        (walletHistory?.totalApprovedAmount ?? 0.0) +
+        (walletHistory?.totalCompletedAmount ?? 0.0);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: Colors.orange.shade100,
+                child: Icon(Icons.star, color: Colors.orange),
+              ),
+              const SizedBox(width: 10),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Your Winning",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "Approved + Completed Points",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Text(
+            totalWinnings.toStringAsFixed(2),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTransactionHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children:  [
+        Text(
+          "My Transactions",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        GestureDetector(
+          onTap: () {
+            // Navigate to the wallet history screen
+            context.push(AppRoutes.walletHistory, extra: walletHistory);
+          },
+          child: Text("View All", style: TextStyle(color: Colors.red, fontSize: 14))),
+      ],
+    );
+  }
+
+  Widget _buildTransactionsList() {
+    if (isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32.0),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            children: [
+              Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+              const SizedBox(height: 16),
+              Text(
+                errorMessage!,
+                style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _refreshWalletHistory,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (walletHistory == null || walletHistory!.data.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            children: [
+              Icon(
+                Icons.account_balance_wallet_outlined,
+                size: 64,
+                color: Colors.grey[400],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No wallet history found',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Your withdrawal history will appear here',
+                style: TextStyle(color: Colors.grey[500], fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+ 
+
+    return Column(
+      children: walletHistory!.data.map((request) {
+        final safeId = request.id.length > 8
+            ? request.id.substring(request.id.length - 8)
+            : request.id;
+
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 2),
+          decoration: BoxDecoration(
+            // borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 0,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: CircleAvatar(
+              backgroundColor: request.statusColor.withOpacity(0.1),
+              child: Icon(request.statusIcon, color: request.statusColor),
+            ),
+            title: Text(
+              request.statusDisplayText,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: request.statusColor,
+              ),
+            ),
+            subtitle: Text(
+              "T ID: $safeId\n${request.timeSinceCreated}",
+              style: const TextStyle(fontSize: 12),
+            ),
+            trailing: Text(
+              request.formattedAmount,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: request.statusColor,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

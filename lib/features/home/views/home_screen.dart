@@ -133,13 +133,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         'Welcome to SLC',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       Text(
                         // use decoded token for user name or user details
                         userDetails?.displayName ??
                             (user.firstname != null
-                                ? '${user.firstname} ${user.lastname}'
+                                ? '${user.firstname?.toUpperCase()} ${user.middlename?.toUpperCase()}'
                                 : 'Guest'),
                         style: const TextStyle(
                           fontSize: 16,
@@ -158,7 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: const Icon(Icons.language, color: Colors.white),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.push(AppRoutes.notifications);
+                    },
                     icon: const Icon(
                       Icons.notifications_active_outlined,
                       color: Colors.white,
@@ -243,31 +245,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                 context.push(AppRoutes.redeemPoints);
                               },
                               child: Container(
-                                width:
-                                    MediaQuery.of(context).size.width / 2 - 24,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 8,
+                                // width:
+                                //     MediaQuery.of(context).size.width / 2 - 24,
+                                padding: const EdgeInsets.only(
+                                  left: 20,
+                                  right: 8,
+                                  top: 8,
+                                  bottom: 8,
                                 ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFFDF3F4),
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     CircleAvatar(
-                                      radius: 18,
+                                      radius: 20,
                                       backgroundColor: AppColors.kcPrimaryColor
                                           .withOpacity(0.1),
                                       child: Icon(
                                         Icons.card_giftcard,
-                                        size: 18,
+                                        size: 20,
                                         color: AppColors.kcPrimaryColor,
                                       ),
                                     ),
-                                    const SizedBox(height: 10),
+                                    const SizedBox(height: 12),
                                     Text(
-                                      'Redeem MY Plus\nPoints',
+                                      'Redeem My Plus\nPoints',
                                       style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
@@ -287,8 +293,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _iconCircle('Gift\nTracker', Icons.redeem, () {
-                          context.push(AppRoutes.redeemPoints);
+                        _iconCircle('Points\nHistory', Icons.history, () {
+                           context.push(
+                                      AppRoutes.redeemHistory,
+                                      extra: userRedeemHistory,
+                                    );
                         }),
                         _iconCircle('Company\nPolicy', Icons.policy, () {
                           context.push(AppRoutes.companyPolicy);
@@ -447,9 +456,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _actionBox(IconData icon, String title) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async{
         if (title == 'Scan Product') {
-          context.push(AppRoutes.qrScan);
+        await  context.push(AppRoutes.qrScan);
+         _loadUserDetails();
+        // await  CommonService.to.getUserDetails(forceRefresh: true);
         } else if (title == 'Chat with us') {
           context.push(AppRoutes.chatWithUs);
         }
@@ -460,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
           color: const Color(0xFFFDF3F4),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
@@ -528,29 +539,41 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      itemCount: 2,
+      itemCount: redeemHistory.recentRedemptions.length >= 3
+          ? 3
+          : redeemHistory.recentRedemptions.length,
       itemBuilder: (context, index) {
-        final redemption = redeemHistory.recentRedemptions![index];
-        final name = userDetails?.fullName ?? 'No Name';
-        final date = redemption.completedAt ?? '';
-        final points = redemption.pointsEarned?.toString() ?? '0';
+        final redemption = redeemHistory.recentRedemptions[index];
+        final name = redemption.offerId.productId?.title ?? 'Product';
+        final date = redemption.completedAt;
+        final points = redemption.pointsEarned.toString();
         return ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-          leading: Image.asset(
+          leading: redemption.offerId.productId!.images.isNotEmpty
+                ?  SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: NetworkImageView(
+                             imgUrl:  redemption.offerId.productId!.images.first,
+                             isFullPath: true,
+                              fit: BoxFit.cover,
+                            ),
+                )
+                : Image.asset(
             "assets/images/defaultProductLogo.png",
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             fit: BoxFit.cover,
           ),
           title: Text(
             name,
-            style: const TextStyle(fontWeight: FontWeight.w600),
+            style: const TextStyle(fontWeight: FontWeight.w600,fontSize: 12),
           ),
           subtitle: Text(
             DateFormators.formatDate(
               DateTime.tryParse(date.toString()) ?? DateTime.now(),
             ),
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(color: Colors.grey,fontSize: 12),
           ),
           trailing: RichText(
             text: TextSpan(
@@ -560,12 +583,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   text: '$points ',
                   style: const TextStyle(
                     color: Colors.red,
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 WidgetSpan(
-                  child: Icon(Icons.arrow_outward, size: 14, color: Colors.red),
+                  child: Icon(Icons.arrow_outward, size: 12, color: Colors.red),
                 ),
               ],
             ),

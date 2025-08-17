@@ -188,19 +188,125 @@ class RedemptionMetadata {
 class OfferInfo {
   final String id;
   final int points;
+  final ProductInfo? productId;
 
-  OfferInfo({required this.id, required this.points});
+  OfferInfo({
+    required this.id,
+    required this.points,
+    this.productId,
+  });
 
   factory OfferInfo.fromJson(Map<String, dynamic> json) {
-    return OfferInfo(id: json['_id'] ?? '', points: json['points'] ?? 0);
+    return OfferInfo(
+      id: json['_id'] ?? '',
+      points: json['points'] ?? 0,
+      productId: json['productId'] != null
+          ? ProductInfo.fromJson(json['productId'] as Map<String, dynamic>)
+          : null,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    return {'_id': id, 'points': points};
+    return {
+      '_id': id,
+      'points': points,
+      'productId': productId?.toJson(),
+    };
   }
 
   @override
   String toString() {
-    return 'OfferInfo(id: $id, points: $points)';
+    return 'OfferInfo(id: $id, points: $points, productId: $productId)';
+  }
+}
+
+class ProductInfo {
+  final String id;
+  final String title;
+  final List<String> images;
+  final String specifications;
+  final String termsAndConditions;
+  final String description;
+  final double price;
+  final double productRating;
+  final int productRatingCount;
+  final bool isActive;
+  final bool isDeleted;
+  final DateTime? deletedAt;
+  final String? deletedBy;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int version;
+
+  ProductInfo({
+    required this.id,
+    required this.title,
+    required this.images,
+    required this.specifications,
+    required this.termsAndConditions,
+    required this.description,
+    required this.price,
+    required this.productRating,
+    required this.productRatingCount,
+    required this.isActive,
+    required this.isDeleted,
+    this.deletedAt,
+    this.deletedBy,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.version,
+  });
+
+  factory ProductInfo.fromJson(Map<String, dynamic> json) {
+    return ProductInfo(
+      id: json['_id'] ?? '',
+      title: json['title'] ?? '',
+      images: List<String>.from(json['images'] ?? []),
+      specifications: json['specifications'] ?? '',
+      termsAndConditions: json['termsAndConditions'] ?? '',
+      description: json['description'] ?? '',
+      price: (json['price'] ?? 0).toDouble(),
+      productRating: (json['productRating'] ?? 0).toDouble(),
+      productRatingCount: json['productRatingCount'] ?? 0,
+      isActive: json['isActive'] ?? false,
+      isDeleted: json['isDeleted'] ?? false,
+      deletedAt: json['deletedAt'] != null
+          ? DateTime.parse(json['deletedAt'])
+          : null,
+      deletedBy: json['deletedBy'],
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updatedAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      version: json['__v'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'title': title,
+      'images': images,
+      'specifications': specifications,
+      'termsAndConditions': termsAndConditions,
+      'description': description,
+      'price': price,
+      'productRating': productRating,
+      'productRatingCount': productRatingCount,
+      'isActive': isActive,
+      'isDeleted': isDeleted,
+      'deletedAt': deletedAt?.toIso8601String(),
+      'deletedBy': deletedBy,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+      '__v': version,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'ProductInfo(id: $id, title: $title, price: $price, isActive: $isActive)';
   }
 }

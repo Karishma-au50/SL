@@ -27,13 +27,6 @@ class AuthService extends BaseApiService {
       status: res.data["error"],
       data: res.data['data'],
     );
-    // if (resModel.status == false) {
-    //   Map<String, dynamic> decodedToken = JwtDecoder.decode(
-    //     resModel.data['token'],
-    //   );
-    //   StorageService.instance.setUserId(UserModel.fromJson(decodedToken));
-    //   StorageService.instance.setToken(resModel.data);
-    // }
     return resModel;
   }
 
@@ -92,7 +85,7 @@ class AuthService extends BaseApiService {
   // get user redeem points history
   Future<ResponseModel> getRedemptionHistory(String userId) async {
     final res = await get(
-      '${AuthEndpoint.getRedemptionPointsSummary}/6890f8872e67eb2c7960e481/points-summary',
+      '${AuthEndpoint.getRedemptionPointsSummary}/$userId/points-summary',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
