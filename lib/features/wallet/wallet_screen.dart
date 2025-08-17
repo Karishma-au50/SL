@@ -482,7 +482,7 @@ class _WalletScreenState extends State<WalletScreen> {
       child: Column(
         children: [
           const Text(
-            "Available Balance (5 Point = ₹1)",
+            "Available Balance (1 Point = ₹1)",
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 10),
