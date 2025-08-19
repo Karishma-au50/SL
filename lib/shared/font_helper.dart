@@ -128,4 +128,91 @@ class FontHelper {
   static TextStyle ts50w600({Color? color}) {
     return TextStyle(fontSize: 55, fontWeight: FontWeight.w600, color: color);
   }
+
+  // Custom TT Firs Neue Trial Typography
+  static TextStyle ttFirsNeueTitle({Color? color}) {
+    return TextStyle(
+      fontFamily: 'TT Firs Neue Trial',
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      height: 1.0, // line-height: 100%
+      letterSpacing: 0.0, // letter-spacing: 0%
+      color: color,
+    );
+  }
+
+  // Generic typography helper for custom font families
+  static TextStyle customTypography({
+    String? fontFamily,
+    double fontSize = 16,
+    FontWeight fontWeight = FontWeight.w400,
+    double height = 1.0,
+    double letterSpacing = 0.0,
+    Color? color,
+    TextAlign textAlign = TextAlign.start,
+  }) {
+    return TextStyle(
+      fontFamily: fontFamily,
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      height: height,
+      letterSpacing: letterSpacing,
+      color: color,
+    );
+  }
+
+  // Generic helper to create TextStyle with consistent theming
+  static TextStyle createTextStyle({
+    double fontSize = 16,
+    FontWeight fontWeight = FontWeight.w400,
+    Color? color,
+    String? fontFamily,
+    double? height,
+    double? letterSpacing,
+    TextDecoration? decoration,
+    Color? decorationColor,
+    FontStyle? fontStyle,
+  }) {
+    return TextStyle(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: color,
+      fontFamily: fontFamily,
+      height: height,
+      letterSpacing: letterSpacing,
+      decoration: decoration,
+      decorationColor: decorationColor,
+      fontStyle: fontStyle,
+    );
+  }
+
+  // Helper to apply TT Firs Neue font family to any existing TextStyle
+  static TextStyle withTTFirsNeue(TextStyle baseStyle) {
+    return baseStyle.copyWith(fontFamily: 'TT Firs Neue Trial Var Roman');
+  }
+
+  // Helper to create responsive text styles based on screen size
+  static TextStyle responsiveTextStyle(
+    BuildContext context, {
+    required double fontSize,
+    FontWeight fontWeight = FontWeight.w400,
+    Color? color,
+    String? fontFamily,
+  }) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double responsiveFontSize = fontSize;
+
+    if (screenWidth < 375) {
+      responsiveFontSize = fontSize * 0.9;
+    } else if (screenWidth > 414) {
+      responsiveFontSize = fontSize * 1.1;
+    }
+
+    return TextStyle(
+      fontSize: responsiveFontSize,
+      fontWeight: fontWeight,
+      color: color,
+      fontFamily: fontFamily,
+    );
+  }
 }

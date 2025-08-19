@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sl/shared/typography.dart';
 
 import '../../shared/app_colors.dart';
 import '../../shared/font_helper.dart';
@@ -97,7 +98,7 @@ class _MyTextFieldState extends State<MyTextField> {
           setState(() {});
         },
         validator: widget.isValidate ? widget.validator : null,
-        style: widget.textStyle ?? FontHelper.ts12w400(),
+        style: widget.textStyle ?? AppTypography.bodySmall(),
         readOnly: widget.isReadOnly,
         autofocus: widget.autoFocus,
         onTap: widget.onTap,
@@ -115,8 +116,12 @@ class _MyTextFieldState extends State<MyTextField> {
           hintText: widget.hintText,
           labelText: widget.labelText ?? widget.hintText,
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          hintStyle: widget.hindStyle ?? FontHelper.ts14w400(color: Colors.grey.shade400),
-          labelStyle: widget.labelStyle ?? FontHelper.ts14w400(color: Colors.black),
+          hintStyle:
+              widget.hindStyle ??
+              AppTypography.bodySmall(color: Colors.black54),
+          labelStyle:
+              widget.labelStyle ??
+              AppTypography.bodySmall(color: Colors.black87),
           border: inputBorder,
           focusedBorder: inputBorder,
           enabledBorder: inputBorder,
@@ -127,9 +132,7 @@ class _MyTextFieldState extends State<MyTextField> {
                   icon: isObserver
                       ? const Icon(Icons.visibility_outlined, size: 25)
                       : const Icon(Icons.visibility_off_outlined, size: 25),
-                  onPressed: () => setState(
-                    () => isObserver = !isObserver,
-                  ),
+                  onPressed: () => setState(() => isObserver = !isObserver),
                 )
               : widget.suffixIcon,
           filled: true,
@@ -225,7 +228,7 @@ class _MyTextFieldOutlineState extends State<MyTextFieldOutline> {
         onTap: widget.onTap,
         maxLength: widget.maxLength,
         inputFormatters: widget.inputFormatters,
-        cursorColor:Color(0xFF212B36),
+        cursorColor: Color(0xFF212B36),
         decoration: InputDecoration(
           counter: const Offstage(),
           isDense: true,
@@ -247,7 +250,8 @@ class _MyTextFieldOutlineState extends State<MyTextFieldOutline> {
             borderSide: BorderSide(color: Colors.grey.shade300, width: 0.5),
           ),
           errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: AppColors.errorColor)),
+            borderSide: BorderSide(color: AppColors.errorColor),
+          ),
           // contentPadding: const EdgeInsets.all(16),
           // contentPadding:
           //     const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
@@ -260,9 +264,7 @@ class _MyTextFieldOutlineState extends State<MyTextFieldOutline> {
                   icon: isObserver
                       ? const Icon(Icons.visibility_outlined, size: 25)
                       : const Icon(Icons.visibility_off_outlined, size: 25),
-                  onPressed: () => setState(
-                    () => isObserver = !isObserver,
-                  ),
+                  onPressed: () => setState(() => isObserver = !isObserver),
                 )
               : widget.suffixIcon,
         ),

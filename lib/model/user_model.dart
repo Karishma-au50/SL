@@ -141,7 +141,7 @@ class UserModel {
   Map<String, dynamic> toJson() {
     // if aadhar["images"] file is File then remove the key
     Map<String, dynamic> dupAadhar = {};
-    if (aadhar != null ) {
+    if (aadhar != null) {
       dupAadhar = {...aadhar!};
       dupAadhar.remove("images");
     }
@@ -179,6 +179,11 @@ class UserModel {
   FormData toFormData() {
     FormData data = FormData.fromMap(toJson());
     // aadhar and pan images contain value type of file then add this to formdata file
+    print(toJson());
+
+    print("Aadhar: $aadhar");
+    print("Pan: $pan");
+
     if (aadhar != null) {
       for (var file in aadhar!["images"]) {
         data.files.add(
@@ -193,8 +198,8 @@ class UserModel {
       }
     }
     if (pan != null) {
-      for (var file in pan!["images"] ) {
-        if(file==null) continue;
+      for (var file in pan!["images"]) {
+        if (file == null) continue;
         data.files.add(
           MapEntry(
             "panImages",

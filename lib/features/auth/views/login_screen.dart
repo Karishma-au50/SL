@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sl/shared/app_colors.dart';
+import 'package:sl/shared/typography.dart';
 import 'package:sl/widgets/buttons/my_button.dart';
 import 'package:sl/widgets/inputs/my_text_field.dart';
 
@@ -62,21 +63,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         )
                       : SizedBox(),
                   const SizedBox(height: 20),
-                  const Center(
+                  Center(
                     child: Text(
                       "Login with Mobile Number",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      style: AppTypography.ttFirsNeueTitle(
                         color: Colors.black87,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Center(
+                  Center(
                     child: Text(
                       "Please enter your Mobile Number to Login",
-                      style: TextStyle(color: Colors.black54, fontSize: 14),
+                      style: AppTypography.bodyMedium(color: Colors.black54),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -118,20 +119,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: GestureDetector(
                       onTap: () => context.push(AppRoutes.register),
-                      child: const Text.rich(
+                      child: Text.rich(
                         TextSpan(
                           text: "Not Registered? ",
-                          style: TextStyle(color: Colors.black54, fontSize: 14),
+                          style: AppTypography.bodyMedium(
+                            color: Colors.black54,
+                          ),
                           children: [
                             TextSpan(
                               text: "Register",
-                              style: TextStyle(
+                              style: AppTypography.bodyMedium(
                                 color: AppColors.kcPrimaryColor,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ),
