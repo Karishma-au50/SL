@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sl/shared/typography.dart';
 import 'package:sl/widgets/toast/my_toast.dart';
 
 import '../../model/user_detail_model.dart';
@@ -93,13 +94,9 @@ class _WalletScreenState extends State<WalletScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF001519),
         elevation: 0,
-        title: const Text(
+        title: Text(
           "Wallet",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
         actions: [
@@ -198,33 +195,12 @@ class _WalletScreenState extends State<WalletScreen> {
             children: [
               Icon(icon, color: color, size: 20),
               const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              Text(title, style: AppTypography.labelSmall(color: Colors.white)),
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            count,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            amount,
-            style: TextStyle(
-              color: color,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text(count, style: AppTypography.heading5(color: Colors.white)),
+          Text(amount, style: AppTypography.labelMedium(color: color)),
         ],
       ),
     );
@@ -567,7 +543,7 @@ class _WalletScreenState extends State<WalletScreen> {
   Widget _buildTransactionHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children:  [
+      children: [
         Text(
           "My Transactions",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -577,7 +553,11 @@ class _WalletScreenState extends State<WalletScreen> {
             // Navigate to the wallet history screen
             context.push(AppRoutes.walletHistory, extra: walletHistory);
           },
-          child: Text("View All", style: TextStyle(color: Colors.red, fontSize: 14))),
+          child: Text(
+            "View All",
+            style: TextStyle(color: Colors.red, fontSize: 14),
+          ),
+        ),
       ],
     );
   }
@@ -646,7 +626,6 @@ class _WalletScreenState extends State<WalletScreen> {
         ),
       );
     }
- 
 
     return Column(
       children: walletHistory!.data.map((request) {

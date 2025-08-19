@@ -66,9 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: Text(
                       "Login with Mobile Number",
-                      style: AppTypography.ttFirsNeueTitle(
-                        color: Colors.black87,
-                      ),
+                      style: AppTypography.heading3(color: Colors.black87),
                       textAlign: TextAlign.center,
                     ),
                   ),

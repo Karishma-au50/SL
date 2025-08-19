@@ -54,21 +54,37 @@ class _MainShellState extends State<MainShell> {
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_offer),
+            icon: _selectedIndex == 0
+                ? Image.asset("assets/images/homeFill.png")
+                : Image.asset("assets/images/homeLine.png"),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: _selectedIndex == 1
+                ? Image.asset("assets/images/discountFill.png")
+                : Image.asset("assets/images/discountLine.png"),
             label: 'Offer',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
+            icon: _selectedIndex == 2
+                ? Image.asset("assets/images/walletFill.png")
+                : Image.asset("assets/images/walletLine.png"),
             label: 'Wallet',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.help_outline),
+            icon: _selectedIndex == 3
+                ? Image.asset("assets/images/messageFill.png")
+                : Image.asset("assets/images/messageLine.png"),
             label: 'Help',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(
+            icon: _selectedIndex == 4
+                ? Image.asset("assets/images/userFill.png")
+                : Image.asset("assets/images/userLine.png"),
+            label: 'Profile',
+          ),
         ],
       ),
     );

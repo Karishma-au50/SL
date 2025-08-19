@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sl/shared/typography.dart';
 
 import '../../model/wallet_history_model.dart';
 import '../../widgets/toast/my_toast.dart';
@@ -7,7 +8,7 @@ import '../home/controller/dashboard_controller.dart';
 
 class WalletHistoryScreen extends StatefulWidget {
   final WalletHistoryModel? initialData;
-  
+
   const WalletHistoryScreen({super.key, this.initialData});
 
   @override
@@ -15,9 +16,6 @@ class WalletHistoryScreen extends StatefulWidget {
 }
 
 class _WalletHistoryScreenState extends State<WalletHistoryScreen> {
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,24 +24,17 @@ class _WalletHistoryScreenState extends State<WalletHistoryScreen> {
         backgroundColor: const Color(0xFF001519),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
+        title: Text(
           "Wallet History",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
-      
       ),
-      body:  _buildTransactionsList());
+      body: _buildTransactionsList(),
+    );
   }
 
-
   Widget _buildTransactionsList() {
-    
-
     if (widget.initialData == null || widget.initialData!.data.isEmpty) {
       return Center(
         child: Padding(
@@ -92,20 +83,16 @@ class _WalletHistoryScreenState extends State<WalletHistoryScreen> {
           final safeId = request.id.length > 8
               ? request.id.substring(request.id.length - 8)
               : request.id;
-      
+
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Container(
               margin: EdgeInsets.only(top: 6),
               decoration: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(
-                    color: Colors.grey.shade300,
-                    width: 0.5,
-                  ),
+                  bottom: BorderSide(color: Colors.grey.shade300, width: 0.5),
                 ),
-              color: Colors.white,
-               
+                color: Colors.white,
               ),
               child: ListTile(
                 contentPadding: EdgeInsets.zero,

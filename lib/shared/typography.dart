@@ -9,7 +9,7 @@ class AppTypography {
 
   // Base text styles with TT Firs Neue font
   static const TextStyle _baseStyle = TextStyle(
-    fontFamily: ttFirsNeue,
+    fontFamily: ttFirsNeueVar,
     height: 1.0,
     letterSpacing: 0.0,
   );

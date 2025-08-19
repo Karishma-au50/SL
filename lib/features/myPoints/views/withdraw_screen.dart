@@ -6,6 +6,7 @@ import 'package:sl/features/myPoints/controller/redeem_points_controller.dart';
 import 'package:sl/model/withdrawal_model.dart';
 import 'package:sl/routes/app_routes.dart';
 import 'package:sl/shared/services/common_service.dart';
+import 'package:sl/shared/typography.dart';
 import 'package:sl/widgets/buttons/my_button.dart';
 import 'package:sl/widgets/inputs/my_text_field.dart';
 
@@ -47,13 +48,9 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
       backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
         backgroundColor: const Color(0xFF001519),
-        title: const Text(
+        title: Text(
           'Withdraw My Plus Points',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
         leading: const BackButton(color: Colors.white),
@@ -65,9 +62,12 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
           Container(
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(16),
-            
+
             decoration: BoxDecoration(
-              image: DecorationImage(image: Image.asset("assets/images/amountBg.png").image, fit: BoxFit.contain),
+              image: DecorationImage(
+                image: Image.asset("assets/images/amountBg.png").image,
+                fit: BoxFit.contain,
+              ),
               // gradient: const LinearGradient(
               //   colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
               // ),

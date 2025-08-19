@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sl/shared/typography.dart';
 
 import '../../model/faq_model.dart';
 import '../home/controller/dashboard_controller.dart';
@@ -64,9 +65,9 @@ class _FaqScreenState extends State<FaqScreen> {
         backgroundColor: const Color(0xFF001519),
         elevation: 0,
         // leading: const BackButton(color: Colors.white),
-        title: const Text(
+        title: Text(
           "FAQ's",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
         actions: [
@@ -79,7 +80,10 @@ class _FaqScreenState extends State<FaqScreen> {
       body: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24)),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
         ),
         child: _buildContent(),
       ),
@@ -88,9 +92,7 @@ class _FaqScreenState extends State<FaqScreen> {
 
   Widget _buildContent() {
     if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (errorMessage != null) {
@@ -106,10 +108,7 @@ class _FaqScreenState extends State<FaqScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _refreshFAQs,
-              child: const Text('Retry'),
-            ),
+            ElevatedButton(onPressed: _refreshFAQs, child: const Text('Retry')),
           ],
         ),
       );
@@ -126,18 +125,16 @@ class _FaqScreenState extends State<FaqScreen> {
 
     return RefreshIndicator(
       onRefresh: _refreshFAQs,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(8),
+      child: ListView.separated(
+        padding: const EdgeInsets.all(16),
         itemCount: faqData.length,
+        separatorBuilder: (context, index) =>
+            Divider(color: Colors.grey.shade300, height: 1),
         itemBuilder: (context, index) {
           final faq = faqData[index];
           return Container(
-            margin: const EdgeInsets.only(top: 10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
+            // margin: const EdgeInsets.only(top: 10),
+            color: Colors.white,
             child: InkWell(
               borderRadius: BorderRadius.circular(12),
               onTap: () {
@@ -146,7 +143,7 @@ class _FaqScreenState extends State<FaqScreen> {
                 });
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -155,19 +152,33 @@ class _FaqScreenState extends State<FaqScreen> {
                         Expanded(
                           child: Text(
                             faq.question,
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                            style: AppTypography.labelMedium(
+                              color: Colors.black,
+                            ),
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(
-                            isExpanded[index] ? Icons.remove_circle_outline : Icons.add_circle_outline,
-                            color: Colors.black54,
-                          ),
-                          onPressed: () {
+                        InkWell(
+                          onTap: () {
                             setState(() {
                               isExpanded[index] = !isExpanded[index];
                             });
                           },
+                          child: Container(
+                            padding: const EdgeInsets.all(3.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.grey.shade300,
+                                width: 2,
+                              ),
+                            ),
+                            child: Text(
+                              isExpanded[index] ? '−' : '+',
+                              style: AppTypography.heading5(
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -176,7 +187,7 @@ class _FaqScreenState extends State<FaqScreen> {
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
                           faq.answer,
-                          style: const TextStyle(fontSize: 13, color: Colors.black87, height: 1.4),
+                          style: AppTypography.bodyMedium(color: Colors.black),
                         ),
                       ),
                   ],

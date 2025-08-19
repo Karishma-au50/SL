@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sl/shared/typography.dart';
 
 class MyPointsScreen extends StatefulWidget {
   const MyPointsScreen({super.key});
@@ -20,13 +21,9 @@ class _MyPointsScreenState extends State<MyPointsScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'My Points',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
       ),

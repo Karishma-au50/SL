@@ -8,6 +8,7 @@ import 'package:sl/features/home/controller/dashboard_controller.dart';
 import 'package:sl/model/user_detail_model.dart';
 import 'package:sl/model/user_model.dart';
 import 'package:sl/routes/app_routes.dart';
+import 'package:sl/shared/typography.dart';
 
 import '../../../model/home_banner_model.dart';
 import '../../../model/user_redeem_history_model.dart';
@@ -121,8 +122,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 40,
                     height: 40,
                     child: NetworkImageView(
-                      imgUrl:
-                          "https://i.pinimg.com/736x/4c/53/91/4c5391c2a69855120a204971a728f421.jpg",
+                      imgUrl: user.gender?.toLowerCase() == "male"
+                          ? "https://i.pinimg.com/736x/6e/52/14/6e5214b1bd71d4ac8c4350301bea7593.jpg"
+                          : "https://i.pinimg.com/736x/68/4c/b6/684cb636cf67568ed031a5fee627c8a5.jpg",
                       radius: 24,
                       isFullPath: true,
                     ),
@@ -133,37 +135,40 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         'Welcome to SLC',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        style: AppTypography.bodySmall(color: Colors.grey),
                       ),
+                      const SizedBox(height: 8),
                       Text(
                         // use decoded token for user name or user details
                         userDetails?.displayName ??
                             (user.firstname != null
                                 ? '${user.firstname?.toUpperCase()} ${user.middlename?.toUpperCase()}'
                                 : 'Guest'),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
+                        style: AppTypography.labelLarge(color: Colors.white),
                       ),
                     ],
                   ),
                   const Spacer(),
-                  IconButton(
-                    onPressed: () {
-                      context.push(AppRoutes.language);
+                  InkWell(
+                    onTap: () {
+                      context.push(AppRoutes.wallet);
                       // StorageService.instance.clear();
                     },
-                    icon: const Icon(Icons.language, color: Colors.white),
+                    child: Image.asset(
+                      "assets/images/walletIcon.png",
+                      width: 24,
+                      height: 24,
+                    ),
                   ),
-                  IconButton(
-                    onPressed: () {
+                  const SizedBox(width: 12),
+                  InkWell(
+                    onTap: () {
                       context.push(AppRoutes.notifications);
                     },
-                    icon: const Icon(
-                      Icons.notifications_active_outlined,
-                      color: Colors.white,
+                    child: Image.asset(
+                      "assets/images/notificationIcon.png",
+                      width: 24,
+                      height: 24,
                     ),
                   ),
                 ],
@@ -175,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: AspectRatio(
-                aspectRatio: 20 / 9,
+                aspectRatio: 16 / 9,
                 child: CarouselSlider(
                   items: homeBanner.map((offer) {
                     return GestureDetector(
@@ -202,10 +207,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            SizedBox(height: 8),
+            // Dots Indicator
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: homeBanner.map((url) {
+                  int index = homeBanner.indexOf(url);
+                  bool isSelected = current == index;
+                  return Container(
+                    width: isSelected ? 16.0 : 8.0,
+                    height: 8.0,
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 8.0,
+                      horizontal: 2.0,
+                    ),
+                    decoration: BoxDecoration(
+                      // shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(4),
+                      color: isSelected
+                          ? AppColors.kcPrimaryColor
+                          : Colors.white.withOpacity(0.5),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+
             const SizedBox(height: 16),
 
             // Top Actions
             Container(
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -217,235 +250,236 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Column(
-                  children: [
-                    SizedBox(height: 10),
-                    SizedBox(
-                      height: 120,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              children: [
-                                _actionBox(
-                                  Icons.qr_code_scanner,
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  SizedBox(
+                    height: 120,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: _actionBox(
+                                  "assets/images/scanQr.png",
                                   'Scan Product',
                                 ),
-                                Spacer(),
-                                _actionBox(Icons.chat, 'Chat with us'),
-                              ],
+                              ),
+                              const SizedBox(height: 8),
+                              Expanded(
+                                child: _actionBox(
+                                  "assets/images/chatWithUs.png",
+                                  'Chat with us',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              context.push(AppRoutes.redeemPoints);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.only(
+                                left: 20,
+                                right: 8,
+                                top: 8,
+                                bottom: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFDF3F4),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "assets/images/redeemPoint.png",
+                                    width: 26,
+                                    height: 26,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'Redeem My Plus\nPoints',
+                                    style: AppTypography.labelLarge(),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                // Handle redeem points tap
-                                context.push(AppRoutes.redeemPoints);
-                              },
-                              child: Container(
-                                // width:
-                                //     MediaQuery.of(context).size.width / 2 - 24,
-                                padding: const EdgeInsets.only(
-                                  left: 20,
-                                  right: 8,
-                                  top: 8,
-                                  bottom: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFDF3F4),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // More options
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _iconCircle(
+                        'Points\nHistory',
+                        "assets/images/pointHistoryIcon.png",
+                        () {
+                          context.push(
+                            AppRoutes.redeemHistory,
+                            extra: userRedeemHistory,
+                          );
+                        },
+                      ),
+                      _iconCircle(
+                        'Company\nPolicy',
+                        "assets/images/companyPolicy.png",
+                        () {
+                          context.push(AppRoutes.companyPolicy);
+                        },
+                      ),
+                      _iconCircle('SLC\nVideo', "assets/images/video.png", () {
+                        context.push(AppRoutes.slcVideo);
+                      }),
+                      _iconCircle('About\nus', "assets/images/aboutUs.png", () {
+                        context.push(AppRoutes.aboutUs);
+                      }),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Points Card
+                  Container(
+                    height: 170.23,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF001519),
+                      borderRadius: BorderRadius.circular(12),
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/withdrawBg.png"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    CircleAvatar(
-                                      radius: 20,
-                                      backgroundColor: AppColors.kcPrimaryColor
-                                          .withOpacity(0.1),
-                                      child: Icon(
-                                        Icons.card_giftcard,
-                                        size: 20,
-                                        color: AppColors.kcPrimaryColor,
+                                    Text(
+                                      'Available Points (1 Point = ₹1)',
+                                      style: AppTypography.labelLarge(
+                                        color: Colors.white,
                                       ),
                                     ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      'Redeem My Plus\nPoints',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
+                                    const SizedBox(width: 8),
+                                    GestureDetector(
+                                      onTap: _loadData,
+                                      child: Icon(
+                                        Icons.refresh,
+                                        color: Colors.white70,
+                                        size: 16,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // More options
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _iconCircle('Points\nHistory', Icons.history, () {
-                           context.push(
-                                      AppRoutes.redeemHistory,
-                                      extra: userRedeemHistory,
-                                    );
-                        }),
-                        _iconCircle('Company\nPolicy', Icons.policy, () {
-                          context.push(AppRoutes.companyPolicy);
-                        }),
-                        _iconCircle('SLC\nVideo', Icons.ondemand_video, () {
-                          context.push(AppRoutes.slcVideo);
-                        }),
-                        _iconCircle('About\nus', Icons.info_outline, () {
-                          context.push(AppRoutes.aboutUs);
-                        }),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Points Card
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF001519),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Available Points (1 Point = ₹1)',
-                                        style: TextStyle(
+                                const SizedBox(height: 8),
+                                isLoadingUserDetails
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
                                           color: Colors.white,
-                                          fontSize: 12,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Text(
+                                        '₹ ${userDetails?.availablePoints.toStringAsFixed(2) ?? '0.00'}',
+                                        style: AppTypography.heading3(
+                                          color: Colors.white,
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
-                                      GestureDetector(
-                                        onTap: _loadData,
-                                        child: Icon(
-                                          Icons.refresh,
-                                          color: Colors.white70,
-                                          size: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  isLoadingUserDetails
-                                      ? const SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 2,
-                                          ),
-                                        )
-                                      : Text(
-                                          '₹ ${userDetails?.availablePoints.toStringAsFixed(2) ?? '0.00'}',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 26,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  Image.asset(
-                                    'assets/images/boy.png',
-                                    width: 80,
-                                    height: 80,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          // const SizedBox(height: 10),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                await context.push(AppRoutes.withdrawPoints);
-
-                                _loadUserDetails();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: const Text('Get it Now Withdraw'),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    if (userRedeemHistory != null &&
-                        userRedeemHistory!.recentRedemptions.isNotEmpty)
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Column(
                               children: [
-                                const Text(
-                                  'Redeem Points',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    context.push(
-                                      AppRoutes.redeemHistory,
-                                      extra: userRedeemHistory,
-                                    );
-                                  },
-                                  child: const Text(
-                                    'View All',
-                                    style: TextStyle(
-                                      color: AppColors.kcPrimaryColor,
-                                    ),
-                                  ),
+                                Image.asset(
+                                  'assets/images/boy.png',
+                                  width: 100,
+                                  height: 80,
                                 ),
                               ],
                             ),
-                          ),
+                          ],
+                        ),
 
-                          // Redeem List Items
-                          _redeemTile(userRedeemHistory!),
-                        ],
-                      ),
-                  ],
-                ),
+                        // const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await context.push(AppRoutes.withdrawPoints);
+
+                              _loadUserDetails();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.all(12),
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'Get it Now Withdraw',
+                              style: AppTypography.labelLarge(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  if (userRedeemHistory != null &&
+                      userRedeemHistory!.recentRedemptions.isNotEmpty)
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Redeem Points',
+                              style: AppTypography.buttonLarge(),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                context.push(
+                                  AppRoutes.redeemHistory,
+                                  extra: userRedeemHistory,
+                                );
+                              },
+                              child: Text(
+                                'View All',
+                                style: AppTypography.labelMedium(
+                                  color: AppColors.kcPrimaryColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Redeem List Items
+                        _redeemTile(userRedeemHistory!),
+                      ],
+                    ),
+                ],
               ),
             ),
           ],
@@ -454,13 +488,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _actionBox(IconData icon, String title) {
+  Widget _actionBox(String image, String title) {
     return GestureDetector(
-      onTap: () async{
+      onTap: () async {
         if (title == 'Scan Product') {
-        await  context.push(AppRoutes.qrScan);
-         _loadUserDetails();
-        // await  CommonService.to.getUserDetails(forceRefresh: true);
+          await context.push(AppRoutes.qrScan);
+          _loadUserDetails();
+          // await  CommonService.to.getUserDetails(forceRefresh: true);
         } else if (title == 'Chat with us') {
           context.push(AppRoutes.chatWithUs);
         }
@@ -470,39 +504,32 @@ class _HomeScreenState extends State<HomeScreen> {
         width: MediaQuery.of(context).size.width / 2 - 24,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFFFDF3F4),
+          color: const Color(0xFFFFF3F2),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: AppColors.kcPrimaryColor.withOpacity(0.1),
-              child: Icon(icon, size: 18, color: AppColors.kcPrimaryColor),
-            ),
+            Image.asset(image, width: 32, height: 32),
             const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            Expanded(child: Text(title, style: AppTypography.labelLarge())),
           ],
         ),
       ),
     );
   }
 
-  Widget _iconCircle(String title, IconData icon, void Function()? callback) {
+  Widget _iconCircle(
+    String title,
+    String imagePath,
+    void Function()? callback,
+  ) {
     return GestureDetector(
       onTap: callback,
       child: Container(
+        height: 110,
         decoration: BoxDecoration(
           border: BoxBorder.all(
-            color: AppColors.kcPrimaryColor.withOpacity(0.2),
+            color: Color(0xFF5D546526).withOpacity(0.15),
             // width: 1,
           ),
           borderRadius: BorderRadius.circular(45),
@@ -513,7 +540,7 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 85,
           // padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
           decoration: BoxDecoration(
-            color: const Color(0xFFFDF3F4), // shape: BoxShape.circle,
+            color: const Color(0xFFFFF3F2), // shape: BoxShape.circle,
             borderRadius: BorderRadius.circular(45),
 
             // boxShadow: [BoxShadow(color: const Color(0xFFFDF3F4), blurRadius: 6)],
@@ -521,12 +548,12 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 28, color: AppColors.kcPrimaryColor),
+              Image.asset(imagePath, width: 28, height: 28),
               const SizedBox(height: 6),
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 11),
+                style: AppTypography.labelMedium(color: Color(0xFF1D1F22)),
               ),
             ],
           ),
@@ -550,45 +577,61 @@ class _HomeScreenState extends State<HomeScreen> {
         return ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
           leading: redemption.offerId.productId!.images.isNotEmpty
-                ?  SizedBox(
+              ? SizedBox(
                   height: 30,
                   width: 30,
                   child: NetworkImageView(
-                             imgUrl:  redemption.offerId.productId!.images.first,
-                             isFullPath: true,
-                              fit: BoxFit.cover,
-                            ),
+                    imgUrl: redemption.offerId.productId!.images.first,
+                    isFullPath: true,
+                    fit: BoxFit.cover,
+                  ),
                 )
-                : Image.asset(
-            "assets/images/defaultProductLogo.png",
-            width: 40,
-            height: 40,
-            fit: BoxFit.cover,
-          ),
+              : Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF3F2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Image.asset(
+                    "assets/images/defaultProductLogo.png",
+                    width: 25,
+                    height: 25,
+                    fit: BoxFit.cover,
+                  ),
+                ),
           title: Text(
             name,
-            style: const TextStyle(fontWeight: FontWeight.w600,fontSize: 12),
+            style: AppTypography.labelMedium(color: Color(0xFF1D1F22)),
           ),
           subtitle: Text(
             DateFormators.formatDate(
               DateTime.tryParse(date.toString()) ?? DateTime.now(),
             ),
-            style: const TextStyle(color: Colors.grey,fontSize: 12),
+            style: AppTypography.bodySmall(color: Color(0xFF747474)),
           ),
           trailing: RichText(
             text: TextSpan(
-              style: const TextStyle(fontFamily: 'Poppins'),
+              style: AppTypography.labelMedium(),
               children: [
                 TextSpan(
                   text: '$points ',
-                  style: const TextStyle(
-                    color: Colors.red,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                  style: AppTypography.labelMedium(
+                    color: AppColors.kcPrimaryColor,
                   ),
                 ),
                 WidgetSpan(
-                  child: Icon(Icons.arrow_outward, size: 12, color: Colors.red),
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF3F2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_outward,
+                      size: 12,
+                      color: AppColors.kcPrimaryColor,
+                    ),
+                  ),
                 ),
               ],
             ),

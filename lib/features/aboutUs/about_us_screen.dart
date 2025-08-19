@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
 import 'package:sl/features/home/controller/dashboard_controller.dart';
+import 'package:sl/shared/typography.dart';
 import 'package:flutter_map/flutter_map.dart' as fmap;
 import 'package:latlong2/latlong.dart';
 
@@ -59,10 +60,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         leading: const BackButton(color: Colors.white),
         title: Text(
           "About Us",
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
       ),

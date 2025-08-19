@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sl/shared/typography.dart';
 
 import '../shared/app_colors.dart';
 import '../shared/constant/app_constants.dart';
@@ -39,7 +40,7 @@ class NetworkImageView extends StatelessWidget {
         child: Center(
           child: Text(
             'Image not available',
-            style: TextStyle(color: Colors.grey[600]),
+            style: AppTypography.bodyMedium(color: Colors.grey.shade600),
           ),
         ),
       );

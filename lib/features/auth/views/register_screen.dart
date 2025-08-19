@@ -11,6 +11,7 @@ import 'package:sl/shared/app_colors.dart';
 import 'package:sl/widgets/inputs/my_text_field.dart';
 import 'package:sl/widgets/toast/my_toast.dart';
 
+import '../../../shared/typography.dart';
 import '../../../widgets/buttons/my_button.dart';
 import '../controller/auth_controller.dart';
 
@@ -200,10 +201,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Select Image Source',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              Text('Select Image Source', style: AppTypography.heading5()),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -234,13 +232,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Camera',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        Text('Camera', style: AppTypography.bodyMedium()),
                       ],
                     ),
                   ),
@@ -270,13 +262,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Gallery',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        Text('Gallery', style: AppTypography.bodyMedium()),
                       ],
                     ),
                   ),
@@ -357,24 +343,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              const Center(
+              Center(
                 child: Text(
                   "Create a New Account",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: AppTypography.heading4(color: Colors.black87),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 20),
               Text(
                 currentStep == 0
-                    ? "Personal Details\nStep 1/3"
+                    ? "Personal Details"
                     : currentStep == 1
-                    ? "Address Details\nStep 2/3"
-                    : "Document Details\nStep 3/3",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w500,
-                ),
+                    ? "Address Details"
+                    : "Document Details",
+                style: AppTypography.bodyLarge(),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                currentStep == 0
+                    ? "Step 1/3"
+                    : currentStep == 1
+                    ? "Step 2/3"
+                    : "Step 3/3",
+                style: AppTypography.bodySmall(color: Color(0xFF747474)),
               ),
               const SizedBox(height: 10),
               stepIndicator(),
@@ -433,7 +424,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           buildTextField("Last Name", "Ex. SL Chemicals", lastNameController),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text("Gender:"),
+            child: Text("Gender:", style: AppTypography.bodyMedium()),
           ),
 
           Padding(
@@ -451,11 +442,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.grey.shade100,
-                          child: Icon(Icons.male, color: Colors.blue, size: 20),
-                        ),
-                        Text("Male"),
+                        Image.asset("assets/icons/GendeMale.png"),
+                        Text("Male", style: AppTypography.bodyMedium()),
                         Radio(
                           value: GenderEnum.male,
                           activeColor: AppColors.kcPrimaryColor,
@@ -481,15 +469,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.grey.shade100,
-                          child: Icon(
-                            Icons.female,
-                            color: Colors.blue,
-                            size: 20,
-                          ),
-                        ),
-                        Text("Female"),
+                        Image.asset("assets/icons/Gendeemale.png"),
+                        Text("Female", style: AppTypography.bodyMedium()),
                         Radio(
                           value: GenderEnum.female,
                           activeColor: AppColors.kcPrimaryColor,
@@ -598,12 +579,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     Icon(Icons.credit_card, color: AppColors.kcPrimaryColor),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       "Aadhar Card Details",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTypography.bodyLarge(),
                     ),
                   ],
                 ),
@@ -616,7 +594,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   maxLength: 12,
                 ),
                 const SizedBox(height: 8),
-                const Text("Upload Aadhar Front Image"),
+                Text(
+                  "Upload Aadhar Front Image",
+                  style: AppTypography.bodyMedium(),
+                ),
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: () => pickImage('aadhar', true),
@@ -644,9 +625,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 'Tap to upload image',
-                                style: TextStyle(
+                                style: AppTypography.bodyMedium(
                                   color: Colors.grey.shade600,
-                                  fontSize: 14,
                                 ),
                               ),
                             ],
@@ -682,7 +662,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text("Upload Aadhar Back Image"),
+                Text(
+                  "Upload Aadhar Back Image",
+                  style: AppTypography.bodyMedium(),
+                ),
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: () => pickImage('aadhar', false),
@@ -710,9 +693,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 'Tap to upload image',
-                                style: TextStyle(
+                                style: AppTypography.bodyMedium(
                                   color: Colors.grey.shade600,
-                                  fontSize: 14,
                                 ),
                               ),
                             ],
@@ -766,13 +748,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     Icon(Icons.assignment_ind, color: AppColors.kcPrimaryColor),
                     const SizedBox(width: 8),
-                    const Text(
-                      "PAN Card Details",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Text("PAN Card Details", style: AppTypography.bodyLarge()),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -784,7 +760,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   maxLength: 10,
                 ),
                 const SizedBox(height: 8),
-                const Text("Upload PAN Front Image"),
+                Text(
+                  "Upload PAN Front Image",
+                  style: AppTypography.bodyMedium(),
+                ),
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: () => pickImage('pan', true),
@@ -812,9 +791,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 'Tap to upload image',
-                                style: TextStyle(
+                                style: AppTypography.bodyMedium(
                                   color: Colors.grey.shade600,
-                                  fontSize: 14,
                                 ),
                               ),
                             ],
@@ -850,7 +828,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text("Upload PAN Back Image"),
+                Text(
+                  "Upload PAN Back Image",
+                  style: AppTypography.bodyMedium(),
+                ),
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: () => pickImage('pan', false),
@@ -878,9 +859,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 'Tap to upload image',
-                                style: TextStyle(
+                                style: AppTypography.bodyMedium(
                                   color: Colors.grey.shade600,
-                                  fontSize: 14,
                                 ),
                               ),
                             ],

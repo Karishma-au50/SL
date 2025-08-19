@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:sl/shared/typography.dart';
 
 import '../../features/home/controller/dashboard_controller.dart';
 import '../toast/my_toast.dart' show MyToasts;
@@ -72,7 +73,7 @@ class _ScannerPageState extends State<ScannerPage> {
                 child: Center(
                   child: Text(
                     'Point the camera at a QR code',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    style: AppTypography.heading5(color: Colors.white),
                   ),
                 ),
               );

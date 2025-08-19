@@ -4,6 +4,8 @@ import 'package:sl/shared/constant/app_colors.dart';
 import 'package:sl/shared/utils/date_formators.dart';
 import 'package:sl/widgets/network_image_view.dart';
 
+import '../../../shared/typography.dart';
+
 class RedeemHistoryScreen extends StatelessWidget {
   const RedeemHistoryScreen({super.key, required this.redeemHistory});
 
@@ -14,19 +16,15 @@ class RedeemHistoryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
-          backgroundColor: const Color(0xFF001519), // dark green
+        backgroundColor: const Color(0xFF001519), // dark green
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 18),
+          icon: const Icon(Icons.arrow_back, color: Colors.white, size: 18),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           "Redeem History",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
       ),
@@ -46,26 +44,32 @@ class RedeemHistoryScreen extends StatelessWidget {
             final redemption = redeemHistory.recentRedemptions![index];
             final points = redemption.pointsEarned?.toString() ?? '0';
             return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 // borderRadius: BorderRadius.circular(12),
-                border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+                border: Border(
+                  bottom: BorderSide(color: const Color(0xFFF3F3F3)),
+                ),
               ),
               child: Row(
                 children: [
                   // Icon
                   CircleAvatar(
                     // radius: 50,
-                    backgroundColor: AppColors.kcPrimaryColor.withOpacity(0.1),
+                    backgroundColor: const Color(0xFFF3F2F2),
                     child: redemption.offerId.productId?.images.isEmpty ?? true
                         ? Image.asset(
                             "assets/images/defaultProductLogo.png",
-                            height: 30,
-                            width: 30,
+                            height: 25,
+                            width: 25,
                             fit: BoxFit.contain,
                           )
-                        : NetworkImageView(imgUrl: redemption.offerId.productId?.images.first ?? ''),
+                        : NetworkImageView(
+                            imgUrl:
+                                redemption.offerId.productId?.images.first ??
+                                '',
+                          ),
                   ),
 
                   const SizedBox(width: 12),
@@ -77,18 +81,20 @@ class RedeemHistoryScreen extends StatelessWidget {
                       children: [
                         Text(
                           redemption.offerId.productId?.title ?? 'Product',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
+                          style: AppTypography.bodySmall(
+                            color: const Color(0xFF1D1F22),
                           ),
+                          //  const TextStyle(
+                          //   fontSize: 14,
+                          //   fontWeight: FontWeight.w500,
+                          //   color: Colors.black,
+                          // ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           redemption.completedAt.toFormattedString(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade500,
+                          style: AppTypography.bodySmall(
+                            color: const Color(0xFF747474),
                           ),
                         ),
                       ],
@@ -100,10 +106,8 @@ class RedeemHistoryScreen extends StatelessWidget {
                     children: [
                       Text(
                         points,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
+                        style: AppTypography.bodyMedium(
+                          color: const Color(0xFFFF2424),
                         ),
                       ),
                       const SizedBox(width: 4),

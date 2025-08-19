@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sl/shared/typography.dart';
 import 'controller/chat_controller.dart';
 
 class ChatWithUsScreen extends StatefulWidget {
@@ -14,8 +15,18 @@ class _ChatWithUsScreenState extends State<ChatWithUsScreen> {
 
   String _getMonthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
   }
@@ -43,35 +54,29 @@ class _ChatWithUsScreenState extends State<ChatWithUsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFF001519),
+      backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
         backgroundColor: const Color(0xFF001519),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Redeem My Plus Points',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Text(
+          'Chat With Us',
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
-          actions: [
+        actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => controller.resetChat(),
           ),
         ],
       ),
-    
+
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         return Container(
@@ -95,15 +100,18 @@ class _ChatWithUsScreenState extends State<ChatWithUsScreen> {
                   backgroundColor: Colors.grey.shade100,
                 ),
               ),
-          
+
               // Chat Messages
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical:0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 0,
+                  ),
                   itemCount: controller.chatHistory.length,
                   itemBuilder: (context, index) {
                     final item = controller.chatHistory[index];
-          
+
                     // Bot Question
                     if (item.containsKey("question")) {
                       return Align(
@@ -119,13 +127,18 @@ class _ChatWithUsScreenState extends State<ChatWithUsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("SL Chemicals",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.orange.shade800)),
+                              Text(
+                                "SL Chemicals",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange.shade800,
+                                ),
+                              ),
                               const SizedBox(height: 6),
-                              Text(item["question"],
-                                  style: const TextStyle(fontSize: 14)),
+                              Text(
+                                item["question"],
+                                style: const TextStyle(fontSize: 14),
+                              ),
                               const SizedBox(height: 8),
                               ...(item["answers"] as List)
                                   .map<Widget>(
@@ -134,13 +147,17 @@ class _ChatWithUsScreenState extends State<ChatWithUsScreen> {
                                       child: Container(
                                         width: double.infinity,
                                         margin: const EdgeInsets.symmetric(
-                                            vertical: 4),
+                                          vertical: 4,
+                                        ),
                                         padding: const EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                           border: Border.all(
-                                              color: Colors.grey.shade300),
+                                            color: Colors.grey.shade300,
+                                          ),
                                         ),
                                         child: Text(
                                           ans["text"],
@@ -155,7 +172,6 @@ class _ChatWithUsScreenState extends State<ChatWithUsScreen> {
                         ),
                       );
                     }
-          
                     // User Selected Answer
                     else if (item.containsKey("answer")) {
                       return Align(
@@ -170,19 +186,23 @@ class _ChatWithUsScreenState extends State<ChatWithUsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("You",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.brown.shade700)),
+                              Text(
+                                "You",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.brown.shade700,
+                                ),
+                              ),
                               const SizedBox(height: 4),
-                              Text(item["answer"],
-                                  style: const TextStyle(fontSize: 14)),
+                              Text(
+                                item["answer"],
+                                style: const TextStyle(fontSize: 14),
+                              ),
                             ],
                           ),
                         ),
                       );
                     }
-          
                     // End Message
                     else if (item.containsKey("end")) {
                       return Center(
@@ -193,13 +213,17 @@ class _ChatWithUsScreenState extends State<ChatWithUsScreen> {
                             color: Colors.green.shade50,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(item["end"],
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold)),
+                          child: Text(
+                            item["end"],
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       );
                     }
-          
+
                     return const SizedBox.shrink();
                   },
                 ),

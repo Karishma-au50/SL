@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sl/shared/app_colors.dart';
+import 'package:sl/shared/typography.dart';
 import 'package:sl/widgets/buttons/my_button.dart';
 
 import '../../../routes/app_routes.dart';
@@ -73,9 +74,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     final defaultPinTheme = PinTheme(
       width: 56,
       height: 56,
-      textStyle: const TextStyle(
-        fontSize: 22,
-        color: Color.fromRGBO(30, 60, 87, 1),
+      textStyle: AppTypography.heading4(
+        color: const Color.fromRGBO(30, 60, 87, 1),
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(19),
@@ -123,31 +123,30 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       ),
                       // const SizedBox(height: 20),
                       const SizedBox(height: 10),
-                         Image.asset(
-                          "assets/images/otpIcon.png",
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
+                      Image.asset(
+                        "assets/images/otpIcon.png",
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
                       const SizedBox(height: 24),
 
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: const Text(
+                        child: Text(
                           'OTP Verification',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: AppTypography.heading4(),
                         ),
                       ),
                       const SizedBox(height: 8),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: const Text(
+                        child: Text(
                           'Enter your 4 digit verification code sent to your email',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black54),
+                          style: AppTypography.bodyMedium(
+                            color: Colors.black54,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 30),
@@ -158,7 +157,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         focusNode: focusNode,
                         defaultPinTheme: defaultPinTheme,
                         separatorBuilder: (index) => const SizedBox(width: 8),
-                     
+
                         hapticFeedbackType: HapticFeedbackType.lightImpact,
                         onChanged: (value) {
                           debugPrint('onChanged: $value');
@@ -199,7 +198,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       MyButton(
                         text: "Verify Now",
                         borderRadius: BorderRadius.circular(8),
-                    
+
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             await controller
@@ -216,7 +215,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                       extra: widget.mobile,
                                     );
                                   }
-                                
                                 });
                             // FirebaseMessaging.instance.getToken().then((token) {
                             //   print('Token: $token');
@@ -246,7 +244,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       // Resend OTP
                       Text(
                         "Didn't receive the Code?",
-                        style: TextStyle(color: Colors.grey.shade600),
+                        style: AppTypography.bodyMedium(
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       GestureDetector(
@@ -255,9 +255,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                           _start == 0
                               ? "Resend OTP"
                               : "Resend OTP 00:${_start.toString().padLeft(2, '0')}",
-                          style: TextStyle(
+                          style: AppTypography.labelMedium(
                             color: AppColors.kcPrimaryColor,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

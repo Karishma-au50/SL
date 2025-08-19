@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/app_colors.dart';
-import '../../shared/font_helper.dart';
+import '../../shared/typography.dart';
 
 class MyDropDown extends StatelessWidget {
   final dynamic value;
@@ -33,23 +33,25 @@ class MyDropDown extends StatelessWidget {
             return items!.map<Widget>((DropdownMenuItem<dynamic> item) {
               return Text(
                 item.value.toString(),
-                style: FontHelper.ts14w400(color: Colors.black),
+                style: AppTypography.bodyMedium(color: Colors.black),
               );
             }).toList();
           },
-          icon: Icon(Icons.keyboard_arrow_down,
-              color: dropdownIconColor ?? Colors.grey, size: 30),
+          icon: Icon(
+            Icons.keyboard_arrow_down,
+            color: dropdownIconColor ?? Colors.grey,
+            size: 30,
+          ),
           isExpanded: true,
-          style: FontHelper.ts16w600(color: Colors.black),
+          style: AppTypography.labelLarge(color: Colors.black),
           onChanged: onChanged,
           decoration: InputDecoration(
             // contentPadding: EdgeInsets.all(0),
-
             counter: const Offstage(),
             isDense: true,
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            hintStyle: FontHelper.ts14w400(),
-            labelStyle: FontHelper.ts14w400(),
+            hintStyle: AppTypography.bodyMedium(),
+            labelStyle: AppTypography.bodyMedium(),
             hintText: hintText ?? '',
             border: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.transparent),
@@ -63,13 +65,13 @@ class MyDropDown extends StatelessWidget {
             errorBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: AppColors.errorColor),
             ),
-            errorStyle: FontHelper.ts12w400(color: AppColors.errorColor),
+            errorStyle: AppTypography.bodySmall(color: AppColors.errorColor),
             filled: true,
-            fillColor:Colors.white,
+            fillColor: Colors.white,
           ),
           hint: Text(
             hintText ?? '',
-            style: FontHelper.ts16w600(color: Colors.grey),
+            style: AppTypography.labelLarge(color: Colors.grey),
           ),
           items: items,
         ),

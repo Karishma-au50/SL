@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../shared/app_colors.dart';
 import '../../shared/font_helper.dart';
+import '../../shared/typography.dart';
 
 class MyButton extends StatefulWidget {
   final String text;
@@ -69,10 +70,11 @@ class _MyButtonState extends State<MyButton> {
                 : widget.color,
             borderRadius: widget.borderRadius,
             border: Border.all(
-                color: (widget.disabled &&
-                        widget.borderColor != Colors.transparent)
-                    ? widget.borderColor.withOpacity(0.5)
-                    : widget.borderColor),
+              color:
+                  (widget.disabled && widget.borderColor != Colors.transparent)
+                  ? widget.borderColor.withOpacity(0.5)
+                  : widget.borderColor,
+            ),
             boxShadow: widget.boxShadow,
           ),
           child: Center(
@@ -89,9 +91,12 @@ class _MyButtonState extends State<MyButton> {
                         ),
                       Text(
                         widget.text,
-                        style: (widget.textStyle ??
-                                FontHelper.ts16w700(color: AppColors.kcWhite))
-                            .copyWith(color: widget.textColor),
+                        style:
+                            (widget.textStyle ??
+                                    AppTypography.bodyLarge(
+                                      color: AppColors.kcWhite,
+                                    ))
+                                .copyWith(color: widget.textColor),
                       ),
                       // Add leading icon if provided
                       if (widget.leadingIcon != null)

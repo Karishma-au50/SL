@@ -9,7 +9,7 @@ class AppColors {
   static const kcWhite = Colors.white;
   static const kcBlack = Colors.black;
   static const errorColor = Color(0xFFE53935);
-  static const backgroundColor =  Color(0xFFD7220C);
+  static const backgroundColor = Color(0xFFD7220C);
 
   // button disbled color
   static const kcButtonDisabledColor = Color(0xFFEBEBEB);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sl/shared/typography.dart';
 import 'package:sl/widgets/network_image_view.dart';
 
 import '../../model/user_detail_model.dart';
@@ -70,13 +71,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         //   icon: const Icon(Icons.arrow_back, color: Colors.white),
         //   onPressed: () => Navigator.pop(context),
         // ),
-        title: const Text(
+        title: Text(
           'Profile',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
         actions: [
@@ -177,7 +174,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildTextField("State", userDetails?.state ?? ""),
                     _buildTextField("Pincode", userDetails?.pincode ?? ""),
                     _buildTextField("Country", userDetails?.country ?? ""),
-                    _buildTextField("Aadhar Number", userDetails?.aadharNumber ?? ""),
+                    _buildTextField(
+                      "Aadhar Number",
+                      userDetails?.aadharNumber ?? "",
+                    ),
                     _buildTextField("PAN Number", userDetails?.panNumber ?? ""),
 
                     const SizedBox(height: 24),
@@ -192,12 +192,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             "Personal Documents",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: AppTypography.labelLarge(),
                           ),
                           const SizedBox(height: 12),
                           _buildPersonalDocuments(),
@@ -381,11 +378,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: Row(
             children: [
-              const Icon(
-                Icons.fingerprint,
-                color: Color(0xFF001519),
-                size: 24,
-              ),
+              const Icon(Icons.fingerprint, color: Color(0xFF001519), size: 24),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -419,7 +412,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        userDetails?.hasAadhar == true ? "Available" : "Not Available",
+                        userDetails?.hasAadhar == true
+                            ? "Available"
+                            : "Not Available",
                         style: TextStyle(
                           color: userDetails?.hasAadhar == true
                               ? Colors.green.shade700
@@ -433,7 +428,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               // Aadhar Images
-              if (userDetails?.aadhar?['images'] != null && userDetails!.aadhar!['images'].isNotEmpty)
+              if (userDetails?.aadhar?['images'] != null &&
+                  userDetails!.aadhar!['images'].isNotEmpty)
                 _buildDocumentImages(userDetails!.aadhar!['images'])
               else
                 Container(
@@ -464,11 +460,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: Row(
             children: [
-              const Icon(
-                Icons.credit_card,
-                color: Color(0xFF001519),
-                size: 24,
-              ),
+              const Icon(Icons.credit_card, color: Color(0xFF001519), size: 24),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -502,7 +494,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        userDetails?.hasPan == true ? "Available" : "Not Available",
+                        userDetails?.hasPan == true
+                            ? "Available"
+                            : "Not Available",
                         style: TextStyle(
                           color: userDetails?.hasPan == true
                               ? Colors.green.shade700
@@ -516,7 +510,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               // PAN Images
-              if (userDetails?.pan?['images'] != null && userDetails!.pan!['images'].isNotEmpty)
+              if (userDetails?.pan?['images'] != null &&
+                  userDetails!.pan!['images'].isNotEmpty)
                 _buildDocumentImages(userDetails!.pan!['images'])
               else
                 Container(
@@ -573,7 +568,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               borderRadius: BorderRadius.circular(4),
               child: GestureDetector(
                 onTap: () => _showImageDialog(imageUrl),
-                child: NetworkImageView(imgUrl: imageUrl)
+                child: NetworkImageView(imgUrl: imageUrl),
               ),
             ),
           );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sl/shared/typography.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -8,26 +9,26 @@ class NotificationScreen extends StatelessWidget {
       "title": "25% Discount 🎉",
       "description":
           "Congratulations! Use discount and Scan SL Point and Chemicide 20 LTR bottles 800 Plus Points in added wallet.",
-      "time": "3 hours ago"
+      "time": "3 hours ago",
     },
     {
       "title": "25% Discount 🎉",
       "description":
           "Congratulations! Use discount and Scan SL Point and Chemicide 20 LTR bottles 800 Plus Points in added wallet.",
-      "time": "5 hours ago"
+      "time": "5 hours ago",
     },
     {
       "title": "25% Discount 🎉",
       "description":
           "Congratulations! Use discount and Scan SL Point and Chemicide 20 LTR bottles 800 Plus Points in added wallet.",
-      "time": "8 hours ago"
+      "time": "8 hours ago",
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     backgroundColor: Color(0xFF002B23),
+      backgroundColor: Color(0xFF002B23),
       appBar: AppBar(
         backgroundColor: const Color(0xFF002B23), // dark green
         elevation: 0,
@@ -35,13 +36,9 @@ class NotificationScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 18),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           "Notifications",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
       ),

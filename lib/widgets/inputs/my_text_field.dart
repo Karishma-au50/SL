@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:sl/shared/typography.dart';
 
 import '../../shared/app_colors.dart';
-import '../../shared/font_helper.dart';
 import '../../shared/utils/hex_color.dart';
 
 class MyTextField extends StatefulWidget {
@@ -110,6 +109,10 @@ class _MyTextFieldState extends State<MyTextField> {
             ? TextInputType.multiline
             : widget.textInputType,
         decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: 20,
+          ),
           counter: const Offstage(),
           isDense: true,
           prefixIcon: widget.prefixIcon,
@@ -126,7 +129,7 @@ class _MyTextFieldState extends State<MyTextField> {
           focusedBorder: inputBorder,
           enabledBorder: inputBorder,
           errorBorder: errorBorder,
-          errorStyle: FontHelper.ts12w400(color: AppColors.errorColor),
+          errorStyle: AppTypography.bodySmall(color: AppColors.errorColor),
           suffixIcon: widget.isPass
               ? IconButton(
                   icon: isObserver
@@ -222,7 +225,7 @@ class _MyTextFieldOutlineState extends State<MyTextFieldOutline> {
           setState(() {});
         },
         validator: widget.isValidate ? widget.validator : null,
-        style: widget.textStyle ?? FontHelper.ts14w700(),
+        style: widget.textStyle ?? AppTypography.labelMedium(),
         readOnly: widget.isReadOnly,
         autofocus: widget.autoFocus,
         onTap: widget.onTap,
@@ -234,9 +237,9 @@ class _MyTextFieldOutlineState extends State<MyTextFieldOutline> {
           isDense: true,
           prefixIcon: widget.prefixIcon,
           hintText: widget.hintText,
-          hintStyle: widget.hindStyle ?? FontHelper.ts18w400(),
+          hintStyle: widget.hindStyle ?? AppTypography.heading5(),
           labelText: (widget.labelText ?? widget.hintText),
-          labelStyle: widget.labelStyle ?? FontHelper.ts18w400(),
+          labelStyle: widget.labelStyle ?? AppTypography.heading5(),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(40),
             borderSide: BorderSide(color: Colors.grey.shade300, width: 0.5),
@@ -258,7 +261,7 @@ class _MyTextFieldOutlineState extends State<MyTextFieldOutline> {
           // // errorText: null,
           // errorStyle: FontHelper.ts12(color: ColorConstants.errorColor),
           errorText: null,
-          errorStyle: const TextStyle(fontSize: 0),
+          errorStyle: AppTypography.bodySmall(color: Colors.transparent),
           suffixIcon: widget.isPass
               ? IconButton(
                   icon: isObserver
