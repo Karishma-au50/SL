@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sl/shared/app_colors.dart';
 import 'package:sl/shared/typography.dart';
+import 'package:sl/widgets/buttons/my_button.dart';
 import 'package:sl/widgets/toast/my_toast.dart';
 
 import '../../model/user_detail_model.dart';
@@ -116,24 +118,36 @@ class _WalletScreenState extends State<WalletScreen> {
           ),
         ),
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Balance Card
-                _buildBalanceCard(),
-                const SizedBox(height: 20),
-                // Winnings Card
-                _buildWinningsCard(),
-                const SizedBox(height: 20),
-                // My Transactions Header
-                _buildTransactionHeader(),
-                const SizedBox(height: 10),
-                // Transactions List
-                _buildTransactionsList(),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Balance Card
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  children: [
+                    _buildBalanceCard(),
+                    const SizedBox(height: 20),
+                    // Winnings Card
+                    _buildWinningsCard(),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+              Divider(color: Color(0xFFF8F8F8), thickness: 10),
+              // My Transactions Header
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  children: [
+                    _buildTransactionHeader(),
+                    const SizedBox(height: 10),
+                    // Transactions List
+                    _buildTransactionsList(),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -441,9 +455,6 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 
   Widget _buildBalanceCard() {
-    // Calculate total balance from wallet history
-    final totalBalance = walletHistory?.totalCompletedAmount ?? 0.0;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -457,37 +468,25 @@ class _WalletScreenState extends State<WalletScreen> {
       ),
       child: Column(
         children: [
-          const Text(
+          Text(
             "Available Balance (1 Point = ₹1)",
-            style: TextStyle(color: Colors.white70, fontSize: 14),
+            style: AppTypography.labelLarge(color: Colors.white),
           ),
           const SizedBox(height: 10),
           Text(
-            "₹${userDetails?.availablePoints.toStringAsFixed(2) ?? '0.00'}",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
+            "₹ ${userDetails?.availablePoints.toStringAsFixed(2) ?? '0.00'}",
+            style: AppTypography.heading2(color: Colors.white),
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
+          MyButton(
+            borderRadius: BorderRadius.circular(12),
+            text: "Withdraw",
+            color: Color(0xFF08AA43),
+            textStyle: AppTypography.bodyBold(color: Colors.white),
             onPressed: () async {
               await context.push(AppRoutes.withdrawPoints);
-
               _loadUserDetails();
             },
-            child: const Text(
-              "Get it Now Withdraw",
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
           ),
         ],
       ),
@@ -503,29 +502,27 @@ class _WalletScreenState extends State<WalletScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.orange.shade50,
-        borderRadius: BorderRadius.circular(16),
+        color: Color(0xFFFFF3F2),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
-              CircleAvatar(
-                backgroundColor: Colors.orange.shade100,
-                child: Icon(Icons.star, color: Colors.orange),
-              ),
+              Image.asset('assets/images/star.png', height: 40, width: 40),
               const SizedBox(width: 10),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "Your Winning",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    style: AppTypography.buttonSmall(color: Color(0xFF1D1F22)),
                   ),
+                  const SizedBox(height: 8),
                   Text(
                     "Approved + Completed Points",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style: AppTypography.labelSmall(color: Color(0xFF747474)),
                   ),
                 ],
               ),
@@ -533,7 +530,7 @@ class _WalletScreenState extends State<WalletScreen> {
           ),
           Text(
             totalWinnings.toStringAsFixed(2),
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            style: AppTypography.heading6(color: Color(0xFF1D1F22)),
           ),
         ],
       ),
@@ -546,7 +543,7 @@ class _WalletScreenState extends State<WalletScreen> {
       children: [
         Text(
           "My Transactions",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: AppTypography.heading6(color: Color(0xFF1D1F22)),
         ),
         GestureDetector(
           onTap: () {
@@ -555,7 +552,7 @@ class _WalletScreenState extends State<WalletScreen> {
           },
           child: Text(
             "View All",
-            style: TextStyle(color: Colors.red, fontSize: 14),
+            style: AppTypography.labelMedium(color: AppColors.kcPrimaryColor),
           ),
         ),
       ],
@@ -582,7 +579,7 @@ class _WalletScreenState extends State<WalletScreen> {
               const SizedBox(height: 16),
               Text(
                 errorMessage!,
-                style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                style: AppTypography.bodyMedium(color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -610,16 +607,12 @@ class _WalletScreenState extends State<WalletScreen> {
               const SizedBox(height: 16),
               Text(
                 'No wallet history found',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTypography.bodyMedium(color: Colors.grey[600]),
               ),
               const SizedBox(height: 8),
               Text(
                 'Your withdrawal history will appear here',
-                style: TextStyle(color: Colors.grey[500], fontSize: 14),
+                style: AppTypography.labelSmall(color: Colors.grey[500]),
               ),
             ],
           ),
@@ -646,30 +639,67 @@ class _WalletScreenState extends State<WalletScreen> {
               ),
             ],
           ),
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: CircleAvatar(
-              backgroundColor: request.statusColor.withOpacity(0.1),
-              child: Icon(request.statusIcon, color: request.statusColor),
-            ),
-            title: Text(
-              request.statusDisplayText,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: request.statusColor,
-              ),
-            ),
-            subtitle: Text(
-              "T ID: $safeId\n${request.timeSinceCreated}",
-              style: const TextStyle(fontSize: 12),
-            ),
-            trailing: Text(
-              request.formattedAmount,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: request.statusColor,
-              ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top Row: Status, Amount, Time
+                Row(
+                  children: [
+                    request.stutusWidget,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            request.statusDisplayText,
+                            style: AppTypography.labelMedium(
+                              color: request.statusColor,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "T ID: $safeId",
+                            style: AppTypography.labelSmall(
+                              color: Color(0xFF747474),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          request.formattedAmount,
+                          style: AppTypography.heading6(
+                            color: request.formattedAmountColor,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Image.asset(
+                              'assets/images/calender.png',
+                              height: 10,
+                              width: 10,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              request.timeSinceCreated,
+                              style: AppTypography.labelSmall(
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         );

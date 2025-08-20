@@ -49,16 +49,12 @@ class _WalletHistoryScreenState extends State<WalletHistoryScreen> {
               const SizedBox(height: 16),
               Text(
                 'No wallet history found',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTypography.bodyMedium(color: Colors.grey[600]),
               ),
               const SizedBox(height: 8),
               Text(
                 'Your withdrawal history will appear here',
-                style: TextStyle(color: Colors.grey[500], fontSize: 14),
+                style: AppTypography.labelSmall(color: Colors.grey[500]),
               ),
             ],
           ),
@@ -67,16 +63,13 @@ class _WalletHistoryScreenState extends State<WalletHistoryScreen> {
     }
 
     return Container(
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
       ),
       child: Column(
         children: widget.initialData!.data.map((request) {
@@ -84,41 +77,80 @@ class _WalletHistoryScreenState extends State<WalletHistoryScreen> {
               ? request.id.substring(request.id.length - 8)
               : request.id;
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Container(
-              margin: EdgeInsets.only(top: 6),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: Colors.grey.shade300, width: 0.5),
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 2),
+            decoration: BoxDecoration(
+              // borderRadius: BorderRadius.circular(8),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 0,
+                  offset: const Offset(0, 1),
                 ),
-                color: Colors.white,
-              ),
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: CircleAvatar(
-                  backgroundColor: request.statusColor.withOpacity(0.1),
-                  child: Icon(request.statusIcon, color: request.statusColor),
-                ),
-                title: Text(
-                  request.statusDisplayText,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: request.statusColor,
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Top Row: Status, Amount, Time
+                  Row(
+                    children: [
+                      request.stutusWidget,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              request.statusDisplayText,
+                              style: AppTypography.labelMedium(
+                                color: request.statusColor,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              "T ID: $safeId",
+                              style: AppTypography.labelSmall(
+                                color: Color(0xFF747474),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            request.formattedAmount,
+                            style: AppTypography.heading6(
+                              color: request.formattedAmountColor,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Image.asset(
+                                'assets/images/calender.png',
+                                height: 10,
+                                width: 10,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                request.timeSinceCreated,
+                                style: AppTypography.labelSmall(
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                subtitle: Text(
-                  "T ID: $safeId\n${request.timeSinceCreated}",
-                  style: const TextStyle(fontSize: 12),
-                ),
-                trailing: Text(
-                  request.formattedAmount,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: request.statusColor,
-                  ),
-                ),
+                ],
               ),
             ),
           );

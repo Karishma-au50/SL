@@ -52,7 +52,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF001519),
         leading: const BackButton(color: Colors.white),
-        title:  Text(
+        title: Text(
           'Redeem My Plus Points',
           style: AppTypography.heading6(color: Colors.white),
         ),
@@ -74,7 +74,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(14.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: ListView(
                     // crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -84,6 +84,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         child: CarouselView(
                           itemExtent: 400,
                           children: [
+                            if (offerDetail.value?.productId.images.isEmpty ??
+                                true)
+                              Image.asset(
+                                'assets/images/defaultProductLogo.png',
+                                height: 60,
+                              ),
                             for (var imgUrl
                                 in (offerDetail.value?.productId.images ?? []))
                               NetworkImageView(imgUrl: imgUrl, radius: 12),
@@ -97,7 +103,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       Text(
                         offerDetail.value?.title ?? '',
                         textAlign: TextAlign.center,
-                        style: AppTypography.heading6(color:Color(0xFF001518)),
+                        style: AppTypography.heading6(color: Color(0xFF001518)),
                       ),
 
                       const SizedBox(height: 10),
@@ -117,9 +123,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                           child: Text(
                             'Plus Point ${offerDetail.value?.points ?? 0}',
-                            style: AppTypography.heading6(
-                              color: Colors.white,
-                            ),
+                            style: AppTypography.heading6(color: Colors.white),
                           ),
                         ),
                       ),
@@ -146,13 +150,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                             Text(
                               'Valid till: ',
-                              style:AppTypography.bodySmall(
+                              style: AppTypography.bodySmall(
                                 color: Colors.black,
                               ),
                             ),
                             SizedBox(width: 4),
                             Text(
-                              DateFormators.formatDate(offerDetail.value!.validTill),
+                              DateFormators.formatDate(
+                                offerDetail.value!.validTill,
+                              ),
                               style: AppTypography.labelLarge(
                                 color: Colors.black,
                               ),
@@ -179,7 +185,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             child: Text(
                               offerDetail.value?.productRating.toString() ??
                                   '0',
-                              style: AppTypography.heading4(color: Color(0xFFFF9222)),
+                              style: AppTypography.heading4(
+                                color: Color(0xFFFF9222),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -189,7 +197,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                   Text(
+                                  Text(
                                     'Product Rating',
                                     style: AppTypography.labelMedium(
                                       color: Colors.black54,
@@ -242,9 +250,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Specification:',
-                          style: AppTypography.labelLarge(
-                            color: Colors.black,
-                          ),
+                          style: AppTypography.labelLarge(color: Colors.black),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -258,13 +264,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       const SizedBox(height: 16),
 
                       // About
-                       Align(
+                      Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'About this item:',
-                          style:  AppTypography.labelLarge(
-                            color: Colors.black,
-                          ),
+                          style: AppTypography.labelLarge(color: Colors.black),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -274,26 +278,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           color: AppColors.kcDefaultText,
                         ),
                       ),
-   const SizedBox(height: 16),
-                       Align(
+                      const SizedBox(height: 16),
+                      Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Terms & Conditions:',
-                          style: AppTypography.labelLarge(
-                            color: Colors.black,
-                          ),
+                          style: AppTypography.labelLarge(color: Colors.black),
                         ),
                       ),
 
-                  const SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         offerDetail.value?.termsAndConditions ?? '',
                         style: AppTypography.labelMedium(
-                            color: AppColors.kcDefaultText,
-                          ),
+                          color: AppColors.kcDefaultText,
+                        ),
                       ),
 
-                        const SizedBox(height: 6),
+                      const SizedBox(height: 6),
                     ],
                   ),
                 ),

@@ -109,6 +109,12 @@ class UserModel {
     );
   }
 
+  String get profileImage {
+    return gender?.toLowerCase() == "male"
+        ? "https://i.pinimg.com/736x/6e/52/14/6e5214b1bd71d4ac8c4350301bea7593.jpg"
+        : "https://i.pinimg.com/736x/68/4c/b6/684cb636cf67568ed031a5fee627c8a5.jpg";
+  }
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['_id'],

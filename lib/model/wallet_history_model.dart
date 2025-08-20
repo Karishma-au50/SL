@@ -176,6 +176,54 @@ class WithdrawalRequest {
     }
   }
 
+  // status widget
+  Widget get stutusWidget {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return CircleAvatar(
+          backgroundColor: statusColor.withOpacity(0.1),
+          child: Icon(statusIcon, color: statusColor),
+        );
+      case 'approved':
+        return CircleAvatar(
+          backgroundColor: statusColor.withOpacity(0.1),
+          child: Icon(statusIcon, color: statusColor),
+        );
+      case 'completed':
+        return Image.asset('assets/images/complete.png', height: 48, width: 48);
+      case 'rejected':
+        return Image.asset('assets/images/cancel.png', height: 48, width: 48);
+      case 'processing':
+        return CircleAvatar(
+          backgroundColor: statusColor.withOpacity(0.1),
+          child: Icon(statusIcon, color: statusColor),
+        );
+      default:
+        return CircleAvatar(
+          backgroundColor: Colors.grey.withOpacity(0.1),
+          child: Icon(Icons.help, color: Colors.grey),
+        );
+    }
+  }
+
+  // Formatted amount color
+  Color get formattedAmountColor {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return Colors.orange;
+      case 'approved':
+        return Colors.blue;
+      case 'completed':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      case 'processing':
+        return Colors.purple;
+      default:
+        return Colors.black87;
+    }
+  }
+
   String get formattedAmount {
     return '₹${pointsRequested.toString()}';
   }
@@ -199,18 +247,28 @@ class WithdrawalRequest {
   }
 
   String get timeSinceCreated {
-    final now = DateTime.now();
-    final difference = now.difference(createdAt);
-
-    if (difference.inDays > 0) {
-      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
-    } else {
-      return 'Just now';
-    }
+    // Example: 26 Aug, 2025 | 10:30 PM
+    final day = createdAt.day.toString().padLeft(2, '0');
+    final monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    final month = monthNames[createdAt.month - 1];
+    final year = createdAt.year;
+    final hour = createdAt.hour % 12 == 0 ? 12 : createdAt.hour % 12;
+    final minute = createdAt.minute.toString().padLeft(2, '0');
+    final period = createdAt.hour >= 12 ? 'PM' : 'AM';
+    return '$day $month, $year | $hour:$minute $period';
   }
 
   bool get isPending => status.toLowerCase() == 'pending';

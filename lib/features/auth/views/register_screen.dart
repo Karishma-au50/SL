@@ -92,44 +92,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (currentStep < 2) {
         setState(() => currentStep++);
       } else {
-        final user = UserModel(
-          firstname: firstNameController.text,
-          middlename: middleNameController.text,
-          lastname: lastNameController.text,
-          gender: genderGroup.name.capitalizeFirst,
-          dob: null,
-          mobile: int.tryParse(mobileController.text),
-          email: emailController.text,
-          address1: address1Controller.text,
-          address2: address2Controller.text,
-          address3: address3Controller.text,
-          state: stateController.text,
-          city: cityController.text,
-          pincode: pincodeController.text,
-          country: countryController.text,
-          role: "customer",
-          aadhar: {
-            'number': aadharNumberController.text,
-            'images': [aadharFrontImage, aadharBackImage],
-          },
-          pan: {
-            'number': panNumberController.text,
-            'images': [panFrontImage, panBackImage],
-          },
-          isVerified: true,
-          isDeleted: false,
-          createdAt: DateTime.now().millisecondsSinceEpoch,
-          updatedAt: DateTime.now().millisecondsSinceEpoch,
-        );
+        try {
+          final user = UserModel(
+            firstname: firstNameController.text,
+            middlename: middleNameController.text,
+            lastname: lastNameController.text,
+            gender: genderGroup.name.capitalizeFirst,
+            dob: null,
+            mobile: int.tryParse(mobileController.text),
+            email: emailController.text,
+            address1: address1Controller.text,
+            address2: address2Controller.text,
+            address3: address3Controller.text,
+            state: stateController.text,
+            city: cityController.text,
+            pincode: pincodeController.text,
+            country: countryController.text,
+            role: "customer",
+            aadhar: {
+              'number': aadharNumberController.text,
+              'images': [aadharFrontImage, aadharBackImage],
+            },
+            pan: {
+              'number': panNumberController.text,
+              'images': [panFrontImage, panBackImage],
+            },
+            isVerified: true,
+            isDeleted: false,
+            createdAt: DateTime.now().millisecondsSinceEpoch,
+            updatedAt: DateTime.now().millisecondsSinceEpoch,
+          );
 
-        await controller
-            .register(user)
-            .then((value) {
-              if (value && mounted) context.go(AppRoutes.login);
-            })
-            .catchError((e) {
-              MyToasts.toastError(e.toString());
-            });
+          await controller
+              .register(user)
+              .then((value) {
+                if (value && mounted) context.go(AppRoutes.login);
+              })
+              .catchError((e) {
+                MyToasts.toastError(e.toString());
+              });
+        } catch (e) {
+          MyToasts.toastError("An error occurred: ${e.toString()}");
+        }
       }
     }
   }
