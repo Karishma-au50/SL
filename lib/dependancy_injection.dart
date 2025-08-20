@@ -12,6 +12,7 @@ class DependancyInjection {
       await Get.putAsync(() => CommonService().init());
       // Get.put(VideoController(), permanent: true, tag: "GLOBAL");
       // NotificationService();
+      NotificationService();
     } catch (e) {
       debugPrint(e.toString());
     }

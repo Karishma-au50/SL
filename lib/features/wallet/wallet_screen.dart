@@ -621,7 +621,7 @@ class _WalletScreenState extends State<WalletScreen> {
     }
 
     return Column(
-      children: walletHistory!.data.map((request) {
+      children: walletHistory!.data.take(5).map((request) {
         final safeId = request.id.length > 8
             ? request.id.substring(request.id.length - 8)
             : request.id;

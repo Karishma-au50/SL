@@ -28,6 +28,7 @@ import '../features/wallet/wallet_history_screen.dart';
 import '../features/wallet/wallet_screen.dart';
 import '../features/slc_video/screens/slc_video_screen.dart';
 import '../features/notifications/notification_screen.dart';
+import '../features/notifications/notification_test_screen.dart';
 import '../widgets/main_shell.dart';
 import '../widgets/scanner/scanner_page.dart';
 import 'app_routes.dart';
@@ -188,21 +189,27 @@ class AppPages {
       GoRoute(
         path: AppRoutes.walletHistory,
         name: 'walletHistory',
-        builder: (context, state){
+        builder: (context, state) {
           WalletHistoryModel initialData = state.extra as WalletHistoryModel;
           return WalletHistoryScreen(initialData: initialData);
-        }
+        },
       ),
       GoRoute(
         path: AppRoutes.slcVideo,
         name: 'slcVideo',
         builder: (context, state) => const SLCVideoScreen(),
       ),
-      
+
       GoRoute(
         path: AppRoutes.notifications,
         name: 'notifications',
         builder: (context, state) => const NotificationScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.notificationTest,
+        name: 'notificationTest',
+        builder: (context, state) => const NotificationTestScreen(),
       ),
     ],
   );

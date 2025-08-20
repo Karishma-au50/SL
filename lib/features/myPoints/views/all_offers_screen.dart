@@ -148,7 +148,7 @@ class _AllOffersScreenState extends State<AllOffersScreen> {
                               );
                             },
                             child: Container(
-                              height: 170,
+                              height: context.width * 0.4,
                               margin: const EdgeInsets.only(bottom: 12),
                               decoration: BoxDecoration(
                                 image: DecorationImage(
