@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_html/flutter_html.dart';
 
 import '../home/controller/dashboard_controller.dart';
+import '../../shared/typography.dart';
 
 class CompanyPolicyScreen extends StatefulWidget {
   CompanyPolicyScreen({super.key});
@@ -41,13 +41,9 @@ class _CompanyPolicyScreenState extends State<CompanyPolicyScreen> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF001519),
           elevation: 0,
-          title: const Text(
+          title: Text(
             'Company Policy',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Colors.white,
-            ),
+            style: AppTypography.heading6(color: Colors.white),
           ),
           centerTitle: true,
           leading: const BackButton(color: Colors.white),
@@ -65,13 +61,9 @@ class _CompanyPolicyScreenState extends State<CompanyPolicyScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF001519),
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Company Policy',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: Colors.white,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
         leading: const BackButton(color: Colors.white),

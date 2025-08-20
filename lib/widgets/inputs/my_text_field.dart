@@ -68,12 +68,12 @@ class _MyTextFieldState extends State<MyTextField> {
 
   final OutlineInputBorder inputBorder = OutlineInputBorder(
     borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
-    borderRadius: const BorderRadius.all(Radius.circular(8)),
+    borderRadius: const BorderRadius.all(Radius.circular(10)),
   );
 
   final OutlineInputBorder errorBorder = const OutlineInputBorder(
     borderSide: BorderSide(color: AppColors.errorColor),
-    borderRadius: BorderRadius.all(Radius.circular(8)),
+    borderRadius: BorderRadius.all(Radius.circular(10)),
   );
 
   @override
@@ -241,15 +241,15 @@ class _MyTextFieldOutlineState extends State<MyTextFieldOutline> {
           labelText: (widget.labelText ?? widget.hintText),
           labelStyle: widget.labelStyle ?? AppTypography.heading5(),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(color: Colors.grey.shade300, width: 0.5),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(color: HexColor("#212B36"), width: 2),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(color: Colors.grey.shade300, width: 0.5),
           ),
           errorBorder: const OutlineInputBorder(

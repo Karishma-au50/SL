@@ -35,7 +35,7 @@ class _ScannerPageState extends State<ScannerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mobile Scanner'),
+        title: Text('Mobile Scanner', style: AppTypography.heading6(color: Colors.white)),
         backgroundColor: const Color(0xFF001519),
         foregroundColor: Colors.white,
         actions: [

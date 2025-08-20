@@ -9,6 +9,7 @@ import 'package:sl/model/offer_model.dart';
 import 'package:sl/routes/app_routes.dart';
 
 import '../../../shared/services/common_service.dart';
+import '../../../shared/typography.dart';
 import '../../../shared/utils/date_formators.dart';
 import '../../../widgets/network_image_view.dart';
 
@@ -97,13 +98,9 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Redeem My Plus Points',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
       ),
@@ -119,7 +116,7 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Image.asset('assets/images/emptyIcon.png', height: 120),
                       Text(
@@ -192,26 +189,23 @@ class _RedeemPointsScreenState extends State<RedeemPointsScreen> {
                             margin: const EdgeInsets.only(bottom: 12),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: Colors.grey.shade300),
                             ),
                             child: TextField(
                               onChanged: updateSearch,
                               decoration: InputDecoration(
                                 hintText: 'Search',
-                                hintStyle: TextStyle(
+                                hintStyle: AppTypography.bodySmall(color: Colors.grey.shade500),
+                                suffixIcon:Image.asset(
+                                  'assets/images/searchIcon.png',
+                                  height: 20,
+                                  width: 20,
                                   color: Colors.grey.shade500,
-                                ),
-                                suffixIcon: Icon(
-                                  Icons.search,
-                                  color: Colors.grey.shade300,
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 8,
-                                ),
+                                contentPadding: const EdgeInsets.all(14),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30),
                                   borderSide: BorderSide.none,
@@ -265,13 +259,10 @@ class _CouponCardState extends State<CouponCard> {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(12),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         image: DecorationImage(image: AssetImage(bgImage), fit: BoxFit.cover),
-        // color:  Colors.blueGrey.withValues(alpha: 0.9),
-        //  gradient: const LinearGradient(
-        //                   colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
-        //                 ),
+ 
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -281,17 +272,13 @@ class _CouponCardState extends State<CouponCard> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
-              // color: Colors.white24,
               borderRadius: BorderRadius.circular(12),
             ),
             child: RotatedBox(
               quarterTurns: -1,
               child: Text(
                 'Plus Point: ${widget.coupon.points}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: AppTypography.heading6(color: Colors.white),
               ),
             ),
           ),
@@ -306,10 +293,7 @@ class _CouponCardState extends State<CouponCard> {
                 Text(
                   widget.coupon.title,
 
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTypography.heading5(color: Colors.white),
                 ),
 
                 const SizedBox(height: 5),
@@ -327,29 +311,24 @@ class _CouponCardState extends State<CouponCard> {
                         children: [
                           Text(
                             'Valid till:',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
+                            style: AppTypography.labelSmall(color: Colors.white70),
                           ),
                           Text(
                             DateFormators.formatDate(widget.coupon.validTill),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: AppTypography.labelMedium(color: Colors.white),
+                          
+                        
                           ),
-                          if (widget.coupon.qrCodeStats != null) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              'Available: ${widget.coupon.qrCodeStats!.available}/${widget.coupon.qrCodeStats!.total}',
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 11,
-                              ),
-                            ),
-                          ],
+                          // if (widget.coupon.qrCodeStats != null) ...[
+                          //   const SizedBox(height: 4),
+                          //   Text(
+                          //     'Available: ${widget.coupon.qrCodeStats!.available}/${widget.coupon.qrCodeStats!.total}',
+                          //     style: const TextStyle(
+                          //       color: Colors.white70,
+                          //       fontSize: 11,
+                          //     ),
+                          //   ),
+                          // ],
                         ],
                       ),
                     ),
@@ -365,10 +344,7 @@ class _CouponCardState extends State<CouponCard> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
+                        padding: const EdgeInsets.all(8),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -382,12 +358,10 @@ class _CouponCardState extends State<CouponCard> {
                         widget.coupon.isRedeemable
                             ? 'View Details'
                             : 'Not Available',
-                        style: TextStyle(
+                        style: AppTypography.labelMedium(
                           color: widget.coupon.isRedeemable
                               ? Colors.white
                               : Colors.white54,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
                         ),
                       ),
                     ),

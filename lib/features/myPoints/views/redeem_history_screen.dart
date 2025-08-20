@@ -81,7 +81,7 @@ class RedeemHistoryScreen extends StatelessWidget {
                       children: [
                         Text(
                           redemption.offerId.productId?.title ?? 'Product',
-                          style: AppTypography.bodySmall(
+                          style: AppTypography.labelMedium(
                             color: const Color(0xFF1D1F22),
                           ),
                           //  const TextStyle(

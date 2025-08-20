@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../model/offer_model.dart';
 import '../../../routes/app_routes.dart';
+import '../../../shared/typography.dart';
 import '../../../shared/utils/date_formators.dart' show DateFormators;
 import '../controller/redeem_points_controller.dart';
 
@@ -91,13 +92,9 @@ class _AllOffersScreenState extends State<AllOffersScreen> {
       backgroundColor: const Color(0xFF001519),
       appBar: AppBar(
         backgroundColor: const Color(0xFF001519),
-        title: const Text(
+        title: Text(
           "Offers",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
         elevation: 0,

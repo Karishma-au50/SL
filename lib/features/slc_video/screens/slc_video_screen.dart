@@ -7,6 +7,7 @@ import '../../../features/home/controller/dashboard_controller.dart';
 import '../../../model/slc_video_model.dart';
 import '../../../shared/app_colors.dart';
 import '../../../shared/constant/app_constants.dart';
+import '../../../shared/typography.dart';
 import '../../../widgets/toast/my_toast.dart';
 
 class SLCVideoScreen extends StatefulWidget {
@@ -210,12 +211,11 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
                     ? _buildYouTubePlayer(url)
                     : _buildVideoPlayer(url),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(
                 video.description,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                style: AppTypography.labelLarge(
+                  color: Color(0xFF1D1F22),
                 ),
               ),
             ],
@@ -246,13 +246,9 @@ class _SLCVideoScreenState extends State<SLCVideoScreen> {
       backgroundColor: const Color(0xFF002B23),
       appBar: AppBar(
         backgroundColor: const Color(0xFF002B23),
-        title: const Text(
+        title: Text(
           "SLC Videos",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
         elevation: 0,

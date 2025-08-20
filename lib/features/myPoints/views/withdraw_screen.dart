@@ -68,17 +68,15 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                 image: Image.asset("assets/images/amountBg.png").image,
                 fit: BoxFit.contain,
               ),
-              // gradient: const LinearGradient(
-              //   colors: [Color(0xFFB745FC), Color(0xFF8E1DC3)],
-              // ),
-              borderRadius: BorderRadius.circular(16),
+             
+              borderRadius: BorderRadius.circular(1),
             ),
             child: Row(
               children: [
                 // const Icon(Icons.card_giftcard, color: Colors.white, size: 36),
-                const SizedBox(width: 100),
+                const SizedBox(width: 85),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Available Balance',
@@ -114,16 +112,22 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                     MyTextField(
                       controller: _amountController,
                       labelText: 'Enter amount',
-                      labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                      hintText: "₹500",
-                      hindStyle: TextStyle(fontWeight: FontWeight.bold),
+                      labelStyle: AppTypography.labelLarge(
+                        color: const Color(0xFF001518),
+                      ),
+                      hintText: "₹ 500",
+                      hindStyle: AppTypography.heading6(
+                        color: Color(0xFFB8B8B8),
+                      ),
                     ),
                     SizedBox(height: 5),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: const Text(
+                      child:  Text(
                         'Min ₹200 & max ₹50,000 allowed per day',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        style: AppTypography.labelSmall(
+                          color: Color(0xFF747474),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -131,15 +135,16 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                     // Bank Info
                     Text(
                       'Send Winnings to',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                      style: AppTypography.bodyBold(
+                        color: const Color(0xFF001518),
                       ),
                     ),
                     SizedBox(height: 5),
                     Text(
                       'Use Bank Transfer when you withdraw more than your point amount',
-                      style: TextStyle(color: Colors.black54, fontSize: 13),
+                      style: AppTypography.bodySmall(
+                        color: const Color(0xFF747474),
+                      ),
                     ),
                     SizedBox(height: 18),
                     GestureDetector(
@@ -157,32 +162,36 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                         }
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: _selectedAccountDetails != null
                               ? Colors.green.shade50
                               : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: _selectedAccountDetails != null
                                 ? Colors.green.shade300
                                 : Colors.grey.shade300,
-                            width: _selectedAccountDetails != null ? 2 : 1,
+                            width: _selectedAccountDetails != null ? 1 : 1,
                           ),
                         ),
                         child: Row(
                           children: [
-                            Icon(
-                              _selectedAccountDetails != null
-                                  ? Icons.account_balance
-                                  : Icons.add_card,
-                              color: _selectedAccountDetails != null
-                                  ? Colors.green.shade600
-                                  : Colors.blue,
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Color(0xFFF3F2F2),
+                                borderRadius: BorderRadius.circular(12),
+                                
+                              ),
+                              child: Image.asset(
+                              'assets/images/bankIcon.png',
+                              width:30,
+                              height: 30,
+                              ),
                             ),
+                         
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(
@@ -191,12 +200,11 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                                   Text(
                                     _selectedAccountDetails?.bankName ??
                                         'Add Bank Details',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
+                                    style: AppTypography.labelMedium(
                                       color: _selectedAccountDetails != null
-                                          ? Colors.green.shade700
-                                          : Colors.black87,
+                                          ? Colors.green.shade800
+                                          : const Color(0xFF001519),
+                                    
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -251,10 +259,15 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                     const Spacer(),
                     // Withdraw Button
                     MyButton(
+                      textColor: _selectedAccountDetails != null && !_isLoading
+                          ? Colors.white
+                          : const Color(0xFFBDBDBD),
+                      textStyle: AppTypography.bodyBold(),
+                      borderRadius: BorderRadius.circular(12),
                       text: _isLoading ? "Processing..." : "Withdraw Now",
-                      color: _selectedAccountDetails != null && !_isLoading
+                      color: _selectedAccountDetails!= null && !_isLoading
                           ? const Color(0xFF001519)
-                          : Colors.grey,
+                          : const Color(0xFFEBEBEB),
                       onPressed: _selectedAccountDetails != null && !_isLoading
                           ? () async {
                               _handleWithdraw();
@@ -349,37 +362,51 @@ class WithdrawalSuccessBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 30,
-        top: 24,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.check_circle_rounded, size: 60, color: Colors.green),
-          SizedBox(height: 16),
-          Text(
-            'Withdrawal Request Sent!',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 12),
-          Text(
-            'Your request for the withdrawal of amount ₹${amount.toStringAsFixed(0)} has been sent successfully.',
-            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 24),
-          MyButton(
-            text: 'Okay, Got it!',
-            color: Color(0xFF001519),
-            onPressed: () async {
-              Navigator.pop(context);
-            },
-          ),
-        ],
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 30,
+          top: 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset('assets/images/ThankYou.png', height: 120),
+            // Icon(Icons.check_circle_rounded, size: 60, color: Colors.green),
+            SizedBox(height: 16),
+            Text(
+              'Withdrawal Request Sent!',
+              style: AppTypography.heading6(),
+            ),
+            SizedBox(height: 12),
+            Text(
+              'Your request for the withdrawal of amount ₹${amount.toStringAsFixed(0)} has been sent successfully.',
+              style: AppTypography.bodyMedium(
+                color: const Color(0xFF888888),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 24),
+            MyButton(
+              text: 'Okay, Got it!',
+              textStyle: AppTypography.bodyBold(color: Colors.white),
+              borderRadius: BorderRadius.circular(12),
+              color: Color(0xFF001519),
+              onPressed: () async {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

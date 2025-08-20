@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sl/model/withdrawal_model.dart';
+import 'package:sl/shared/typography.dart';
 import 'package:sl/widgets/buttons/my_button.dart';
 import 'package:sl/widgets/inputs/my_text_field.dart';
 
@@ -53,13 +54,9 @@ class _BankDetailFormState extends State<BankDetailForm> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Add Bank Details',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         centerTitle: true,
       ),
@@ -85,18 +82,18 @@ class _BankDetailFormState extends State<BankDetailForm> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                       Text(
                         'Bank Account Information',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF001519),
+                        style: AppTypography.bodyBold(
+                          color: const Color(0xFF001519),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
+                      const SizedBox(height: 4),
+                       Text(
                         'Please provide your bank account details for withdrawal',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                        style: AppTypography.bodySmall(
+                          color: const Color(0xFF888888),
+                        ),
                       ),
                       const SizedBox(height: 24),
               
@@ -196,7 +193,11 @@ class _BankDetailFormState extends State<BankDetailForm> {
               
                       // Submit Button
                       MyButton(
+                        borderRadius: BorderRadius.circular(12),
                         text: 'Save Account Details',
+                        textStyle: AppTypography.bodyBold(
+                          color: Colors.white,
+                        ),
                         color: const Color(0xFF001519),
                         onPressed: () async {
                           _submitForm();

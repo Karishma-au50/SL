@@ -63,6 +63,11 @@ class AppTypography {
     fontWeight: FontWeight.w400,
     color: color,
   );
+    static TextStyle bodyBold({Color? color}) => _baseStyle.copyWith(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: color,
+  );
 
   static TextStyle bodySmall({Color? color}) => _baseStyle.copyWith(
     fontSize: 12,

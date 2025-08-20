@@ -12,7 +12,7 @@ class TypographyExampleScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Typography Examples',
-          style: AppTypography.heading5(color: Colors.white),
+          style: AppTypography.heading6(color: Colors.white),
         ),
         backgroundColor: Colors.blue,
       ),
