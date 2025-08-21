@@ -138,18 +138,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Center(
                       child: CircleAvatar(
                         radius: 50,
-                        backgroundImage:
-                            userDetails?.imageURL.isNotEmpty == true
-                            ? NetworkImage(userDetails!.imageURL.first)
-                            : const AssetImage("assets/images/Union.png")
-                                  as ImageProvider,
-                        child: userDetails?.imageURL.isEmpty == true
-                            ? const Icon(
-                                Icons.person,
-                                size: 50,
-                                color: Colors.grey,
-                              )
-                            : null,
+                        backgroundImage: NetworkImage(
+                          userDetails!.profileImage,
+                        ),
                       ),
                     ),
 
@@ -165,10 +156,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildTextField(
                       "Date of Birth",
                       _formatDate(userDetails?.dob),
+                      suffixIcon: Image.asset(
+                        "assets/images/calender.png",
+                        width: 24,
+                        height: 24,
+                      ),
                     ),
-                    _buildTextField("Phone Number", _formatPhoneNumber()),
+                    _buildTextField(
+                      "Phone Number",
+                      _formatPhoneNumber(),
+                      prefixIcon: SizedBox(
+                        width: 80,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("+91", style: AppTypography.bodyMedium()),
+                            Icon(
+                              Icons.keyboard_arrow_down_outlined,
+                              color: Colors.grey.shade600,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 1,
+                              height: 24,
+                              color: Colors.grey.shade300,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     _buildTextField("Email Address", userDetails?.email ?? ""),
-                    _buildTextField("Gender", userDetails?.gender ?? ""),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text("Gender", style: AppTypography.labelLarge()),
+                    ),
+                    _buildTextField(
+                      "",
+                      userDetails?.gender ?? "",
+                      prefixIcon: userDetails?.gender.toLowerCase() == "male"
+                          ? Image.asset("assets/icons/GendeMale.png")
+                          : Image.asset("assets/icons/Gendeemale.png"),
+                    ),
                     _buildTextField("Address", _formatAddress()),
                     _buildTextField("City", userDetails?.city ?? ""),
                     _buildTextField("State", userDetails?.state ?? ""),
@@ -343,21 +372,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return userDetails!.mobile.toString();
   }
 
-  Widget _buildTextField(String? label, String? hint) {
+  Widget _buildTextField(
+    String? label,
+    String? hint, {
+    Widget? prefixIcon,
+    Widget? suffixIcon,
+  }) {
     // Show "N/A" if hint is null, empty, or only whitespace
     String displayValue = (hint?.trim().isEmpty ?? true) ? "N/A" : hint!;
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(12.0),
       child: MyTextField(
         hintText: displayValue,
         labelText: label ?? "",
-        hindStyle: TextStyle(
-          color: displayValue == "N/A" ? Colors.grey : Colors.black,
-          fontStyle: displayValue == "N/A"
-              ? FontStyle.italic
-              : FontStyle.normal,
-        ),
+        prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon,
+        textStyle: AppTypography.bodyMedium(),
         isReadOnly:
             true, // Make fields read-only since this is a display screen
       ),

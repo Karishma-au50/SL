@@ -148,6 +148,7 @@ class _AllOffersScreenState extends State<AllOffersScreen> {
                               );
                             },
                             child: Container(
+                              height: context.width * 0.4,
                               margin: const EdgeInsets.only(bottom: 12),
                               decoration: BoxDecoration(
                                 image: DecorationImage(
@@ -174,39 +175,71 @@ class _AllOffersScreenState extends State<AllOffersScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
+                                        const SizedBox(height: 8),
                                         Text(
                                           offer.title,
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: AppTypography.heading5(),
                                         ),
                                         const SizedBox(height: 8),
                                         Row(
                                           children: [
-                                            const Icon(
-                                              Icons.calendar_today,
-                                              size: 14,
-                                              color: Colors.black54,
+                                            Image.asset(
+                                              'assets/images/calender.png',
+                                              height: 16,
                                             ),
                                             const SizedBox(width: 4),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Valid date",
+                                                  style: AppTypography.overline(
+                                                    color: Color(0xFF1d1F22),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  DateFormators.formatDate(
+                                                    offer.validTill,
+                                                  ),
+                                                  style:
+                                                      AppTypography.buttonSmall(
+                                                        color: Color(
+                                                          0xFF1D1F22,
+                                                        ),
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+
+                                        const Spacer(),
+                                        const Divider(color: Colors.white54),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
                                             Text(
-                                              "Valid date\n${DateFormators.formatDate(offer.validTill)}",
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.black54,
+                                              "View Details",
+                                              style: AppTypography.bodySmall(
+                                                color: Color(0xFF646464),
                                               ),
+                                            ),
+                                            Column(
+                                              children: [
+                                                const Icon(
+                                                  Icons.double_arrow,
+                                                  size: 18,
+                                                  color: Color(0xFF646464),
+                                                ),
+                                                const SizedBox(width: 50),
+                                              ],
                                             ),
                                           ],
                                         ),
                                         const SizedBox(height: 8),
-                                        const Text(
-                                          "View Details →",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black54,
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   ),

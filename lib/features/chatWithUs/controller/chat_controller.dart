@@ -62,20 +62,35 @@ class ChatController extends GetxController {
       chatHistory.add({
         "_id": questionObj.id,
         "question": questionObj.question,
-        "answers": questionObj.answers.map((a) => {
-          "text": a.label,
-          "nextId": a.nextId,
-        }).toList(),
+        "answers": questionObj.answers
+            .map((a) => {"text": a.label, "nextId": a.nextId})
+            .toList(),
+        "timestamp": DateTime.now().toIso8601String(),
       });
       currentId.value = id;
     }
   }
 
   void selectAnswer(Map<String, dynamic> answer) {
-    chatHistory.add({"answer": answer["text"]});
+    // Find the current question to include as reference
+    String? currentQuestion;
+    if (currentId.value != null) {
+      final questionObj = chatFlow.firstWhereOrNull(
+        (q) => q.id == currentId.value,
+      );
+      currentQuestion = questionObj?.question;
+    }
+
+    chatHistory.add({
+      "answer": answer["text"],
+      "questionReference": currentQuestion,
+      "timestamp": DateTime.now().toIso8601String(),
+    });
 
     if (answer["nextId"] != null && answer["nextId"].isNotEmpty) {
-      final nextChat = chatFlow.firstWhereOrNull((chat) => chat.id == answer["nextId"]);
+      final nextChat = chatFlow.firstWhereOrNull(
+        (chat) => chat.id == answer["nextId"],
+      );
       if (nextChat != null) {
         if (nextChat.question != null && nextChat.question!.isNotEmpty) {
           // It's a question
@@ -85,13 +100,18 @@ class ChatController extends GetxController {
           chatHistory.add({
             "_id": nextChat.id,
             "question": nextChat.answer,
-            "answers": <Map<String, String>>[], // Empty answers for final response
+            "answers":
+                <Map<String, String>>[], // Empty answers for final response
+            "timestamp": DateTime.now().toIso8601String(),
           });
           currentId.value = null;
         }
       }
     } else {
-      chatHistory.add({"end": "Thank you for chatting with us!"});
+      chatHistory.add({
+        "end": "Thank you for chatting with us!",
+        "timestamp": DateTime.now().toIso8601String(),
+      });
       currentId.value = null;
     }
   }

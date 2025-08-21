@@ -23,7 +23,6 @@ class AppRoutes {
   static const String wallet = '/wallet';
   static const String slcVideo = '/slcVideo';
   static const String notifications = '/notifications';
+  static const String notificationTest = '/notificationTest';
   static const String walletHistory = '/walletHistory';
-
-
 }

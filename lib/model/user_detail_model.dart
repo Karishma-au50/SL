@@ -25,7 +25,9 @@ class SavedAccountDetails {
       ifscCode: json['ifscCode'] ?? '',
       upiId: json['upiId'] ?? '',
       isDefault: json['isDefault'] ?? false,
-      savedAt: DateTime.parse(json['savedAt'] ?? DateTime.now().toIso8601String()),
+      savedAt: DateTime.parse(
+        json['savedAt'] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 
@@ -111,6 +113,12 @@ class UserDetailModel {
     this.savedAccountDetails,
   });
 
+  String get profileImage {
+    return gender.toLowerCase() == "male"
+        ? "https://i.pinimg.com/736x/6e/52/14/6e5214b1bd71d4ac8c4350301bea7593.jpg"
+        : "https://i.pinimg.com/736x/68/4c/b6/684cb636cf67568ed031a5fee627c8a5.jpg";
+  }
+
   factory UserDetailModel.fromJson(Map<String, dynamic> json) {
     return UserDetailModel(
       id: json['_id'] ?? '',
@@ -191,14 +199,19 @@ class UserDetailModel {
   String get fullName => '$firstname $lastname'.trim();
   String get displayName => fullName.isNotEmpty ? fullName : email;
   String get formattedMobile => mobile.toString();
-  String get completeAddress => [address1, address2, address3, city, state, pincode]
-      .where((element) => element.isNotEmpty)
-      .join(', ');
-  
+  String get completeAddress => [
+    address1,
+    address2,
+    address3,
+    city,
+    state,
+    pincode,
+  ].where((element) => element.isNotEmpty).join(', ');
+
   // Aadhar and PAN helper getters
   String get aadharNumber => aadhar?['number']?.toString() ?? '';
   String get panNumber => pan?['number']?.toString() ?? '';
-  
+
   bool get hasAadhar => aadharNumber.isNotEmpty;
   bool get hasPan => panNumber.isNotEmpty;
 

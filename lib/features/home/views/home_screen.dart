@@ -118,36 +118,48 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: NetworkImageView(
-                      imgUrl: user.gender?.toLowerCase() == "male"
-                          ? "https://i.pinimg.com/736x/6e/52/14/6e5214b1bd71d4ac8c4350301bea7593.jpg"
-                          : "https://i.pinimg.com/736x/68/4c/b6/684cb636cf67568ed031a5fee627c8a5.jpg",
-                      radius: 24,
-                      isFullPath: true,
+                  GestureDetector(
+                    onTap: () {
+                      context.push(AppRoutes.profile, extra: userDetails);
+                    },
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: NetworkImageView(
+                            imgUrl: user.profileImage,
+                            radius: 24,
+                            isFullPath: true,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Welcome to SLC',
+                              style: AppTypography.bodySmall(
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              // use decoded token for user name or user details
+                              userDetails?.displayName ??
+                                  (user.firstname != null
+                                      ? '${user.firstname?.toUpperCase()} ${user.middlename?.toUpperCase()}'
+                                      : 'Guest'),
+                              style: AppTypography.labelLarge(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Welcome to SLC',
-                        style: AppTypography.bodySmall(color: Colors.grey),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        // use decoded token for user name or user details
-                        userDetails?.displayName ??
-                            (user.firstname != null
-                                ? '${user.firstname?.toUpperCase()} ${user.middlename?.toUpperCase()}'
-                                : 'Guest'),
-                        style: AppTypography.labelLarge(color: Colors.white),
-                      ),
-                    ],
-                  ),
+
                   const Spacer(),
                   InkWell(
                     onTap: () {
@@ -276,6 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                         ),
+                        SizedBox(width: 16),
                         Expanded(
                           child: GestureDetector(
                             onTap: () {

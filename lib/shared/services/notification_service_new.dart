@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 
+import '../../main.dart';
 import '../../routes/app_pages.dart';
 import '../../routes/app_routes.dart';
 import '../../shared/constant/app_functions.dart';
@@ -240,6 +243,14 @@ class NotificationService {
     );
   }
 
+  Future<String> _saveFile(List<int> data, String fileName) async {
+    final directory = await getTemporaryDirectory();
+    final filePath = '${directory.path}/$fileName';
+    final file = File(filePath);
+    await file.writeAsBytes(data);
+    return filePath;
+  }
+
   // Display notification
   Future<void> displayNotification(
     int id,
@@ -280,6 +291,7 @@ class NotificationService {
           importance: Importance.max,
           priority: Priority.high,
           styleInformation: bigPictureStyleInformation,
+          largeIcon: bigPictureStyleInformation?.largeIcon,
         );
 
     // iOS-specific notification details
