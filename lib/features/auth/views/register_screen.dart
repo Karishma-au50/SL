@@ -60,8 +60,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   XFile? aadharBackImage;
   XFile? panFrontImage;
   XFile? panBackImage;
-  void nextStep() async {
-    if (_formKeys[currentStep].currentState?.validate() ?? false) {
+  Future<void> nextStep() async {
+   try{
+     if (_formKeys[currentStep].currentState?.validate() ?? false) {
       // Additional validation for document step
       if (currentStep == 2) {
         // Validate Aadhar details
@@ -132,6 +133,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             });
       }
     }
+   }
+   catch (e) {
+     MyToasts.toastError(e.toString());
+   }
   }
 
   void prevStep() {
@@ -380,7 +385,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               MyButton(
                 text: currentStep == 2 ? "Submit" : "Next",
                 onPressed: () async {
-                  nextStep();
+                  await nextStep();
                 },
               ),
               const SizedBox(height: 10),
